@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSFL Farm — Equipment Shopping List v2</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1410;
+  --bg2: #161d18;
+  --bg3: #1d2820;
+  --border: #2a3a2d;
+  --border2: #344a38;
+  --text: #d4e8d0;
+  --text2: #7a9e7e;
+  --text3: #4d6b51;
+  --green: #4ade80;
+  --green-dim: #1a4a2a;
+  --amber: #f59e0b;
+  --amber-dim: #3d2a08;
+  --blue: #60a5fa;
+  --blue-dim: #0c2240;
+  --red: #f87171;
+  --red-dim: #3d1010;
+  --purple: #a78bfa;
+  --purple-dim: #1e1040;
+  --teal: #2dd4bf;
+  --teal-dim: #0c2e2a;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+header {
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+h1 {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--green);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+h1 span { color: var(--text3); font-weight: 400; }
+.version {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  border: 1px solid var(--border2);
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.5rem 2rem;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.stat {
+  background: var(--bg2);
+  padding: 14px 16px;
+}
+.stat-label { font-size: 10px; color: var(--text3); font-family: var(--mono); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+.stat-val { font-size: 22px; font-weight: 600; font-family: var(--mono); color: var(--text); }
+.stat-val.green { color: var(--green); }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.controls {
+  padding: 0 2rem 1rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.filter-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.filter-label { font-size: 10px; font-family: var(--mono); color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 4px; }
+.fbtn {
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fbtn:hover { color: var(--text); border-color: var(--text3); }
+.fbtn.on { background: var(--green-dim); color: var(--green); border-color: var(--green); }
+.search-wrap { margin-left: auto; }
+.search-wrap input {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 5px 12px;
+  border-radius: 3px;
+  width: 200px;
+  outline: none;
+}
+.search-wrap input:focus { border-color: var(--green); }
+.search-wrap input::placeholder { color: var(--text3); }
+.tbl-wrap { overflow-x: auto; padding: 0 2rem 2rem; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead tr { border-bottom: 1px solid var(--border2); }
+th {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text3);
+  text-align: left;
+  padding: 10px 10px;
+  white-space: nowrap;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  user-select: none;
+  transition: color 0.15s;
+}
+th:hover { color: var(--text); }
+th .si { font-size: 9px; margin-left: 3px; opacity: 0.4; }
+th .si.on { opacity: 1; color: var(--green); }
+td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+tr:hover td { background: var(--bg2); }
+.nm { font-weight: 500; font-size: 12px; color: var(--text); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.sb { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.bdg {
+  display: inline-block;
+  font-size: 9px;
+  font-family: var(--mono);
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.b-new   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid #1a3a6a; }
+.b-sh    { background: var(--teal-dim);   color: var(--teal);   border: 1px solid #1a4a44; }
+.b-build { background: var(--purple-dim); color: var(--purple); border: 1px solid #2a1a6a; }
+.b-high  { background: var(--green-dim);  color: var(--green);  border: 1px solid #1a4a2a; }
+.b-med   { background: var(--amber-dim);  color: var(--amber);  border: 1px solid #5a3a08; }
+.b-low   { background: var(--red-dim);    color: var(--red);    border: 1px solid #5a1a1a; }
+.b-oe    { background: var(--amber-dim);  color: var(--amber);  border: 1px solid #5a3a08; }
+.b-time  { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); font-size: 10px; }
+.price-new { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+.price-target { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--green); }
+.price-same { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+.bar-wrap { margin-top: 4px; }
+.bar-pct { font-family: var(--mono); font-size: 11px; color: var(--green); font-weight: 500; }
+.bar-bg { height: 3px; border-radius: 2px; background: var(--border2); margin-top: 3px; }
+.bar-fill { height: 3px; border-radius: 2px; background: var(--green); }
+.small-text { font-size: 11px; color: var(--text2); }
+.muted { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.no-results { text-align: center; padding: 3rem; color: var(--text3); font-family: var(--mono); }
+.totals-row td { border-top: 1px solid var(--border2); border-bottom: none; background: var(--bg3); font-family: var(--mono); font-weight: 500; }
+@media (max-width: 900px) {
+  header, .stats, .controls, .tbl-wrap { padding-left: 1rem; padding-right: 1rem; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="version">LOCKYER VALLEY BSFL FARM</div>
+    <h1>Equipment Shopping List <span>— v2 with OE upgrades</span></h1>
+  </div>
+  <div style="font-size:11px;color:var(--text3);font-family:var(--mono);line-height:1.8;margin-bottom:2px">
+    OE = Over-engineered upgrade recommended<br>
+    S/H = second-hand target price · Build = DIY build cost
+  </div>
+</header>
+
+<div class="stats" id="stats"></div>
+
+<div class="controls">
+  <div class="filter-group">
+    <span class="filter-label">Cat</span>
+    <button class="fbtn on" onclick="sf('cat','all',this)">All</button>
+    <button class="fbtn" onclick="sf('cat','data',this)">Data</button>
+    <button class="fbtn" onclick="sf('cat','climate',this)">Climate</button>
+    <button class="fbtn" onclick="sf('cat','rearing',this)">Rearing</button>
+    <button class="fbtn" onclick="sf('cat','processing',this)">Processing</button>
+    <button class="fbtn" onclick="sf('cat','packaging',this)">Packaging</button>
+    <button class="fbtn" onclick="sf('cat','structural',this)">Structural</button>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Source</span>
+    <button class="fbtn on" onclick="sf('src','all',this)">All</button>
+    <button class="fbtn" onclick="sf('src','new',this)">Buy new</button>
+    <button class="fbtn" onclick="sf('src','sh',this)">Second-hand</button>
+    <button class="fbtn" onclick="sf('src','build',this)">Build</button>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Flag</span>
+    <button class="fbtn on" onclick="sf('oe','all',this)">All</button>
+    <button class="fbtn" onclick="sf('oe','y',this)">OE upgrades only</button>
+  </div>
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search equipment..." oninput="render()">
+  </div>
+</div>
+
+<div class="tbl-wrap">
+<table>
+<thead>
+<tr>
+  <th style="width:19%" onclick="so('name')">Equipment<span class="si" id="si-name">↕</span></th>
+  <th style="width:7%"  onclick="so('cat')">Category<span class="si" id="si-cat">↕</span></th>
+  <th style="width:6%"  onclick="so('src')">Source<span class="si" id="si-src">↕</span></th>
+  <th style="width:7%"  onclick="so('np')">New $<span class="si" id="si-np">↕</span></th>
+  <th style="width:7%"  onclick="so('tp')">Target $<span class="si" id="si-tp">↕</span></th>
+  <th style="width:6%"  onclick="so('saving')">Saving<span class="si" id="si-saving">↕</span></th>
+  <th style="width:6%"  onclick="so('av')">S/H avail<span class="si" id="si-av">↕</span></th>
+  <th style="width:12%">Best brands</th>
+  <th style="width:15%">Tests / notes before buying</th>
+  <th style="width:7%"  onclick="so('wk')">Needed<span class="si" id="si-wk">↕</span></th>
+  <th style="width:11%">Where to find</th>
+</tr>
+</thead>
+<tbody id="tb"></tbody>
+</table>
+</div>
+
+<script>
+const D = [
+  // DATA / SENSORS
+  {name:"RPi 5 (8GB) + NVMe HAT + 256GB NVMe SSD",cat:"data",src:"new",np:185,tp:185,av:null,brands:"Official RPi Foundation + Samsung 980",tests:"Boot to desktop, run stress test 10min, confirm NVMe detected and mounted. Never buy RPi clones.",wk:1,t:"Week 1",where:"Core Electronics AU, Pi Australia",sub:"MQTT broker + InfluxDB + Grafana. OE upgrade: 4GB+SD fails under DB write load",oe:true},
+  {name:"UPS battery backup",cat:"data",src:"sh",np:260,tp:90,av:"high",brands:"APC Back-UPS, CyberPower, Eaton",tests:"Run on battery 10min. Check battery manufacture date — replace if >3yr. Test auto-switchover relay.",wk:1,t:"Week 1",where:"eBay AU, Gumtree, office liquidators",sub:"Protects RPi and network switch from outages and brown-outs",oe:false},
+  {name:"Managed 8-port switch (TP-Link TL-SG108E)",cat:"data",src:"new",np:100,tp:100,av:null,brands:"TP-Link TL-SG108E — specific model",tests:"Check all 8 ports with cable tester. Confirm web management UI loads at 192.168.0.1.",wk:1,t:"Week 1",where:"Scorptec, Umart, Amazon AU",sub:"VLAN + per-port monitoring. OE upgrade: unmanaged gives zero fault visibility",oe:true},
+  {name:"ESP32 sensor nodes ×8",cat:"data",src:"new",np:200,tp:200,av:null,brands:"Espressif official 38-pin WROOM modules",tests:"Flash test firmware before installing. Verify WiFi signal at planned install location.",wk:1,t:"Week 1",where:"Core Electronics AU, AliExpress",sub:"One per cage and rack, plus 2 spares. I²C bus — SHT40, MH-Z19C, relays",oe:false},
+  {name:"SHT40 temp/humidity sensors ×10",cat:"data",src:"new",np:90,tp:90,av:null,brands:"Sensirion SHT40 ONLY — no substitutes",tests:"Cross-check two units side-by-side before deploying. Expect <0.2°C and <1.5% RH offset.",wk:1,t:"Week 1",where:"Core Electronics AU, Mouser AU",sub:"OE upgrade from DHT22: I²C bus, NIST-traceable calibration, no phantom dropouts",oe:true},
+  {name:"MQ135 NH₃ / air quality sensors ×4 (interim)",cat:"data",src:"new",np:20,tp:20,av:null,brands:"Any breakout board",tests:"Burn-in 24h before first use. Note: cross-sensitive to CO₂ and alcohol — use for trends only.",wk:1,t:"Week 1",where:"Core Electronics AU, AliExpress",sub:"Interim only until SPEC sensors installed at month 3. Establishes baseline patterns cheaply.",oe:false},
+  {name:"SPEC 968-008 electrochemical NH₃ sensors ×4",cat:"data",src:"new",np:240,tp:240,av:null,brands:"SPEC Sensors 968-008 — exact part number required",tests:"Zero in fresh outdoor air for 10min before first reading. Check expiry date on packaging (2yr shelf life).",wk:12,t:"Month 3",where:"Mouser AU, element14 AU",sub:"OE upgrade replacing MQ135 at scale. NH₃-specific ±3ppm. Replaces when scaling to 10+ racks.",oe:true},
+  {name:"DS18B20 waterproof substrate probes ×16",cat:"data",src:"new",np:80,tp:80,av:null,brands:"Genuine Maxim/Dallas DS18B20 — clones drift badly",tests:"Test each probe: ice water should read 0±0.5°C, boiling 100±0.5°C. Reject any outside this.",wk:2,t:"Week 2",where:"Core Electronics AU — request genuine Maxim. Avoid generic AliExpress.",sub:"One probe per shelf level per rack. 1-Wire bus, up to 16 on one GPIO.",oe:false},
+  {name:"MH-Z19C NDIR CO₂ sensors ×3",cat:"data",src:"new",np:90,tp:90,av:null,brands:"Winsen MH-Z19C",tests:"Allow 3min warm-up before first reading. Run outdoors first 20min to establish 400ppm ABC baseline.",wk:1,t:"Week 1",where:"Core Electronics AU, AliExpress",sub:"Breeding cage + rearing room + processing room. CO₂ spike = colony or batch stress signal.",oe:false},
+  {name:"HX711 load cell kits ×6",cat:"data",src:"new",np:48,tp:48,av:null,brands:"Any HX711 breakout + rated load cell",tests:"Verify linearity: test at 10%, 50%, 100% of rated capacity. Check zero drift over 10min powered.",wk:2,t:"Week 2",where:"Core Electronics AU, AliExpress",sub:"Egg mass weigh station, harvest weigh hopper, feed dosing ×2, frass weigh ×2.",oe:false},
+  {name:"RPi HQ Camera (12MP) + 16mm CS lens ×2",cat:"data",src:"new",np:240,tp:240,av:null,brands:"Official RPi HQ Camera + Arducam 16mm CS-mount",tests:"Focus test at exact rack mounting height. Check for dead pixels. Confirm ribbon cable fully seated.",wk:6,t:"Month 2",where:"Core Electronics AU, Pi Australia",sub:"OE upgrade from Camera Module 3. Interchangeable CS lens = adjustable FOV as rack geometry changes.",oe:true},
+  {name:"12V DC PSU + DIN bus bar distribution",cat:"data",src:"new",np:120,tp:120,av:null,brands:"Meanwell RS-150-12 PSU + Phoenix Contact bus bar",tests:"Verify output voltage under full connected load (should stay 11.8–12.2V). Torque all terminals.",wk:2,t:"Week 2",where:"Jaycar, RS Components AU, element14",sub:"Powers all ESP32 nodes, relays, augers, conveyor, actuators from single rail.",oe:false},
+  {name:"NAS + 4TB HDD (weekly spectral backup)",cat:"data",src:"sh",np:280,tp:100,av:"high",brands:"Synology DS223 + WD Red 4TB",tests:"Run extended SMART test (6–8hrs). Check power-on hours — reject if >30,000hrs.",wk:4,t:"Month 1",where:"eBay AU, Gumtree, IT liquidators",sub:"Weekly automated rsync of InfluxDB dumps and raw spectral CSV archive.",oe:false},
+  {name:"QR label printer + label stock (1000 labels)",cat:"data",src:"new",np:80,tp:80,av:null,brands:"Brother QL-820NWB or Dymo LabelWriter 550",tests:"Print 20 labels on HDPE surface — check adhesion when wet. Confirm scan distance >30cm works.",wk:2,t:"Week 2",where:"Officeworks, Amazon AU",sub:"Core data link: every tray gets a QR scan at seeding, feeding, harvest, NIR scan, and dispatch.",oe:false},
+  // CLIMATE
+  {name:"Mini-split AC — rearing room",cat:"climate",src:"sh",np:1100,tp:380,av:"high",brands:"Daikin, Mitsubishi Electric, Fujitsu (in that order)",tests:"Run both heat AND cool modes for 15min each. Pull front cover — inspect coils for mould or corrosion. Check inverter for error codes on remote display.",wk:4,t:"Month 1",where:"Gumtree, Facebook Marketplace, HVAC trade liquidators",sub:"3.5kW reverse cycle. PID setpoint 27°C. Biggest single second-hand saving in the build.",oe:false},
+  {name:"Mini-split AC — breeding room",cat:"climate",src:"sh",np:900,tp:320,av:"high",brands:"Daikin, Mitsubishi Electric, Fujitsu",tests:"Same as rearing unit. Confirm both indoor + outdoor heads, both remotes, all mounting brackets included.",wk:4,t:"Month 1",where:"Gumtree, Facebook Marketplace, HVAC trade liquidators",sub:"2.5kW reverse cycle. Setpoint 28°C / 68% RH.",oe:false},
+  {name:"Inline duct exhaust fan",cat:"climate",src:"sh",np:280,tp:80,av:"high",brands:"Fantech, Fanmaster, Greenwood",tests:"Run at full speed — listen for bearing rattle. Hold hand at outlet to check airflow. Inspect motor casing for heat after 5min.",wk:4,t:"Month 1",where:"Gumtree, eBay AU, electrical wholesaler clearances",sub:"250–315mm duct diameter, 800–1200 m³/h. Rearing room air exchange.",oe:false},
+  {name:"Full-spectrum LED strip + RTC timer relay",cat:"climate",src:"new",np:80,tp:80,av:null,brands:"5630 full-spectrum LED strip + Omron H5S-WFB2 timer",tests:"Verify timer relay accuracy: run for 48h, check on/off times drift <1min. Confirm LED spectrum.",wk:4,t:"Month 1",where:"Jaycar, AliExpress, RS Components AU",sub:"12h photoperiod for breeding cage. RTC-controlled — no manual switches in the loop.",oe:false},
+  {name:"Relay modules ×12",cat:"climate",src:"new",np:60,tp:60,av:null,brands:"Any optocoupled relay board — confirm rated current",tests:"Test each channel switches under rated load before permanent installation. Check opto-isolator present.",wk:2,t:"Week 2",where:"Core Electronics AU, AliExpress",sub:"Climate and lighting switching across all zones from ESP32 GPIO.",oe:false},
+  // STRUCTURAL
+  {name:"304 SS fittings and tubing — full product-contact kit",cat:"structural",src:"new",np:160,tp:160,av:null,brands:"Any 304 SS — confirm grade stamped on each fitting",tests:"Check thread pitch standard used (BSP vs NPT — pick one and be consistent). Pressure-test all water lines at 2× operating pressure before use.",wk:8,t:"Month 2",where:"Reece Plumbing, RS Components AU, eBay AU",sub:"OE upgrade: all product-contact lines in SS not PVC. Mandatory for any HACCP audit path.",oe:true},
+  {name:"Emergency stop buttons ×6",cat:"structural",src:"new",np:80,tp:80,av:null,brands:"Schneider Harmony XB5, ABB, Siemens",tests:"Test NC contact opens cleanly under load. Confirm mushroom head latches on push and resets on twist. Wire into 12V control circuit, not mains.",wk:10,t:"Month 3",where:"RS Components AU, element14 AU",sub:"Non-negotiable. One on conveyor, tray tipper, drum separator, press, dryer, and blanching tank.",oe:false},
+  {name:"Aluminium profile racking ×4 racks",cat:"structural",src:"build",np:800,tp:800,av:null,brands:"Bosch Rexroth 30×30 or Motedis V-slot",tests:"Check squareness with set square before final fastening. Verify each shelf rated ≥25kg. Test tray slides without binding.",wk:4,t:"Month 1",where:"Motedis AU, eBay AU, Bosch Rexroth distributors",sub:"10 trays per rack × 4 racks = 40 tray capacity. Build yourself — L-brackets and T-nuts.",oe:false},
+  {name:"SS work tables ×2 (1200×600mm)",cat:"structural",src:"sh",np:400,tp:120,av:"high",brands:"Any 1.2mm 304 SS top minimum thickness",tests:"Check table top for warping (lay straight edge across). Avoid galvanised steel frames — zinc contamination risk. Check weld integrity at leg joints.",wk:2,t:"Week 2",where:"Restaurant auctions, Gumtree, commercial kitchen liquidators (Brisbane/GC)",sub:"Feed prep station and harvest processing bench.",oe:false},
+  // REARING
+  {name:"HDPE rearing trays ×40",cat:"rearing",src:"sh",np:400,tp:140,av:"medium",brands:"Any food-grade HDPE — check for resin code 2 stamp",tests:"Inspect all 4 corners for stress cracks. Check drain holes not cracked or widened. Reject any with strong chemical odour.",wk:6,t:"Month 2",where:"Aquaculture suppliers, hydroponics shops, Gumtree",sub:"600×400×100mm. Order extras — attrition rate from cracking is ~10%/year.",oe:false},
+  {name:"IBC tote — feedstock storage (1000L)",cat:"rearing",src:"sh",np:350,tp:80,av:"high",brands:"Schoeller, Mauser, Greif",tests:"CRITICAL: confirm food-grade UN certification stamp on base plate — do not trust seller's word. Check cage frame for rust. Inspect bottom valve seal.",wk:4,t:"Month 1",where:"Gumtree, Facebook Marketplace, bulk liquid resellers",sub:"Pre-mixed dry feedstock storage. IBC cage must be non-corroded or larvae contamination risk.",oe:false},
+  {name:"Digital platform scale 50kg",cat:"rearing",src:"sh",np:180,tp:60,av:"high",brands:"A&D SC series, Ohaus Ranger, Adam Equipment",tests:"Verify accuracy with known weights at 5kg, 20kg, and 50kg. Check tare function resets correctly. Confirm USB or RS232 data output functional.",wk:2,t:"Week 2",where:"eBay AU, Gumtree, lab and industrial surplus",sub:"Feed input weighing, egg mass, harvest yield. RS232 output → ESP32 for auto-logging.",oe:false},
+  {name:"Breeding cage (aluminium angle + mesh)",cat:"rearing",src:"build",np:180,tp:180,av:null,brands:"Aluminium angle from Bunnings + fibreglass flyscreen mesh",tests:"Check mesh for gaps >1mm at all joins — adults escape through anything larger. Seal all internal corners with silicone. Confirm door closes flush.",wk:4,t:"Month 1",where:"Bunnings aluminium angle + Bunnings flyscreen mesh",sub:"2×2×1m. Build yourself. Mesh sides for airflow, solid top and base.",oe:false},
+  {name:"Auger feed dispensers ×2",cat:"rearing",src:"build",np:280,tp:280,av:null,brands:"12V DC auger motor (Greenbelt, Spiral Manufacturing)",tests:"Run dry first, then with substrate — check for bridging at hopper throat. Verify controller step delivers consistent volume ±5g.",wk:8,t:"Month 2",where:"AliExpress auger motor + Core Electronics AU controller",sub:"One per rack pair. Time + weight triggered dispensing from ESP32.",oe:false},
+  {name:"Peristaltic pump — substrate moisture dosing",cat:"rearing",src:"sh",np:120,tp:45,av:"medium",brands:"Kamoer NKP, Watson-Marlow 120U",tests:"Run with water for 5min — inspect tubing for any cracking or hardening. Verify flow rate consistency ±3% over 5min.",wk:8,t:"Month 2",where:"eBay AU, lab equipment surplus",sub:"Doses water into feed substrate to maintain 65% moisture content target.",oe:false},
+  // PROCESSING
+  {name:"Conveyor belt 400mm wide × 1.5m",cat:"processing",src:"sh",np:320,tp:110,av:"low",brands:"Food-grade PU belt on welded SS frame",tests:"Run full length unloaded — check belt tracking stays centred. Inspect belt join integrity. Confirm variable speed controller works across full range.",wk:12,t:"Month 3",where:"Food processing auctions, manufacturing clearances, Grays Online",sub:"Harvest line from separator to NIR scanner to routing gate. Food-grade belt essential.",oe:false},
+  {name:"Drum separator (DIY build)",cat:"processing",src:"build",np:260,tp:260,av:null,brands:"5mm perf 304 SS sheet + 12V DC motor + centrifugal blower",tests:"Run with substrate before larvae — confirm frass falls through 5mm holes cleanly. Run with larvae — confirm clean exit from drum end. Adjust drum angle (5–8°) for best throughput.",wk:10,t:"Month 3",where:"Metal supplier (perf sheet) + Jaycar (motor + controller) + Bunnings (blower)",sub:"Core harvest separation. Build from perf SS cylinder on motor-driven roller mount.",oe:false},
+  {name:"Motorised tray tipper (DIY build)",cat:"processing",src:"build",np:340,tp:340,av:null,brands:"12V linear actuator 200mm stroke (BEMONOC, Actuonix)",tests:"Run 20 full cycles unloaded, then 10 with a loaded tray. Check actuator limit switches stop cleanly. Verify frame doesn't flex under load.",wk:10,t:"Month 3",where:"AliExpress linear actuator + local metal fabricator for frame",sub:"Auto-inverts harvest tray onto conveyor. Triggered by CV harvest signal + operator confirm.",oe:false},
+  {name:"Servo routing gate — 3-way chute",cat:"processing",src:"build",np:60,tp:60,av:null,brands:"MG996R servo + 3D-printed or sheet-metal chute",tests:"Test all 3 positions under full load flow. Verify NIR trigger signal reliably fires correct route within 500ms of reading.",wk:12,t:"Month 3",where:"Core Electronics AU (servo) + local 3D print or sheet metal",sub:"Diverts post-NIR to: oil press stream (fat>28%), whole dry stream, or pupae reserve.",oe:false},
+  {name:"Blanching tank — euthanasia",cat:"processing",src:"sh",np:380,tp:130,av:"medium",brands:"Julabo, PolyScience, Grant — or commercial SS bain marie",tests:"Hold 80°C setpoint for 30min — verify with independent calibrated probe (should be ±1°C). Inspect heating element for scale. Check thermostat doesn't overshoot.",wk:14,t:"Month 4",where:"Lab surplus, food processing auctions, eBay AU",sub:"PID-controlled 80°C / 60 second blanch. Halts enzyme activity, safe euthanasia method.",oe:false},
+  {name:"Forced-air tray dryer (DIY build)",cat:"processing",src:"build",np:480,tp:480,av:null,brands:"Rockwool insulation + Inkbird PID + 1500W fan heater",tests:"Run at 65°C for 2h — map temperature uniformity across all tray positions with IR thermometer. Temp variation should be <±5°C. Check door seal holds.",wk:14,t:"Month 4",where:"Bunnings (insulation + frame) + Jaycar (PID, thermocouple) + AliExpress (fan)",sub:"Target 60–70°C, <10% moisture output. Build from insulated box + PID-controlled fan heater.",oe:false},
+  {name:"Screw press — oil extraction",cat:"processing",src:"sh",np:680,tp:280,av:"medium",brands:"Piteba, YTK, Vevor",tests:"Run dry — listen for bearing noise (reject if grinding). Check barrel temperature under load with IR gun (should stay <50°C with cooling). Inspect auger shaft for wear grooves.",wk:16,t:"Month 4",where:"Gumtree, food processing auctions, Alibaba resellers, Grays Online",sub:"Cold press. Barrel temp monitored — high temp degrades lauric acid profile. Key BSFL oil marker.",oe:false},
+  {name:"Oil filtration — Buchner + SS drum + N₂ kit",cat:"processing",src:"sh",np:320,tp:110,av:"medium",brands:"Borosilicate Buchner funnel + 304 SS drum + N₂ regulator",tests:"Inspect Buchner flask for chips or cracks at the rim — these fail under vacuum. Test drum bung seal with air pressure. Confirm vacuum pump holds pressure.",wk:20,t:"Month 5",where:"Lab surplus, eBay AU, scientific equipment liquidators, drum resellers",sub:"Filters crude press oil, stores under nitrogen blanket to prevent oxidation.",oe:false},
+  {name:"Hammer mill — defatted meal particle sizing",cat:"processing",src:"sh",np:560,tp:220,av:"medium",brands:"Lister, Skiold, Vevor, Sona",tests:"Run with grain first — check hammer screen for holes or deformation. Inspect bearings for roughness. Verify motor amps under load vs nameplate rating.",wk:20,t:"Month 5",where:"Farm clearing sales, rural auctions, Grays Online, Gumtree",sub:"Reduces defatted press cake to specified meal particle size for buyer specification.",oe:false},
+  // PACKAGING
+  {name:"Chamber vacuum sealer",cat:"packaging",src:"sh",np:480,tp:180,av:"medium",brands:"Henkelman, Multivac, Orved, Vac-Star",tests:"Run 5 vacuum cycles — check seal bar heats evenly across full width. Confirm lid gasket holds vacuum (should reach <5mbar). Inspect pump oil level and colour (change if dark).",wk:20,t:"Month 5",where:"Restaurant auctions, hospitality liquidators, Grays Online, Gumtree",sub:"All finished product packaging. Chamber style essential — external sealers can't handle moist product.",oe:false},
+  {name:"SS drum — frass batch storage",cat:"packaging",src:"sh",np:200,tp:70,av:"high",brands:"Any 304 SS or food-grade HDPE drum with lid",tests:"Check interior for residue or strong chemical odour. Confirm lid creates a proper seal. Reject any with rust pitting.",wk:6,t:"Month 2",where:"Gumtree, drum resellers, industrial surplus",sub:"Frass stored per batch with QR label for traceability. Weighed and N-P-K labelled before dispatch.",oe:false},
+];
+
+const aoMap = {high:0,medium:1,low:2,null:3};
+let F = {cat:'all', src:'all', oe:'all'};
+let SK = 'wk', SD = 1;
+
+function fm(n){ return '$' + n.toLocaleString(); }
+function saving(i){
+  if(i.src==='build' || i.np===i.tp) return null;
+  return Math.round((1 - i.tp/i.np)*100);
+}
+
+function render(){
+  const q = document.getElementById('search').value.toLowerCase();
+  let data = D.filter(i => {
+    if(F.cat !== 'all' && i.cat !== F.cat) return false;
+    if(F.src !== 'all' && i.src !== F.src) return false;
+    if(F.oe === 'y' && !i.oe) return false;
+    if(q && !i.name.toLowerCase().includes(q) && !i.sub.toLowerCase().includes(q) && !i.cat.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  data.sort((a,b) => {
+    let av, bv;
+    if(SK==='av'){ av=aoMap[a.av]??3; bv=aoMap[b.av]??3; }
+    else if(SK==='saving'){ av=saving(a)??-1; bv=saving(b)??-1; }
+    else { av=a[SK]; bv=b[SK]; }
+    if(typeof av==='string') return av.localeCompare(bv)*SD;
+    return (av-bv)*SD;
+  });
+
+  const tn = data.reduce((s,i)=>s+i.np,0);
+  const tt = data.reduce((s,i)=>s+i.tp,0);
+  const ts = tn-tt;
+  const shC = data.filter(i=>i.src==='sh').length;
+  const oeC = data.filter(i=>i.oe).length;
+  const bdC = data.filter(i=>i.src==='build').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-label">New cost (filtered)</div><div class="stat-val">${fm(tn)}</div><div class="stat-sub">${data.length} line items</div></div>
+    <div class="stat"><div class="stat-label">Target spend</div><div class="stat-val">${fm(tt)}</div><div class="stat-sub">buy + s/h + build</div></div>
+    <div class="stat"><div class="stat-label">Potential saving</div><div class="stat-val green">${fm(ts)}</div><div class="stat-sub">${Math.round(ts/tn*100)}% vs all-new</div></div>
+    <div class="stat"><div class="stat-label">Breakdown</div><div class="stat-val" style="font-size:14px">${shC} s/h · ${bdC} build · ${oeC} OE</div><div class="stat-sub">of ${data.length} total items</div></div>
+  `;
+
+  const tb = document.getElementById('tb');
+  if(!data.length){
+    tb.innerHTML = '<tr><td colspan="11" class="no-results">No items match current filters.</td></tr>';
+    return;
+  }
+
+  let rows = '';
+  data.forEach(i => {
+    const oe = i.oe ? '<span class="bdg b-oe">OE</span>' : '';
+    const sv = saving(i);
+    let svCell;
+    if(sv===null){
+      svCell = '<span class="muted">—</span>';
+    } else {
+      svCell = `<div class="bar-wrap"><div class="bar-pct">${sv}%</div><div class="bar-bg"><div class="bar-fill" style="width:${sv}%"></div></div></div>`;
+    }
+    const priceCell = i.np===i.tp
+      ? `<span class="price-same">${fm(i.tp)}</span>`
+      : `<span class="price-target">${fm(i.tp)}</span>`;
+
+    const srcBdg = i.src==='new' ? '<span class="bdg b-new">New</span>'
+      : i.src==='sh' ? '<span class="bdg b-sh">S/H</span>'
+      : '<span class="bdg b-build">Build</span>';
+
+    const avBdg = !i.av ? '<span class="muted">—</span>'
+      : i.av==='high' ? '<span class="bdg b-high">High</span>'
+      : i.av==='medium' ? '<span class="bdg b-med">Medium</span>'
+      : '<span class="bdg b-low">Low</span>';
+
+    rows += `<tr>
+      <td><div class="nm">${i.name} ${oe}</div><div class="sb">${i.sub}</div></td>
+      <td><span style="font-size:11px;color:var(--text2);font-family:var(--mono)">${i.cat}</span></td>
+      <td>${srcBdg}</td>
+      <td><span class="price-new">${fm(i.np)}</span></td>
+      <td>${priceCell}</td>
+      <td>${svCell}</td>
+      <td>${avBdg}</td>
+      <td><span class="small-text">${i.brands}</span></td>
+      <td><span class="small-text">${i.tests}</span></td>
+      <td><span class="bdg b-time">${i.t}</span></td>
+      <td><span class="small-text">${i.where}</span></td>
+    </tr>`;
+  });
+
+  // Totals row
+  rows += `<tr class="totals-row">
+    <td colspan="3"><span style="font-size:11px;color:var(--text2)">TOTALS (${data.length} items)</span></td>
+    <td><span class="price-new">${fm(tn)}</span></td>
+    <td><span class="price-target">${fm(tt)}</span></td>
+    <td><span class="bar-pct">${Math.round(ts/tn*100)}%</span></td>
+    <td colspan="5"><span style="font-size:11px;color:var(--text3)">saving ${fm(ts)} vs all-new</span></td>
+  </tr>`;
+
+  tb.innerHTML = rows;
+
+  ['name','cat','src','np','tp','saving','av','wk'].forEach(k => {
+    const el = document.getElementById('si-'+k);
+    if(el){ el.textContent = SK===k ? (SD===1?'↑':'↓') : '↕'; el.className = 'si'+(SK===k?' on':''); }
+  });
+}
+
+function so(k){ if(SK===k) SD*=-1; else{SK=k;SD=1;} render(); }
+
+function sf(type, val, btn){
+  F[type] = val;
+  // deactivate siblings
+  const grp = btn.closest('.filter-group');
+  grp.querySelectorAll('.fbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

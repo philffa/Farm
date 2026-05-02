@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farm Records</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+  :root {
+    --soil:#3d2b1f;--bark:#6b4c35;--straw:#c8a96e;--sage:#7a9e7e;
+    --sage-dark:#4e7453;--sage-light:#b8d4ba;--cream:#f5f0e8;
+    --cream-dark:#ede5d8;--rust:#b85c38;--text:#2a1f16;
+    --text-mid:#5c4535;--text-light:#9a7d6a;
+    --border:rgba(107,76,53,0.15);--border-strong:rgba(107,76,53,0.3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+  /* HEADER */
+  .header{background:var(--soil);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.25);gap:1rem;}
+  .header-left{}
+  .header-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--straw);}
+  .header-sub{font-size:0.7rem;color:var(--sage-light);margin-top:2px;font-weight:300;}
+  .header-btns{display:flex;gap:6px;flex-shrink:0;align-items:center;}
+  .sync-status{display:flex;align-items:center;gap:5px;font-size:0.72rem;color:var(--sage-light);white-space:nowrap;}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:#f0c040;flex-shrink:0;}
+  .sync-dot.online{background:#7ecf7e;animation:pulse 2s infinite;}
+  .sync-dot.error{background:#e06060;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+  .hbtn{border:none;padding:0.42rem 0.9rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+  .hbtn-green{background:var(--sage-dark);color:white;}
+  .hbtn-green:hover{background:#3d5e41;}
+  .hbtn-outline{background:transparent;color:var(--straw);border:1px solid rgba(200,169,110,0.4);}
+  .hbtn-outline:hover{background:rgba(200,169,110,0.12);}
+  .hbtn-rust{background:var(--rust);color:white;}
+  .hbtn-rust:hover{background:#9a4020;}
+
+  /* NAV */
+  .nav-wrap{background:var(--cream-dark);border-bottom:1px solid var(--border-strong);display:flex;align-items:stretch;}
+  .nav{display:flex;overflow-x:auto;flex:1;padding:0 0.5rem;scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:0.82rem 0.95rem;font-size:0.82rem;font-weight:500;color:var(--text-mid);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all 0.15s;user-select:none;display:flex;align-items:center;gap:4px;}
+  .nav-tab:hover{color:var(--soil);}
+  .nav-tab.active{color:var(--sage-dark);border-bottom-color:var(--sage-dark);}
+  .tab-del{font-size:0.68rem;opacity:0.45;cursor:pointer;padding:1px 3px;border-radius:3px;}
+  .tab-del:hover{opacity:1;background:rgba(184,92,56,0.15);color:var(--rust);}
+  .nav-add-tab{padding:0.82rem 1rem;font-size:0.82rem;color:var(--text-light);cursor:pointer;border-left:1px solid var(--border-strong);display:flex;align-items:center;gap:4px;flex-shrink:0;transition:all 0.15s;}
+  .nav-add-tab:hover{color:var(--sage-dark);background:rgba(78,116,83,0.06);}
+
+  /* MAIN */
+  .main{max-width:900px;margin:0 auto;padding:1.4rem 1rem 4rem;}
+  .section{display:none;}.section.active{display:block;}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:0.7rem;}
+  .section-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--soil);}
+  .section-actions{display:flex;gap:7px;flex-wrap:wrap;}
+
+  /* BUTTONS */
+  .add-btn{background:var(--sage-dark);color:white;border:none;padding:0.48rem 1rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:background 0.2s;}
+  .add-btn:hover{background:#3d5e41;}
+  .sec-edit-btn,.export-btn{background:white;border:1px solid var(--border-strong);color:var(--text-mid);padding:0.45rem 0.9rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.15s;}
+  .sec-edit-btn:hover,.export-btn:hover{background:var(--cream-dark);color:var(--soil);}
+
+  /* RECORDS */
+  .records-list{display:flex;flex-direction:column;gap:9px;}
+  .record-card{background:white;border:1px solid var(--border);border-radius:10px;padding:0.95rem 1.1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;transition:box-shadow 0.15s;}
+  .record-card:hover{box-shadow:0 2px 12px rgba(61,43,31,0.08);}
+  .record-main{flex:1;min-width:0;}
+  .record-title{font-weight:600;font-size:0.93rem;color:var(--soil);margin-bottom:2px;}
+  .record-meta{font-size:0.78rem;color:var(--text-light);margin-bottom:5px;}
+  .record-detail{font-size:0.83rem;color:var(--text-mid);line-height:1.5;}
+  .record-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+  .tag{font-size:0.7rem;padding:2px 8px;border-radius:20px;font-weight:500;}
+  .tag-goose{background:#ddeef5;color:#2a6980;}
+  .tag-goat{background:#e8ddd0;color:#6b4020;}
+  .tag-pasture{background:#ddf0dd;color:#2e6030;}
+  .tag-health{background:#fde8e8;color:#8b2020;}
+  .tag-finance{background:#fdf3d8;color:#7a5a00;}
+  .tag-water{background:#ddeeff;color:#1a4a7a;}
+  .tag-compost{background:#e8ead8;color:#4a4a20;}
+  .tag-egg{background:#fff0d8;color:#8a5000;}
+  .tag-breeding{background:#eeddf5;color:#5a2080;}
+  .tag-infra{background:#e8e8e8;color:#404040;}
+  .tag-bas{background:#e8f5e8;color:#1a5a2a;}
+  .tag-loans{background:#f5e8e8;color:#5a1a1a;}
+  .tag-custom{background:#e8f0e8;color:#2a5030;}
+  .record-actions{display:flex;gap:5px;flex-shrink:0;}
+  .icon-btn{background:none;border:1px solid var(--border-strong);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.78rem;color:var(--text-mid);transition:all 0.15s;}
+  .icon-btn:hover{background:var(--cream-dark);}
+  .icon-btn.delete:hover{background:#fde8e8;color:var(--rust);border-color:var(--rust);}
+
+  /* EMPTY */
+  .empty{text-align:center;padding:2.5rem 1rem;color:var(--text-light);}
+  .empty-icon{font-size:2.2rem;margin-bottom:0.7rem;}
+  .empty-title{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:0.3rem;color:var(--text-mid);}
+  .empty-sub{font-size:0.83rem;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(30,20,10,0.55);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--cream);border-radius:14px;width:100%;max-width:550px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+  .modal-header{background:var(--soil);padding:1rem 1.3rem;border-radius:14px 14px 0 0;display:flex;align-items:center;justify-content:space-between;}
+  .modal-title{font-family:'Playfair Display',serif;color:var(--straw);font-size:1rem;}
+  .modal-close{background:none;border:none;color:var(--sage-light);font-size:1.2rem;cursor:pointer;padding:2px 5px;}
+  .modal-close:hover{color:white;}
+  .modal-body{padding:1.3rem;}
+  .modal-footer{padding:0.9rem 1.3rem;border-top:1px solid var(--border);display:flex;gap:0.7rem;justify-content:flex-end;}
+
+  /* FORM */
+  .form-group{margin-bottom:0.95rem;}
+  .form-label{display:block;font-size:0.76rem;font-weight:600;color:var(--text-mid);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;}
+  .form-input,.form-select,.form-textarea{width:100%;padding:0.55rem 0.75rem;border:1px solid var(--border-strong);border-radius:7px;font-family:'Source Sans 3',sans-serif;font-size:0.88rem;background:white;color:var(--text);transition:border-color 0.15s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--sage-dark);box-shadow:0 0 0 3px rgba(78,116,83,0.12);}
+  .form-textarea{min-height:72px;resize:vertical;}
+  .form-hint{font-size:0.73rem;color:var(--text-light);margin-top:3px;line-height:1.4;}
+  .btn-cancel{background:none;border:1px solid var(--border-strong);color:var(--text-mid);padding:0.48rem 1rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.83rem;cursor:pointer;}
+  .btn-cancel:hover{background:var(--cream-dark);}
+  .btn-save{background:var(--sage-dark);color:white;border:none;padding:0.48rem 1.2rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.83rem;font-weight:500;cursor:pointer;}
+  .btn-save:hover{background:#3d5e41;}
+
+  /* SETUP PANEL */
+  .setup-panel{background:white;border:2px solid var(--straw);border-radius:12px;padding:1.4rem;margin-bottom:1.4rem;}
+  .setup-panel h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--soil);margin-bottom:0.6rem;}
+  .setup-steps{counter-reset:step;margin:0.8rem 0;}
+  .setup-step{display:flex;gap:0.8rem;margin-bottom:0.7rem;font-size:0.85rem;color:var(--text-mid);line-height:1.5;}
+  .step-num{background:var(--sage-dark);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;flex-shrink:0;margin-top:1px;}
+  .setup-link{color:var(--sage-dark);font-weight:500;}
+  .setup-input-row{display:flex;gap:8px;margin-top:0.8rem;flex-wrap:wrap;}
+  .setup-input-row .form-input{flex:1;min-width:180px;}
+
+  /* FIELD BUILDER */
+  .field-list{display:flex;flex-direction:column;gap:7px;margin-bottom:0.9rem;}
+  .field-item{background:white;border:1px solid var(--border-strong);border-radius:8px;padding:0.65rem 0.85rem;display:flex;align-items:center;gap:9px;}
+  .field-item-label{flex:1;font-size:0.86rem;color:var(--text);}
+  .field-item-type{font-size:0.72rem;color:var(--text-light);background:var(--cream-dark);padding:2px 7px;border-radius:10px;}
+  .field-item-del{background:none;border:none;color:var(--text-light);cursor:pointer;font-size:1rem;padding:2px 5px;border-radius:4px;}
+  .field-item-del:hover{color:var(--rust);background:#fde8e8;}
+  .add-field-row{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end;}
+  .add-field-row .form-input,.add-field-row .form-select{flex:1;min-width:110px;}
+  .add-field-btn{background:var(--bark);color:white;border:none;padding:0.55rem 0.9rem;border-radius:7px;font-family:'Source Sans 3',sans-serif;font-size:0.83rem;cursor:pointer;white-space:nowrap;}
+  .add-field-btn:hover{background:var(--soil);}
+
+  /* DASHBOARD */
+  .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:1.4rem;}
+  .dash-card{background:white;border:1px solid var(--border);border-radius:10px;padding:0.9rem;text-align:center;}
+  .dash-num{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--sage-dark);}
+  .dash-label{font-size:0.73rem;color:var(--text-light);margin-top:2px;}
+  .recent-title{font-size:0.76rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem;}
+
+  /* FILTER */
+  .filter-bar{margin-bottom:0.9rem;}
+  .filter-input{width:100%;padding:0.43rem 0.75rem;border:1px solid var(--border-strong);border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.83rem;background:white;color:var(--text);}
+  .filter-input:focus{outline:none;border-color:var(--sage-dark);}
+
+  /* BUILDER */
+  .builder-intro{background:white;border:1px solid var(--border);border-radius:10px;padding:1.1rem;margin-bottom:1.1rem;font-size:0.86rem;color:var(--text-mid);line-height:1.6;}
+  .custom-sec-card{background:white;border:1px solid var(--border);border-radius:10px;padding:0.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:9px;}
+  .custom-sec-name{font-weight:600;font-size:0.93rem;color:var(--soil);}
+  .custom-sec-meta{font-size:0.78rem;color:var(--text-light);margin-top:2px;}
+  .custom-sec-actions{display:flex;gap:6px;}
+
+  /* TEMPLATE LIBRARY */
+  .template-search-wrap{position:relative;margin-bottom:1rem;}
+  .template-search{width:100%;padding:0.6rem 0.8rem 0.6rem 2.2rem;border:1px solid var(--border-strong);border-radius:8px;font-family:'Source Sans 3',sans-serif;font-size:0.88rem;background:white;color:var(--text);}
+  .template-search:focus{outline:none;border-color:var(--sage-dark);box-shadow:0 0 0 3px rgba(78,116,83,0.12);}
+  .template-search-icon{position:absolute;left:0.7rem;top:50%;transform:translateY(-50%);pointer-events:none;}
+  .template-cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+  .template-cat-btn{padding:0.28rem 0.8rem;border-radius:20px;border:1px solid var(--border-strong);background:white;font-family:'Source Sans 3',sans-serif;font-size:0.76rem;color:var(--text-mid);cursor:pointer;transition:all 0.15s;}
+  .template-cat-btn:hover,.template-cat-btn.active{background:var(--sage-dark);color:white;border-color:var(--sage-dark);}
+  .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px;margin-bottom:1.4rem;}
+  .template-card{background:white;border:1px solid var(--border);border-radius:10px;padding:0.9rem;cursor:pointer;transition:all 0.15s;position:relative;text-align:left;width:100%;}
+  .template-card:hover{border-color:var(--sage-dark);box-shadow:0 2px 10px rgba(78,116,83,0.12);}
+  .template-card.already-added{opacity:0.5;cursor:default;}
+  .template-card.already-added:hover{border-color:var(--border);box-shadow:none;}
+  .template-emoji{font-size:1.5rem;margin-bottom:0.35rem;display:block;}
+  .template-name{font-weight:600;font-size:0.86rem;color:var(--soil);margin-bottom:0.2rem;}
+  .template-desc{font-size:0.73rem;color:var(--text-light);line-height:1.4;}
+  .template-fields-count{font-size:0.7rem;color:var(--text-mid);margin-top:0.35rem;}
+  .template-added-badge{position:absolute;top:7px;right:7px;background:var(--sage-light);color:var(--sage-dark);font-size:0.62rem;padding:2px 5px;border-radius:8px;font-weight:700;}
+  .tpl-section-label{font-size:0.74rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.06em;margin:1.1rem 0 0.5rem;}
+
+  /* PHOTOS */
+  .photo-picker{margin-bottom:0.95rem;}
+  .photo-picker-label{display:block;font-size:0.76rem;font-weight:600;color:var(--text-mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+  .photo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .photo-thumb-wrap{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border-strong);flex-shrink:0;}
+  .photo-thumb{width:100%;height:100%;object-fit:cover;cursor:pointer;display:block;}
+  .photo-thumb-del{position:absolute;top:2px;right:2px;background:rgba(30,10,5,0.7);color:white;border:none;border-radius:50%;width:18px;height:18px;font-size:0.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .photo-thumb-status{position:absolute;bottom:2px;left:2px;font-size:0.6rem;padding:1px 4px;border-radius:3px;font-weight:600;}
+  .photo-thumb-status.uploading{background:rgba(240,192,64,0.9);color:#5a3a00;}
+  .photo-thumb-status.uploaded{background:rgba(100,200,100,0.9);color:#1a4a18;}
+  .photo-thumb-status.queued{background:rgba(180,180,180,0.9);color:#333;}
+  .photo-add-btn{width:80px;height:80px;border:2px dashed var(--border-strong);border-radius:8px;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text-light);font-size:0.7rem;transition:all 0.15s;flex-shrink:0;}
+  .photo-add-btn:hover{border-color:var(--sage-dark);color:var(--sage-dark);background:rgba(78,116,83,0.04);}
+  .photo-add-icon{font-size:1.4rem;line-height:1;}
+  /* Card photo strip */
+  .card-photos{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+  .card-photo{width:56px;height:56px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid var(--border);transition:transform 0.15s;}
+  .card-photo:hover{transform:scale(1.05);}
+  .card-photo-count{width:56px;height:56px;border-radius:6px;background:var(--cream-dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.72rem;color:var(--text-light);cursor:pointer;}
+  /* Upload queue badge */
+  .queue-badge{background:#f0c040;color:#5a3a00;border-radius:10px;padding:1px 6px;font-size:0.7rem;font-weight:600;margin-left:4px;}
+  /* Lightbox */
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:95vw;max-height:80vh;border-radius:8px;object-fit:contain;}
+  .lightbox-btns{display:flex;gap:10px;}
+  .lightbox-btn{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:0.5rem 1.1rem;border-radius:6px;font-family:'Source Sans 3',sans-serif;font-size:0.83rem;cursor:pointer;}
+  .lightbox-btn:hover{background:rgba(255,255,255,0.25);}
+  .lightbox-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:white;font-size:1.8rem;cursor:pointer;line-height:1;opacity:0.7;}
+  .lightbox-close:hover{opacity:1;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--soil);color:var(--straw);padding:0.6rem 1.3rem;border-radius:30px;font-size:0.83rem;font-weight:500;z-index:500;transition:transform 0.3s ease;white-space:nowrap;pointer-events:none;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  /* SYNC BANNER */
+  .sync-banner{background:#fff8e6;border:1px solid #e8c84a;border-radius:8px;padding:0.7rem 1rem;font-size:0.82rem;color:#6a5000;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+  .sync-banner.error{background:#fff0f0;border-color:#e8a0a0;color:#6a0000;}
+  .sync-banner.success{background:#f0fff4;border-color:#80cc90;color:#1a5a28;}
+
+  @media(max-width:500px){
+    .header{padding:0.9rem;}.header-title{font-size:1.1rem;}
+    .hbtn{font-size:0.72rem;padding:0.38rem 0.7rem;}
+    .sync-status span{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="header-title">Farm Records</div>
+    <div class="header-sub" id="headerSub">Offline — saves locally</div>
+  </div>
+  <div class="header-btns">
+    <div class="sync-status">
+      <div class="sync-dot" id="syncDot"></div>
+      <span id="syncLabel">Not synced</span>
+    </div>
+    <button class="hbtn hbtn-outline" onclick="manualSync()" title="Sync now">↑↓ Sync</button>
+    <button class="hbtn hbtn-green" onclick="showSection('_settings')">⚙ Settings</button>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav" id="mainNav"></div>
+  <div class="nav-add-tab" onclick="showSection('_builder')">+ Section</div>
+</div>
+
+<main class="main" id="mainContent"></main>
+
+<!-- RECORD MODAL -->
+<div class="modal-overlay" id="recordModal" onclick="handleOverlayClick(event,'recordModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="recordModalTitle">Add record</div>
+      <button class="modal-close" onclick="closeModal('recordModal')">✕</button>
+    </div>
+    <div class="modal-body" id="recordModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('recordModal')">Cancel</button>
+      <button class="btn-save" onclick="saveRecord()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUILDER MODAL -->
+<div class="modal-overlay" id="builderModal" onclick="handleOverlayClick(event,'builderModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="builderModalTitle">New section</div>
+      <button class="modal-close" onclick="closeModal('builderModal')">✕</button>
+    </div>
+    <div class="modal-body" id="builderModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('builderModal')">Cancel</button>
+      <button class="btn-save" onclick="saveCustomSection()">Save section</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOverlay(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="Photo"/>
+  <div class="lightbox-btns">
+    <button class="lightbox-btn" onclick="openFullPhoto()">↗ Open full size</button>
+    <button class="lightbox-btn" onclick="closeLightbox()">Close</button>
+  </div>
+</div>
+<input type="file" id="globalPhotoInput" accept="image/*" multiple style="display:none" onchange="handlePhotoFiles(event)"/>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+
+const LOCAL_KEY = 'farmRecords_v3';
+const CUSTOM_KEY = 'farmCustomSections_v3';
+const SETTINGS_KEY = 'farmSettings_v3';
+
+function loadLocal() {
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY)) || initDB(); } catch(e) { return initDB(); }
+}
+function initDB() {
+  return { geese:[], goats:[], eggs:[], breeding:[], health:[], pasture:[], water:[], compost:[], finance:[], bas:[], loans:[], infra:[] };
+}
+function saveLocal(db) {
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(db));
+  localStorage.setItem('farmLastLocal', new Date().toISOString());
+}
+function loadCustomSections() {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_KEY)) || []; } catch(e) { return []; }
+}
+function saveCustomSections(s) { localStorage.setItem(CUSTOM_KEY, JSON.stringify(s)); }
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+// ═══════════════════════════════════════════════════════
+// CLOUD SYNC — JSONBin.io
+// Free tier: unlimited bins, 10k requests/month
+// User creates free account at jsonbin.io, gets API key
+// ═══════════════════════════════════════════════════════
+
+let syncInProgress = false;
+
+function getCloudConfig() {
+  const s = loadSettings();
+  return { apiKey: s.jsonbinKey || '', binId: s.jsonbinBinId || '' };
+}
+
+async function cloudPull() {
+  const { apiKey, binId } = getCloudConfig();
+  if (!apiKey || !binId) return null;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+      headers: { 'X-Master-Key': apiKey }
+    });
+    if (!res.ok) throw new Error('Pull failed: ' + res.status);
+    const json = await res.json();
+    return json.record;
+  } catch(e) {
+    console.warn('Cloud pull error:', e);
+    return null;
+  }
+}
+
+async function cloudPush(payload) {
+  const { apiKey, binId } = getCloudConfig();
+  if (!apiKey || !binId) return false;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch(e) {
+    console.warn('Cloud push error:', e);
+    return false;
+  }
+}
+
+async function createNewBin(apiKey) {
+  const db = loadLocal();
+  const custom = loadCustomSections();
+  try {
+    const res = await fetch('https://api.jsonbin.io/v3/b', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': apiKey,
+        'X-Bin-Name': 'Farm Records',
+        'X-Bin-Private': 'true'
+      },
+      body: JSON.stringify({ db, customSections: custom, _version: Date.now() })
+    });
+    if (!res.ok) throw new Error('Create bin failed: ' + res.status);
+    const json = await res.json();
+    return json.metadata?.id || null;
+  } catch(e) {
+    console.warn('Create bin error:', e);
+    return null;
+  }
+}
+
+// Merge strategy: union by record id, newest _saved wins on conflict
+function mergeDB(local, remote) {
+  if (!remote) return local;
+  const result = { ...initDB(), ...local };
+  const allKeys = new Set([...Object.keys(local), ...Object.keys(remote)]);
+  allKeys.forEach(key => {
+    if (key.startsWith('_')) return;
+    const localArr = local[key] || [];
+    const remoteArr = remote[key] || [];
+    const map = {};
+    [...localArr, ...remoteArr].forEach(r => {
+      if (!map[r.id] || (r._saved || '') > (map[r.id]._saved || '')) map[r.id] = r;
+    });
+    result[key] = Object.values(map);
+  });
+  return result;
+}
+
+function mergeCustomSections(local, remote) {
+  if (!remote || !Array.isArray(remote)) return local;
+  const map = {};
+  [...local, ...remote].forEach(s => { map[s.id] = s; });
+  return Object.values(map);
+}
+
+async function manualSync() {
+  if (syncInProgress) return;
+  const { apiKey, binId } = getCloudConfig();
+  if (!apiKey || !binId) { showToast('Set up cloud sync in Settings first'); showSection('_settings'); return; }
+  setSyncStatus('syncing');
+  await doSync();
+}
+
+async function doSync(silent) {
+  if (syncInProgress) return;
+  const { apiKey, binId } = getCloudConfig();
+  if (!apiKey || !binId) return;
+  syncInProgress = true;
+  setSyncStatus('syncing');
+  try {
+    const remote = await cloudPull();
+    const localDB = loadLocal();
+    const localCustom = loadCustomSections();
+
+    const mergedDB = mergeDB(localDB, remote?.db);
+    const mergedCustom = mergeCustomSections(localCustom, remote?.customSections);
+
+    saveLocal(mergedDB);
+    saveCustomSections(mergedCustom);
+
+    const pushed = await cloudPush({ db: mergedDB, customSections: mergedCustom, _version: Date.now() });
+    if (pushed) {
+      setSyncStatus('online');
+      saveSettings({ ...loadSettings(), lastSync: new Date().toISOString() });
+      if (!silent) { showToast('Synced ✓'); refreshCurrentSection(); }
+    } else {
+      setSyncStatus('error');
+      if (!silent) showToast('Sync failed — check connection');
+    }
+  } catch(e) {
+    setSyncStatus('error');
+    if (!silent) showToast('Sync error');
+  }
+  syncInProgress = false;
+}
+
+function setSyncStatus(state) {
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  const sub = document.getElementById('headerSub');
+  dot.className = 'sync-dot';
+  if (state === 'online') {
+    dot.classList.add('online');
+    label.textContent = 'Synced';
+    sub.textContent = 'Cloud sync active';
+  } else if (state === 'syncing') {
+    label.textContent = 'Syncing…';
+    sub.textContent = 'Syncing to cloud…';
+  } else if (state === 'error') {
+    dot.classList.add('error');
+    label.textContent = 'Sync failed';
+    sub.textContent = 'Saves locally, sync failed';
+  } else {
+    label.textContent = 'Not synced';
+    sub.textContent = 'Saves locally only';
+  }
+}
+
+// Auto-sync every 2 minutes if configured
+setInterval(() => { const c = getCloudConfig(); if (c.apiKey && c.binId) doSync(true); }, 120000);
+
+// ═══════════════════════════════════════════════════════
+// BUILT-IN FORMS
+// ═══════════════════════════════════════════════════════
+
+const BUILTIN_FORMS = {
+  goose:{ title:'Geese — bird record', dbKey:'geese', fields:[
+    {id:'name',label:'Name or ID',type:'text',placeholder:'e.g. Gertrude'},
+    {id:'sex',label:'Sex',type:'select',options:['Female','Male (Gander)']},
+    {id:'breed',label:'Breed',type:'text',placeholder:'e.g. Embden, Toulouse'},
+    {id:'source',label:'Source / seller',type:'text',placeholder:'Where acquired from'},
+    {id:'date',label:'Date acquired',type:'date'},
+    {id:'age',label:'Age or hatch date',type:'text',placeholder:'e.g. 12 weeks or DOB'},
+    {id:'parents',label:'Parents (if bred on farm)',type:'text',placeholder:'Mother and father ID'},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Markings, temperament, anything else'},
+  ]},
+  goat:{ title:'Goats — animal record', dbKey:'goats', fields:[
+    {id:'name',label:'Name or ID',type:'text',placeholder:'e.g. Billy 1'},
+    {id:'sex',label:'Sex',type:'select',options:['Female (Doe)','Male (Buck)','Wether (castrated)']},
+    {id:'breed',label:'Breed',type:'text',placeholder:'e.g. Boer cross, Feral'},
+    {id:'source',label:'Source / seller',type:'text',placeholder:'Where acquired from'},
+    {id:'date',label:'Date acquired',type:'date'},
+    {id:'age',label:'Age or DOB',type:'text',placeholder:'Approximate age or date of birth'},
+    {id:'price',label:'Purchase price ($)',type:'number',placeholder:'0'},
+    {id:'markings',label:'Distinguishing markings',type:'text',placeholder:'Colour, spots, horn shape etc.'},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Anything else'},
+  ]},
+  egg:{ title:'Egg record', dbKey:'eggs', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'count',label:'Number of eggs collected',type:'number',placeholder:'0'},
+    {id:'female',label:'Which female (if known)',type:'text',placeholder:''},
+    {id:'disposition',label:'What happened to eggs',type:'select',options:['Kept / eaten','Sold','Set for hatching','Broken / lost']},
+    {id:'price',label:'Sale price if sold ($ total)',type:'number',placeholder:'0'},
+    {id:'broody',label:'Any broody behaviour?',type:'select',options:['No','Yes — noted which bird']},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Anything unusual'},
+  ]},
+  breeding:{ title:'Breeding record', dbKey:'breeding', fields:[
+    {id:'season',label:'Breeding season (year)',type:'text',placeholder:'e.g. 2026'},
+    {id:'gander',label:'Gander ID / name',type:'text',placeholder:''},
+    {id:'ganderSource',label:'Gander origin flock',type:'text',placeholder:'Where this gander came from'},
+    {id:'females',label:'Females in group',type:'text',placeholder:'Names or IDs'},
+    {id:'generation',label:'Generation number',type:'text',placeholder:'e.g. Gen 1, Gen 2'},
+    {id:'eggs',label:'Eggs set for hatching',type:'number',placeholder:'0'},
+    {id:'hatched',label:'Goslings hatched',type:'number',placeholder:'0'},
+    {id:'survived',label:'Survived to 8 weeks',type:'number',placeholder:'0'},
+    {id:'notes',label:'Notes — inbreeding cautions etc.',type:'textarea',placeholder:''},
+  ]},
+  health:{ title:'Health & treatment record', dbKey:'health', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'animal',label:'Animal (name/ID)',type:'text',placeholder:'Which bird or goat'},
+    {id:'species',label:'Species',type:'select',options:['Goose','Goat','All geese','All goats','All animals']},
+    {id:'type',label:'Record type',type:'select',options:['Illness observed','Vet visit','Treatment / drench','Vaccination','Death','Weight check','FAMACHA score']},
+    {id:'details',label:'Details',type:'textarea',placeholder:'Symptoms, diagnosis, product, dose, withholding period...'},
+    {id:'vet',label:'Vet name (if visited)',type:'text',placeholder:''},
+    {id:'cost',label:'Cost ($)',type:'number',placeholder:'0'},
+    {id:'nextDue',label:'Next treatment due',type:'date'},
+  ]},
+  pasture:{ title:'Pasture & grazing log', dbKey:'pasture', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'type',label:'Entry type',type:'select',options:['Animals moved in','Animals moved out','Grass assessment','Weed treatment','Slashing','Compost applied','Bare patch noted','Other']},
+    {id:'section',label:'Paddock section',type:'text',placeholder:'e.g. North paddock, Section A'},
+    {id:'animals',label:'Animals involved',type:'text',placeholder:'e.g. 6 goats, 4 geese'},
+    {id:'grassCover',label:'Grass cover estimate',type:'select',options:['N/A','Rank / overgrown','Good cover','Moderate','Sparse','Bare']},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Observations, weeds identified, action taken'},
+  ]},
+  water:{ title:'Water log', dbKey:'water', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'tankLevel',label:'Tank level (approx %)',type:'number',placeholder:'e.g. 75'},
+    {id:'creekStatus',label:'Creek status',type:'select',options:['Flowing well','Trickling','Dry','N/A']},
+    {id:'troughCleaned',label:'Trough cleaned?',type:'select',options:['No','Yes — goat trough','Yes — goose water','Yes — both']},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Any issues, pump maintenance etc.'},
+  ]},
+  compost:{ title:'Compost log', dbKey:'compost', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'bay',label:'Bay number',type:'select',options:['Bay 1 (filling)','Bay 2 (breaking down)','Bay 3 (ready to use)']},
+    {id:'action',label:'Action',type:'select',options:['Added material','Turned bay','Moved bay across','Applied to garden / trees','Started new bay','Noted issue']},
+    {id:'materials',label:'Materials added',type:'text',placeholder:'e.g. goose manure + dry grass'},
+    {id:'appliedTo',label:'Applied to (if used)',type:'text',placeholder:'e.g. fruit trees, vegetable beds'},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Temperature, moisture, any issues'},
+  ]},
+  finance:{ title:'Finance entry', dbKey:'finance', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'type',label:'Income or expense',type:'select',options:['Expense','Income']},
+    {id:'taxCategory',label:'ATO tax category',type:'select',options:[
+      '— Expenses —',
+      'D1 – Repairs and maintenance',
+      'D2 – Capital improvement (depreciate)',
+      'D3 – Motor vehicle expenses',
+      'D4 – Animal purchases',
+      'D5 – Feed and fodder',
+      'D6 – Veterinary and chemicals',
+      'D7 – Seeds and plants',
+      'D8 – Fencing and water',
+      'D9 – Fuel and oil',
+      'D10 – Wages and labour',
+      'D11 – Insurance',
+      'D12 – Rates and land tax',
+      'D13 – Interest on loans',
+      'D14 – Accounting and legal',
+      'D15 – Subscriptions and memberships',
+      'D16 – Marketing and advertising',
+      'D17 – Other deductible expense',
+      'D18 – Non-deductible expense',
+      '— Income —',
+      'I1 – Primary production sales',
+      'I2 – Livestock sales',
+      'I3 – Crop and produce sales',
+      'I4 – Honey and bee product sales',
+      'I5 – Other farm income',
+      'I6 – Government grants / rebates',
+      'I7 – Insurance proceeds',
+      'I8 – Non-assessable income',
+    ]},
+    {id:'enterprise',label:'Enterprise (for P&L)',type:'select',options:['Farm-wide / general','Geese — eggs','Geese — birds','Goats','European bees — honey','Native bees — honey','Finger limes','Vanilla','Wasabi','Nasturtium','Fruit trees','Vege garden','Other specialty plant','Machinery','Infrastructure']},
+    {id:'description',label:'Description',type:'text',placeholder:'Brief description of transaction'},
+    {id:'supplier',label:'Supplier or buyer',type:'text',placeholder:'Business name'},
+    {id:'abn',label:'Supplier ABN',type:'text',placeholder:'If registered — from invoice'},
+    {id:'invoiceNo',label:'Invoice / receipt number',type:'text',placeholder:''},
+    {id:'amount',label:'Total amount paid/received ($)',type:'number',placeholder:'0.00'},
+    {id:'gstStatus',label:'GST status',type:'select',options:['GST inclusive (10%)','GST free','Input taxed','No GST — not registered','Export — GST free']},
+    {id:'gstAmount',label:'GST amount ($)',type:'number',placeholder:'Auto-calculate: divide total by 11'},
+    {id:'basQuarter',label:'BAS quarter',type:'select',options:['Q1 — Jul to Sep','Q2 — Oct to Dec','Q3 — Jan to Mar','Q4 — Apr to Jun']},
+    {id:'paymentMethod',label:'Payment method',type:'select',options:['Bank transfer','Card — business','Card — personal (claim back)','Cash','Cheque','Direct debit','Other']},
+    {id:'reconciled',label:'Bank reconciled?',type:'select',options:['No — pending','Yes — reconciled','Queried with bank']},
+    {id:'capitalItem',label:'Capital item?',type:'select',options:['No — immediately deductible','Yes — must depreciate','Unsure — check with accountant']},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Additional details for accountant'},
+  ]},
+  bas:{ title:'BAS statement entry', dbKey:'bas', fields:[
+    {id:'quarter',label:'BAS quarter',type:'select',options:['Q1 — Jul to Sep','Q2 — Oct to Dec','Q3 — Jan to Mar','Q4 — Apr to Jun']},
+    {id:'year',label:'Financial year',type:'text',placeholder:'e.g. 2026-27'},
+    {id:'dueDate',label:'Due date',type:'date'},
+    {id:'lodgedDate',label:'Date lodged',type:'date'},
+    {id:'g1',label:'G1 — Total sales (inc GST)',type:'number',placeholder:'0.00'},
+    {id:'g2',label:'G2 — Export sales',type:'number',placeholder:'0.00'},
+    {id:'g3',label:'G3 — Other GST-free sales',type:'number',placeholder:'0.00'},
+    {id:'g4',label:'G4 — Input taxed sales',type:'number',placeholder:'0.00'},
+    {id:'g8',label:'G8 — Taxable sales (auto: G1 minus G2/3/4)',type:'number',placeholder:'0.00'},
+    {id:'g9',label:'G9 — GST on sales (G8 divided by 11)',type:'number',placeholder:'0.00'},
+    {id:'g10',label:'G10 — Capital purchases (inc GST)',type:'number',placeholder:'0.00'},
+    {id:'g11',label:'G11 — Non-capital purchases (inc GST)',type:'number',placeholder:'0.00'},
+    {id:'g20',label:'G20 — Total purchases (G10 + G11)',type:'number',placeholder:'0.00'},
+    {id:'g1b',label:'1B — GST credits (purchases divided by 11)',type:'number',placeholder:'0.00'},
+    {id:'netGst',label:'Net GST payable / refund ($)',type:'number',placeholder:'0.00'},
+    {id:'w1',label:'W1 — Total wages paid',type:'number',placeholder:'0.00'},
+    {id:'w2',label:'W2 — PAYG withheld',type:'number',placeholder:'0.00'},
+    {id:'status',label:'Payment status',type:'select',options:['Draft','Lodged — payment pending','Lodged — paid','Lodged — refund received','Amended']},
+    {id:'paymentAmount',label:'Amount paid / refunded ($)',type:'number',placeholder:'0.00'},
+    {id:'preparedBy',label:'Prepared by',type:'text',placeholder:'Self / accountant name'},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Any adjustments, issues, accountant notes'},
+  ]},
+  loans:{ title:'Loan / liability entry', dbKey:'loans', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'lender',label:'Lender',type:'text',placeholder:'Bank or financier name'},
+    {id:'purpose',label:'Loan purpose',type:'text',placeholder:'e.g. Tractor purchase, Land purchase, Operating'},
+    {id:'type',label:'Entry type',type:'select',options:['New loan','Repayment','Interest charge','Balance check','Refinance','Paid out']},
+    {id:'loanType',label:'Loan type',type:'select',options:['Term loan — fixed rate','Term loan — variable rate','Line of credit','Overdraft','Chattel mortgage — machinery','Hire purchase','Seasonal credit']},
+    {id:'originalAmount',label:'Original loan amount ($)',type:'number',placeholder:'0.00'},
+    {id:'balance',label:'Current balance ($)',type:'number',placeholder:'0.00'},
+    {id:'repayment',label:'Repayment amount ($)',type:'number',placeholder:'0.00'},
+    {id:'principal',label:'Principal portion ($)',type:'number',placeholder:'0.00'},
+    {id:'interest',label:'Interest portion ($)',type:'number',placeholder:'0.00'},
+    {id:'interestRate',label:'Interest rate (%)',type:'number',placeholder:'0.00'},
+    {id:'security',label:'Security / collateral',type:'text',placeholder:'e.g. Land title, Machinery'},
+    {id:'nextPayment',label:'Next payment due',type:'date'},
+    {id:'maturityDate',label:'Loan maturity date',type:'date'},
+    {id:'accountNo',label:'Loan account number',type:'text',placeholder:''},
+    {id:'notes',label:'Notes',type:'textarea',placeholder:'Covenants, conditions, refinance options'},
+  ]},
+  infra:{ title:'Infrastructure log', dbKey:'infra', fields:[
+    {id:'date',label:'Date',type:'date'},
+    {id:'type',label:'Entry type',type:'select',options:['Fence check','Fault repaired','Energiser reading','Post replaced','Shelter maintenance','Predator activity','Animal escape','Other']},
+    {id:'location',label:'Location / area',type:'text',placeholder:'e.g. north fence, goose shelter'},
+    {id:'voltage',label:'Energiser voltage (if checked)',type:'text',placeholder:'e.g. 4.2 kV'},
+    {id:'details',label:'Details',type:'textarea',placeholder:'What was found, what was done'},
+  ]},
+};
+
+const BUILTIN_SECTIONS = [
+  {id:'dashboard',label:'Overview'},
+  {id:'geese',label:'Geese',formKey:'goose'},
+  {id:'goats',label:'Goats',formKey:'goat'},
+  {id:'eggs',label:'Eggs',formKey:'egg'},
+  {id:'breeding',label:'Breeding',formKey:'breeding'},
+  {id:'health',label:'Health',formKey:'health'},
+  {id:'pasture',label:'Pasture',formKey:'pasture'},
+  {id:'water',label:'Water',formKey:'water'},
+  {id:'compost',label:'Compost',formKey:'compost'},
+  {id:'finance',label:'Finance',formKey:'finance'},
+  {id:'bas',label:'BAS',formKey:'bas'},
+  {id:'loans',label:'Loans',formKey:'loans'},
+  {id:'infra',label:'Infrastructure',formKey:'infra'},
+];
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+
+let currentSection = 'dashboard';
+
+function buildNav() {
+  const custom = loadCustomSections();
+  const nav = document.getElementById('mainNav');
+  let html = '';
+  BUILTIN_SECTIONS.forEach(s => {
+    html += `<div class="nav-tab${s.id===currentSection?' active':''}" onclick="showSection('${s.id}')">${s.label}</div>`;
+  });
+  custom.forEach(s => {
+    const tabEmoji = s.emoji ? s.emoji + ' ' : '';
+    html += `<div class="nav-tab${s.id===currentSection?' active':''}" onclick="showSection('${s.id}')">
+      ${tabEmoji}${esc(s.label)}<span class="tab-del" onclick="event.stopPropagation();confirmDeleteSection('${s.id}')">✕</span>
+    </div>`;
+  });
+  nav.innerHTML = html;
+}
+
+function buildContent() {
+  const custom = loadCustomSections();
+  const db = loadLocal();
+  let html = '';
+
+  // Dashboard
+  html += `<div id="sec-dashboard" class="section${currentSection==='dashboard'?' active':''}">
+    <div class="section-header"><h1 class="section-title">Overview</h1><div style="font-size:0.78rem;color:var(--text-light)" id="lastUpdated"></div></div>
+    <div class="dash-grid" id="dashGrid"></div>
+    <div class="recent-title">Recent entries</div>
+    <div class="records-list" id="recentList"></div>
+  </div>`;
+
+  // Built-in
+  BUILTIN_SECTIONS.filter(s=>s.id!=='dashboard').forEach(s => {
+    const isFinance = s.id==='finance';
+    const hasFilter = ['geese','goats','health','bas','loans'].includes(s.id);
+    html += `<div id="sec-${s.id}" class="section${currentSection===s.id?' active':''}">
+      <div class="section-header">
+        <h1 class="section-title">${s.label}</h1>
+        <div class="section-actions">
+          <button class="export-btn" onclick="exportCSVSection('${s.id}')">Export CSV</button>
+          <button class="add-btn" onclick="openRecordModal('${s.formKey}')">+ Add entry</button>
+        </div>
+      </div>
+      ${hasFilter?`<div class="filter-bar"><input class="filter-input" placeholder="Search ${s.label.toLowerCase()}..." oninput="renderBuiltinSection('${s.id}',this.value)"/></div>`:''}
+      ${isFinance?`<div class="dash-grid" id="financeStats"></div>`:''}
+      <div class="records-list" id="list-${s.id}"></div>
+    </div>`;
+  });
+
+  // Custom
+  custom.forEach(s => {
+    html += `<div id="sec-${s.id}" class="section${currentSection===s.id?' active':''}">
+      <div class="section-header">
+        <h1 class="section-title">${esc(s.label)}</h1>
+        <div class="section-actions">
+          <button class="sec-edit-btn" onclick="openEditSection('${s.id}')">Edit section</button>
+          <button class="export-btn" onclick="exportCSVKey('${s.id}','${esc(s.label)}')">Export CSV</button>
+          <button class="add-btn" onclick="openCustomRecordModal('${s.id}')">+ Add entry</button>
+        </div>
+      </div>
+      <div class="filter-bar"><input class="filter-input" placeholder="Search..." oninput="renderCustomSection('${s.id}',this.value)"/></div>
+      <div class="records-list" id="list-${s.id}"></div>
+    </div>`;
+  });
+
+  // Settings
+  html += `<div id="sec-_settings" class="section${currentSection==='_settings'?' active':''}">
+    <div class="section-header"><h1 class="section-title">Settings</h1></div>
+    <div id="settingsContent"></div>
+  </div>`;
+
+  // Builder
+  html += `<div id="sec-_builder" class="section${currentSection==='_builder'?' active':''}">
+    <div class="section-header"><h1 class="section-title">Add sections</h1><button class="add-btn" onclick="openNewSectionModal()">+ Build from scratch</button></div>
+    <div class="builder-intro">Search the template library to add pre-built tracking sections in one tap, or build your own from scratch with custom fields.</div>
+    <div id="templateLibrary"></div>
+    <div id="customSectionsList"></div>
+  </div>`;
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+function showSection(name) {
+  currentSection = name;
+  buildNav();
+  buildContent();
+  if (name==='dashboard') renderDashboard();
+  else if (name==='_settings') renderSettings();
+  else if (name==='_builder') { renderTemplateLibrary(); renderCustomSectionsList(); }
+  else {
+    const custom = loadCustomSections();
+    if (custom.find(s=>s.id===name)) renderCustomSection(name);
+    else renderBuiltinSection(name);
+    if (name==='finance') renderFinanceStats();
+  }
+}
+
+function refreshCurrentSection() { showSection(currentSection); }
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS PAGE
+// ═══════════════════════════════════════════════════════
+
+function renderSettings() {
+  const s = loadSettings();
+  const el = document.getElementById('settingsContent');
+  const hasCreds = s.jsonbinKey && s.jsonbinBinId;
+  el.innerHTML = `
+    <div class="setup-panel">
+      <h2>☁ Cloud sync setup</h2>
+      <p style="font-size:0.85rem;color:var(--text-mid);line-height:1.6;margin-bottom:0.8rem;">
+        Your records save to this device automatically. To sync across multiple devices and back up online, connect a free JSONBin account. Setup takes about 2 minutes.
+      </p>
+      <div class="setup-steps">
+        <div class="setup-step"><div class="step-num">1</div><div>Go to <a class="setup-link" href="https://jsonbin.io" target="_blank">jsonbin.io</a> and create a free account</div></div>
+        <div class="setup-step"><div class="step-num">2</div><div>After logging in, click your account icon → <strong>API Keys</strong> → copy your <strong>Master Key</strong></div></div>
+        <div class="setup-step"><div class="step-num">3</div><div>Paste your Master Key below and click <strong>Connect</strong> — the app will create a private bin for your farm data automatically</div></div>
+        <div class="setup-step"><div class="step-num">4</div><div>On any other device, open this HTML file, go to Settings and enter the same Master Key and the Bin ID shown below after connecting</div></div>
+      </div>
+      ${hasCreds ? `<div class="sync-banner success">✓ Cloud sync connected. Bin ID: <strong>${s.jsonbinBinId}</strong> — copy this to use on other devices.</div>` : ''}
+      <div class="form-group" style="margin-top:0.8rem">
+        <label class="form-label">JSONBin Master Key</label>
+        <input class="form-input" id="inp_apiKey" type="password" placeholder="$2b$10$..." value="${esc(s.jsonbinKey||'')}"/>
+      </div>
+      <div class="form-group" id="binIdGroup" style="${hasCreds?'':''}">
+        <label class="form-label">Bin ID <span style="font-weight:400;text-transform:none;font-size:0.8rem;color:var(--text-light)">(leave blank on first setup — filled automatically)</span></label>
+        <input class="form-input" id="inp_binId" type="text" placeholder="auto-created on first connect" value="${esc(s.jsonbinBinId||'')}"/>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.3rem">
+        <button class="add-btn" onclick="connectCloud()">Connect & sync now</button>
+        ${hasCreds?`<button class="export-btn" onclick="disconnectCloud()">Disconnect</button>`:''}
+      </div>
+    </div>
+
+    <div class="setup-panel" style="border-color:var(--border-strong)">
+      <h2>📷 Photo storage (Cloudinary)</h2>
+      <p style="font-size:0.85rem;color:var(--text-mid);margin-bottom:0.8rem;line-height:1.6;">
+        Photos are saved as thumbnails on your device automatically. To also store full-resolution photos in the cloud, connect a free Cloudinary account. Full-res photos are linked from your records and open in a new tab.
+      </p>
+      <div class="setup-steps">
+        <div class="setup-step"><div class="step-num">1</div><div>Go to <a class="setup-link" href="https://cloudinary.com" target="_blank">cloudinary.com</a> and create a free account</div></div>
+        <div class="setup-step"><div class="step-num">2</div><div>From your dashboard, copy your <strong>Cloud name</strong></div></div>
+        <div class="setup-step"><div class="step-num">3</div><div>Go to <strong>Settings → Upload → Upload presets</strong> → Add a new preset → set it to <strong>Unsigned</strong> → save and copy the preset name</div></div>
+        <div class="setup-step"><div class="step-num">4</div><div>Paste both below and tap Save — photos will now upload full-resolution automatically</div></div>
+      </div>
+      ${s.cloudinaryCloud ? `<div class="sync-banner success" style="margin-bottom:0.8rem">✓ Cloudinary connected — photos upload automatically</div>` : ''}
+      <div class="form-group">
+        <label class="form-label">Cloud name</label>
+        <input class="form-input" id="inp_cloudName" type="text" placeholder="e.g. my-farm-cloud" value="${esc(s.cloudinaryCloud||'')}"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Upload preset name</label>
+        <input class="form-input" id="inp_uploadPreset" type="text" placeholder="e.g. farm_records_unsigned" value="${esc(s.cloudinaryPreset||'')}"/>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-btn" onclick="saveCloudinarySettings()">Save photo settings</button>
+        ${s.cloudinaryCloud?`<button class="export-btn" onclick="retryPhotoUploads()">Retry queued uploads <span class="queue-badge" id="queueBadge"></span></button>`:''}
+      </div>
+    </div>
+
+    <div class="setup-panel" style="border-color:var(--border-strong)">
+      <h2>💾 Export & backup</h2>
+      <p style="font-size:0.85rem;color:var(--text-mid);margin-bottom:0.9rem;line-height:1.6;">Download all your data as a JSON file. Keep this somewhere safe as a backup. You can also import it back into any copy of this app.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="add-btn" onclick="exportAll()">Export all data (JSON)</button>
+        <button class="export-btn" onclick="openImportDialog()">Import from file</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"/>
+    </div>
+
+    <div class="setup-panel" style="border-color:var(--border-strong)">
+      <h2>⚠ Clear local data</h2>
+      <p style="font-size:0.85rem;color:var(--text-mid);margin-bottom:0.9rem;line-height:1.6;">Remove all records from this device. If cloud sync is connected your data remains safe in the cloud and will re-sync on next open.</p>
+      <button class="hbtn hbtn-rust" onclick="clearLocalData()">Clear local data</button>
+    </div>
+  `;
+}
+
+async function connectCloud() {
+  const apiKey = document.getElementById('inp_apiKey').value.trim();
+  const binIdInput = document.getElementById('inp_binId').value.trim();
+  if (!apiKey) { showToast('Enter your API key first'); return; }
+
+  showToast('Connecting…');
+  const s = loadSettings();
+
+  if (binIdInput) {
+    // Existing bin — just save and sync
+    saveSettings({ ...s, jsonbinKey: apiKey, jsonbinBinId: binIdInput });
+    await doSync(false);
+    renderSettings();
+  } else {
+    // Create new bin
+    const binId = await createNewBin(apiKey);
+    if (!binId) { showToast('Could not create bin — check your API key'); setSyncStatus('error'); return; }
+    saveSettings({ ...s, jsonbinKey: apiKey, jsonbinBinId: binId });
+    setSyncStatus('online');
+    showToast('Connected! Bin ID: ' + binId);
+    renderSettings();
+  }
+}
+
+function saveCloudinarySettings() {
+  const cloudName = (document.getElementById('inp_cloudName').value||'').trim();
+  const uploadPreset = (document.getElementById('inp_uploadPreset').value||'').trim();
+  if (!cloudName || !uploadPreset) { showToast('Enter both Cloud name and Upload preset'); return; }
+  saveSettings({ ...loadSettings(), cloudinaryCloud: cloudName, cloudinaryPreset: uploadPreset });
+  showToast('Photo settings saved');
+  processUploadQueue();
+  renderSettings();
+}
+
+async function retryPhotoUploads() {
+  showToast('Retrying photo uploads…');
+  await processUploadQueue();
+  const q = loadUploadQueue();
+  showToast(q.length ? `${q.length} photo${q.length>1?'s':''} still queued — check connection` : 'All photos uploaded ✓');
+  updateQueueBadge();
+}
+
+function disconnectCloud() {
+  if (!confirm('Disconnect cloud sync? Your local data stays. You can reconnect anytime.')) return;
+  const s = loadSettings();
+  delete s.jsonbinKey; delete s.jsonbinBinId;
+  saveSettings(s);
+  setSyncStatus('offline');
+  showToast('Disconnected');
+  renderSettings();
+}
+
+function openImportDialog() { document.getElementById('importFile').click(); }
+
+function handleImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const db = loadLocal();
+      const importedDB = parsed.db || parsed;
+      Object.keys(importedDB).forEach(key => {
+        if (key.startsWith('_')) return;
+        if (!db[key]) db[key] = [];
+        const existingIds = new Set(db[key].map(r=>r.id));
+        (importedDB[key]||[]).forEach(r => { if (!existingIds.has(r.id)) db[key].push(r); });
+      });
+      saveLocal(db);
+      if (parsed.customSections) {
+        const existing = loadCustomSections();
+        const existingIds = new Set(existing.map(s=>s.id));
+        parsed.customSections.forEach(s => { if (!existingIds.has(s.id)) existing.push(s); });
+        saveCustomSections(existing);
+      }
+      showToast('Imported successfully');
+      showSection('dashboard');
+    } catch(err) { showToast('Error reading file'); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function clearLocalData() {
+  if (!confirm('Clear all local data from this device? If cloud sync is connected your data is safe in the cloud.')) return;
+  localStorage.removeItem(LOCAL_KEY);
+  localStorage.removeItem(CUSTOM_KEY);
+  showToast('Local data cleared');
+  showSection('dashboard');
+}
+
+// ═══════════════════════════════════════════════════════
+// RECORD MODAL
+// ═══════════════════════════════════════════════════════
+
+let editingId=null, editingFormKey=null, editingIsCustom=false, editingCustomSectionId=null;
+
+function openRecordModal(formKey, recordId) {
+  editingFormKey=formKey; editingIsCustom=false; editingId=recordId||null;
+  const form = BUILTIN_FORMS[formKey];
+  document.getElementById('recordModalTitle').textContent = form.title;
+  let existing = {};
+  if (recordId) { const r=(loadLocal()[form.dbKey]||[]).find(r=>r.id===recordId); if(r) existing=r; }
+  document.getElementById('recordModalBody').innerHTML = buildFormHTML(form.fields, existing);
+  if (!recordId) setTodayDates('recordModalBody');
+  injectPhotoPicker(existing._photos || []);
+  document.getElementById('recordModal').classList.add('open');
+}
+
+function openCustomRecordModal(sectionId, recordId) {
+  editingIsCustom=true; editingCustomSectionId=sectionId; editingId=recordId||null;
+  const section = loadCustomSections().find(s=>s.id===sectionId);
+  if (!section) return;
+  document.getElementById('recordModalTitle').textContent = esc(section.label) + ' — add entry';
+  let existing = {};
+  if (recordId) { const r=(loadLocal()[sectionId]||[]).find(r=>r.id===recordId); if(r) existing=r; }
+  document.getElementById('recordModalBody').innerHTML = buildFormHTML(section.fields, existing);
+  if (!recordId) setTodayDates('recordModalBody');
+  injectPhotoPicker(existing._photos || []);
+  document.getElementById('recordModal').classList.add('open');
+}
+
+function buildFormHTML(fields, existing) {
+  return fields.map(f => {
+    const val = existing[f.id]||'';
+    if (f.type==='textarea') return `<div class="form-group"><label class="form-label">${esc(f.label)}</label><textarea class="form-textarea" id="f_${f.id}" placeholder="${esc(f.placeholder||'')}">${esc(val)}</textarea></div>`;
+    if (f.type==='select') { const opts=(f.options||[]).map(o=>`<option${val===o?' selected':''}>${esc(o)}</option>`).join(''); return `<div class="form-group"><label class="form-label">${esc(f.label)}</label><select class="form-select" id="f_${f.id}">${opts}</select></div>`; }
+    return `<div class="form-group"><label class="form-label">${esc(f.label)}</label><input class="form-input" type="${f.type}" id="f_${f.id}" placeholder="${esc(f.placeholder||'')}" value="${esc(val)}"/></div>`;
+  }).join('');
+}
+
+function setTodayDates(containerId) {
+  const t = new Date().toISOString().split('T')[0];
+  document.querySelectorAll('#'+containerId+' input[type="date"]').forEach(el=>{ if(!el.value) el.value=t; });
+}
+
+function saveRecord() {
+  let fields, dbKey;
+  if (editingIsCustom) {
+    const section = loadCustomSections().find(s=>s.id===editingCustomSectionId);
+    if (!section) return;
+    fields=section.fields; dbKey=editingCustomSectionId;
+  } else {
+    const form=BUILTIN_FORMS[editingFormKey];
+    fields=form.fields; dbKey=form.dbKey;
+  }
+  const record = { id:editingId||Date.now().toString(), _type:editingIsCustom?editingCustomSectionId:editingFormKey, _saved:new Date().toISOString() };
+  fields.forEach(f=>{ const el=document.getElementById('f_'+f.id); if(el) record[f.id]=el.value; });
+  const db=loadLocal();
+  if (!db[dbKey]) db[dbKey]=[];
+  if (editingId) { const i=db[dbKey].findIndex(r=>r.id===editingId); if(i>-1) db[dbKey][i]=record; else db[dbKey].push(record); }
+  else db[dbKey].unshift(record);
+  saveLocal(db);
+  // Handle photos — upload in background then re-save
+  savePhotosToRecord(record, dbKey).then(() => {
+    const db2=loadLocal();
+    if(!db2[dbKey]) db2[dbKey]=[];
+    const i=db2[dbKey].findIndex(r=>r.id===record.id);
+    if(i>-1) db2[dbKey][i]=record; else db2[dbKey].unshift(record);
+    saveLocal(db2);
+    const c=getCloudConfig(); if(c.apiKey&&c.binId) doSync(true);
+  });
+  closeModal('recordModal');
+  showSection(currentSection);
+  showToast('Saved');
+  const c=getCloudConfig(); if(c.apiKey&&c.binId) doSync(true);
+}
+
+// ═══════════════════════════════════════════════════════
+// SECTION BUILDER
+// ═══════════════════════════════════════════════════════
+
+let draftFields=[], editingSectionId=null;
+
+function openNewSectionModal() {
+  editingSectionId=null;
+  draftFields=[{id:'date',label:'Date',type:'date',placeholder:''}];
+  document.getElementById('builderModalTitle').textContent='New section';
+  renderBuilderForm('');
+  document.getElementById('builderModal').classList.add('open');
+}
+
+function openEditSection(sectionId) {
+  const section=loadCustomSections().find(s=>s.id===sectionId);
+  if(!section) return;
+  editingSectionId=sectionId;
+  draftFields=JSON.parse(JSON.stringify(section.fields));
+  document.getElementById('builderModalTitle').textContent='Edit — '+section.label;
+  renderBuilderForm(section.label);
+  document.getElementById('builderModal').classList.add('open');
+}
+
+function renderBuilderForm(name) {
+  document.getElementById('builderModalBody').innerHTML=`
+    <div class="form-group">
+      <label class="form-label">Section name</label>
+      <input class="form-input" id="bName" type="text" placeholder="e.g. Beehives, Fruit trees, Irrigation" value="${esc(name)}"/>
+      <div class="form-hint">Appears as a tab in the navigation bar</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Fields</label>
+      <div class="field-list" id="draftFieldList"></div>
+      <div class="add-field-row">
+        <input class="form-input" id="nfLabel" type="text" placeholder="Field name e.g. Hive ID, Tree variety"/>
+        <select class="form-select" id="nfType" style="max-width:120px" onchange="document.getElementById('nfOptsWrap').style.display=this.value==='select'?'block':'none'">
+          <option value="text">Text</option>
+          <option value="number">Number</option>
+          <option value="date">Date</option>
+          <option value="textarea">Long notes</option>
+          <option value="select">Dropdown</option>
+        </select>
+        <button class="add-field-btn" onclick="addDraftField()">+ Add</button>
+      </div>
+      <div id="nfOptsWrap" style="display:none;margin-top:0.7rem">
+        <label class="form-label">Dropdown options (one per line)</label>
+        <textarea class="form-textarea" id="nfOpts" placeholder="Option 1&#10;Option 2&#10;Option 3" style="min-height:70px"></textarea>
+      </div>
+    </div>
+  `;
+  renderDraftFields();
+}
+
+function renderDraftFields() {
+  const el=document.getElementById('draftFieldList');
+  if(!el) return;
+  if(!draftFields.length){ el.innerHTML='<div style="font-size:0.81rem;color:var(--text-light);padding:0.4rem 0">Add fields below — at least one required</div>'; return; }
+  el.innerHTML=draftFields.map((f,i)=>`<div class="field-item"><span class="field-item-label">${esc(f.label)}</span><span class="field-item-type">${f.type==='textarea'?'notes':f.type}</span><button class="field-item-del" onclick="removeDraftField(${i})">✕</button></div>`).join('');
+}
+
+function addDraftField() {
+  const label=(document.getElementById('nfLabel').value||'').trim();
+  const type=document.getElementById('nfType').value;
+  if(!label){ showToast('Enter a field name'); return; }
+  const field={id:'f_'+Date.now(),label,type,placeholder:''};
+  if(type==='select'){ const raw=(document.getElementById('nfOpts').value||'').trim(); field.options=raw?raw.split('\n').map(s=>s.trim()).filter(Boolean):['Option 1','Option 2']; }
+  draftFields.push(field);
+  document.getElementById('nfLabel').value='';
+  document.getElementById('nfOpts').value='';
+  document.getElementById('nfType').value='text';
+  document.getElementById('nfOptsWrap').style.display='none';
+  renderDraftFields();
+}
+
+function removeDraftField(i){ draftFields.splice(i,1); renderDraftFields(); }
+
+function saveCustomSection() {
+  const name=(document.getElementById('bName').value||'').trim();
+  if(!name){ showToast('Give the section a name'); return; }
+  if(!draftFields.length){ showToast('Add at least one field'); return; }
+  const custom=loadCustomSections();
+  if(editingSectionId){ const i=custom.findIndex(s=>s.id===editingSectionId); if(i>-1){ custom[i].label=name; custom[i].fields=draftFields; } }
+  else {
+    const id='custom_'+Date.now();
+    custom.push({id,label:name,fields:draftFields});
+    const db=loadLocal(); if(!db[id]) { db[id]=[]; saveLocal(db); }
+  }
+  saveCustomSections(custom);
+  closeModal('builderModal');
+  showToast('Section saved');
+  const c=getCloudConfig(); if(c.apiKey&&c.binId) doSync(true);
+  const target=editingSectionId||custom[custom.length-1].id;
+  showSection(target);
+}
+
+function confirmDeleteSection(sectionId) {
+  const custom=loadCustomSections();
+  const section=custom.find(s=>s.id===sectionId);
+  if(!section) return;
+  const db=loadLocal();
+  const count=(db[sectionId]||[]).length;
+  if(!confirm(`Delete "${section.label}"?${count?' This will delete '+count+' record'+(count>1?'s':'')+' in it.':''} Cannot be undone.`)) return;
+  saveCustomSections(custom.filter(s=>s.id!==sectionId));
+  delete db[sectionId]; saveLocal(db);
+  showToast('Section deleted');
+  const c=getCloudConfig(); if(c.apiKey&&c.binId) doSync(true);
+  showSection('dashboard');
+}
+
+// ═══════════════════════════════════════════════════════
+// TEMPLATE LIBRARY
+// ═══════════════════════════════════════════════════════
+
+const TEMPLATES = [
+  // BEES
+  { id:'tpl_native_hive', cat:'Bees', emoji:'🐝', name:'Native bee hives', desc:'Stingless native bee colony tracking',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'hiveId',label:'Hive ID / name',type:'text',placeholder:'e.g. Hive 1, Front garden'},
+      {id:'species',label:'Species',type:'select',options:['Tetragonula carbonaria','Tetragonula hockingsi','Austroplebeia australis','Other native']},
+      {id:'location',label:'Location on property',type:'text',placeholder:'e.g. Under mango tree, north wall'},
+      {id:'acquired',label:'Date acquired / established',type:'date',placeholder:''},
+      {id:'source',label:'Source',type:'text',placeholder:'Where the colony came from'},
+      {id:'strength',label:'Colony strength',type:'select',options:['Strong','Moderate','Weak','Struggling','Unknown']},
+      {id:'propolis',label:'Propolis / entrance condition',type:'select',options:['Good seal','Minor gaps','Needs attention','Damaged']},
+      {id:'harvest',label:'Honey harvest (ml)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Observations, splitting plans, issues'},
+    ]},
+  { id:'tpl_euro_hive', cat:'Bees', emoji:'🍯', name:'European bee hives', desc:'Langstroth / Warré hive management',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'hiveId',label:'Hive ID',type:'text',placeholder:'e.g. Hive A'},
+      {id:'type',label:'Hive type',type:'select',options:['Langstroth','Warré','Flow Hive','Top bar','Other']},
+      {id:'queen',label:'Queen status',type:'select',options:['Seen','Eggs seen — present','Suspected queenless','Supersedure cells','Swarm cells','Requeened']},
+      {id:'queenAge',label:'Queen age / year marked',type:'text',placeholder:'e.g. 2024, yellow dot'},
+      {id:'frames',label:'Frames of bees',type:'number',placeholder:'0'},
+      {id:'honey',label:'Frames of honey',type:'number',placeholder:'0'},
+      {id:'brood',label:'Frames of brood',type:'number',placeholder:'0'},
+      {id:'temper',label:'Temperament',type:'select',options:['Calm','Slightly defensive','Defensive','Very defensive']},
+      {id:'varroa',label:'Varroa mite check',type:'select',options:['Not checked','<1% — acceptable','1-3% — monitor','3%+ — treat','Treated']},
+      {id:'treatment',label:'Treatment applied',type:'text',placeholder:'e.g. oxalic acid, ApiVar strip'},
+      {id:'super',label:'Super status',type:'select',options:['N/A','Empty','Being filled','Ready to harvest','Harvested']},
+      {id:'harvest',label:'Honey harvested (kg)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Observations, issues, plans'},
+    ]},
+  { id:'tpl_bee_harvest', cat:'Bees', emoji:'🫙', name:'Honey harvest log', desc:'Record each harvest with yield and quality',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'hive',label:'Hive ID',type:'text',placeholder:''},
+      {id:'type',label:'Honey type',type:'select',options:['European — raw','European — extracted','Native stingless','Creamed','Comb']},
+      {id:'weight',label:'Weight harvested (kg)',type:'number',placeholder:'0'},
+      {id:'frames',label:'Frames extracted',type:'number',placeholder:'0'},
+      {id:'moisture',label:'Moisture content %',type:'number',placeholder:'e.g. 18'},
+      {id:'colour',label:'Colour / flavour notes',type:'text',placeholder:'e.g. light amber, floral'},
+      {id:'sold',label:'Sold or kept',type:'select',options:['Kept','Sold — retail','Sold — wholesale','Gifted']},
+      {id:'price',label:'Sale price ($ total)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // FRUIT TREES
+  { id:'tpl_fruit_tree', cat:'Fruit trees', emoji:'🌳', name:'Fruit tree register', desc:'Individual tree records — all varieties',
+    fields:[
+      {id:'date',label:'Date planted',type:'date',placeholder:''},
+      {id:'name',label:'Tree ID / name',type:'text',placeholder:'e.g. Mango 1, Back row lemon'},
+      {id:'variety',label:'Variety',type:'text',placeholder:'e.g. Bowen Mango, Eureka Lemon, Hass Avocado'},
+      {id:'species',label:'Species / type',type:'select',options:['Mango','Avocado','Citrus — lemon','Citrus — lime','Citrus — orange','Citrus — mandarin','Citrus — grapefruit','Fig','Banana','Papaya / Pawpaw','Guava','Lychee','Macadamia','Persimmon','Mulberry','Jaboticaba','Finger lime','Tamarind','Jackfruit','Starfruit / Carambola','Longan','Rambutan','Custard apple','Feijoa','Pomegranate','Sapodilla','Dragon fruit','Other']},
+      {id:'rootstock',label:'Rootstock (if known)',type:'text',placeholder:''},
+      {id:'location',label:'Location on property',type:'text',placeholder:'e.g. North row 3, Near dam'},
+      {id:'source',label:'Source / nursery',type:'text',placeholder:''},
+      {id:'height',label:'Approximate height (m)',type:'number',placeholder:''},
+      {id:'canopy',label:'Canopy spread (m)',type:'number',placeholder:''},
+      {id:'fruiting',label:'Fruiting status',type:'select',options:['Not yet fruiting','First fruit','Established fruiting','Declining','Removed']},
+      {id:'pollinator',label:'Pollinator needed?',type:'select',options:['Self-fertile','Needs pollinator','Pollinator planted nearby','Unknown']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Grafting info, pest history, anything else'},
+    ]},
+  { id:'tpl_tree_harvest', cat:'Fruit trees', emoji:'🍋', name:'Fruit harvest log', desc:'Log each harvest — weight, quality, destination',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'tree',label:'Tree ID / variety',type:'text',placeholder:''},
+      {id:'weight',label:'Weight harvested (kg)',type:'number',placeholder:'0'},
+      {id:'quality',label:'Quality',type:'select',options:['Excellent','Good','Mixed','Poor — pest/disease','Poor — weather']},
+      {id:'disposition',label:'What happened to harvest',type:'select',options:['Eaten fresh','Sold','Preserved / processed','Gifted','Animal feed','Composted']},
+      {id:'price',label:'Sale price ($ total)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Pest damage, unusual size, flavour notes'},
+    ]},
+  { id:'tpl_tree_treatment', cat:'Fruit trees', emoji:'💊', name:'Tree treatments', desc:'Fertilising, spraying, pruning records',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'tree',label:'Tree(s) treated',type:'text',placeholder:'e.g. All citrus, Mango 1'},
+      {id:'type',label:'Treatment type',type:'select',options:['Fertilise','Foliar spray','Pest treatment','Disease treatment','Pruning','Mulching','Irrigation','Compost applied','Graft']},
+      {id:'product',label:'Product / material used',type:'text',placeholder:'e.g. blood and bone, copper fungicide'},
+      {id:'rate',label:'Rate / quantity',type:'text',placeholder:'e.g. 200g per tree, diluted 1:10'},
+      {id:'notes',label:'Notes / observations',type:'textarea',placeholder:''},
+    ]},
+
+  // HIGH VALUE PLANTS
+  { id:'tpl_finger_lime', cat:'High value plants', emoji:'🟢', name:'Finger limes', desc:'Australian native — each plant tracked',
+    fields:[
+      {id:'date',label:'Date planted',type:'date',placeholder:''},
+      {id:'plantId',label:'Plant ID',type:'text',placeholder:'e.g. FL-01'},
+      {id:'variety',label:'Colour / variety',type:'select',options:['Green caviar','Pink / red','Yellow','Purple / black','Champagne','Wild type','Unknown']},
+      {id:'location',label:'Location',type:'text',placeholder:''},
+      {id:'source',label:'Source / nursery',type:'text',placeholder:''},
+      {id:'status',label:'Plant status',type:'select',options:['Established','Flowering','Fruiting','Dormant','Struggling','Dead']},
+      {id:'harvest',label:'Harvest weight (g)',type:'number',placeholder:'0'},
+      {id:'price',label:'Sale value ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_vanilla', cat:'High value plants', emoji:'🌿', name:'Vanilla vines', desc:'Vanilla planifolia vine tracking and pollination',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'vineId',label:'Vine ID',type:'text',placeholder:'e.g. V-01'},
+      {id:'support',label:'Support structure',type:'text',placeholder:'e.g. shadehouse post, mango tree'},
+      {id:'length',label:'Vine length (m)',type:'number',placeholder:'0'},
+      {id:'type',label:'Entry type',type:'select',options:['Planted','Growth note','Flowering','Hand pollinated','Pod set','Pod harvest','Treatment']},
+      {id:'pods',label:'Pods set / harvested',type:'number',placeholder:'0'},
+      {id:'podWeight',label:'Green pod weight (g)',type:'number',placeholder:'0'},
+      {id:'curedWeight',label:'Cured pod weight (g)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Pollination success, curing method, issues'},
+    ]},
+  { id:'tpl_wasabi', cat:'High value plants', emoji:'🌱', name:'Wasabi', desc:'Wasabia japonica — highly specific needs',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'plantId',label:'Plant ID',type:'text',placeholder:'e.g. W-01'},
+      {id:'variety',label:'Variety',type:'select',options:['Daruma','Mazuma','Hybrid','Unknown']},
+      {id:'location',label:'Growing location',type:'text',placeholder:'e.g. Creek bed, Shaded bed 2'},
+      {id:'method',label:'Growing method',type:'select',options:['In-ground creek','Raised bed','Hydroponic','Aquaponic','Container']},
+      {id:'waterTemp',label:'Water temp (°C)',type:'number',placeholder:'ideally 10-15°C'},
+      {id:'type',label:'Entry type',type:'select',options:['Planted','Growth check','Harvest','Treatment','Replant']},
+      {id:'rhizomeWeight',label:'Rhizome harvested (g)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Temperature issues, pests, growth rate'},
+    ]},
+  { id:'tpl_nasturtium', cat:'High value plants', emoji:'🌸', name:'Nasturtium', desc:'Edible flower crop — plantings and harvests',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'bed',label:'Bed / area',type:'text',placeholder:'e.g. Bed 3, North slope'},
+      {id:'variety',label:'Variety',type:'text',placeholder:'e.g. Alaska, Jewel Mix, Empress of India'},
+      {id:'type',label:'Entry type',type:'select',options:['Sown','Germinated','Flowering','Harvest — flowers','Harvest — leaves','Harvest — seeds','End of season']},
+      {id:'qty',label:'Quantity harvested',type:'text',placeholder:'e.g. 200g flowers, 500 seeds'},
+      {id:'price',label:'Sale value ($)',type:'number',placeholder:'0'},
+      {id:'destination',label:'Destination',type:'select',options:['Restaurant sale','Market sale','Own use','Gifted','Seed saving','Composted']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_specialty_plant', cat:'High value plants', emoji:'✨', name:'Specialty / rare plant', desc:'General record for any high value plant',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'name',label:'Plant name / ID',type:'text',placeholder:'Common and scientific name'},
+      {id:'location',label:'Location',type:'text',placeholder:''},
+      {id:'source',label:'Source',type:'text',placeholder:'Nursery, propagated, wild collected'},
+      {id:'value',label:'Estimated value ($)',type:'number',placeholder:'0'},
+      {id:'type',label:'Entry type',type:'select',options:['Planted','Growth check','Harvest','Treatment','Propagation','Sale']},
+      {id:'qty',label:'Quantity / yield',type:'text',placeholder:''},
+      {id:'revenue',label:'Revenue ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Growing conditions, market notes'},
+    ]},
+
+  // MARKET GARDEN / VEGE
+  { id:'tpl_vege_bed', cat:'Vege garden', emoji:'🥦', name:'Vegetable beds', desc:'Track each bed through seasons',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'bed',label:'Bed ID',type:'text',placeholder:'e.g. Bed 1, Raised bed A'},
+      {id:'crop',label:'Crop planted',type:'text',placeholder:'e.g. Tomato, Zucchini, Mixed greens'},
+      {id:'variety',label:'Variety',type:'text',placeholder:''},
+      {id:'type',label:'Entry type',type:'select',options:['Prepared bed','Sown','Transplanted','Germination','Harvest','Pest treatment','Fertilised','End of season']},
+      {id:'qty',label:'Quantity / yield',type:'text',placeholder:'e.g. 3kg tomatoes, 200g lettuce'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Pest pressure, yield quality, variety notes'},
+    ]},
+
+  // LIVESTOCK additions
+  { id:'tpl_chickens', cat:'Livestock', emoji:'🐔', name:'Chickens', desc:'Flock management and egg production',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'type',label:'Entry type',type:'select',options:['Bird record','Egg count','Health check','Treatment','Death','New bird']},
+      {id:'birdId',label:'Bird ID / name',type:'text',placeholder:'Leave blank for flock-wide entries'},
+      {id:'breed',label:'Breed',type:'text',placeholder:'e.g. Isa Brown, Australorp, Sussex'},
+      {id:'eggs',label:'Eggs collected today',type:'number',placeholder:'0'},
+      {id:'condition',label:'Flock condition',type:'select',options:['N/A','Excellent','Good','Fair','Poor']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_pigs', cat:'Livestock', emoji:'🐷', name:'Pigs', desc:'Individual pig records and weight gain',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'pigId',label:'Pig ID / name',type:'text',placeholder:''},
+      {id:'breed',label:'Breed',type:'text',placeholder:'e.g. Large White, Berkshire, Duroc'},
+      {id:'sex',label:'Sex',type:'select',options:['Gilt (young female)','Sow','Boar','Barrow (castrated)']},
+      {id:'type',label:'Entry type',type:'select',options:['New animal','Weight check','Health treatment','Feed note','Breeding','Farrowing','Processing']},
+      {id:'weight',label:'Weight (kg)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_cattle', cat:'Livestock', emoji:'🐄', name:'Cattle', desc:'Individual animal records and events',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'animalId',label:'Tag / ID number',type:'text',placeholder:''},
+      {id:'breed',label:'Breed',type:'text',placeholder:'e.g. Angus, Brahman, Droughtmaster'},
+      {id:'sex',label:'Sex',type:'select',options:['Cow','Bull','Steer','Heifer']},
+      {id:'type',label:'Entry type',type:'select',options:['New animal','Weigh','Pregnancy check','Calving','Health treatment','Vaccination','Sold','Death']},
+      {id:'weight',label:'Weight (kg)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // WATER / IRRIGATION
+  { id:'tpl_dam', cat:'Water & irrigation', emoji:'💧', name:'Dam / water storage', desc:'Water levels, quality and pump records',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'dam',label:'Dam / tank ID',type:'text',placeholder:'e.g. Main dam, Tank 1'},
+      {id:'level',label:'Water level (%)',type:'number',placeholder:'0-100'},
+      {id:'quality',label:'Water quality',type:'select',options:['Clear','Slightly turbid','Turbid','Algae present','Tested — good','Tested — issues']},
+      {id:'type',label:'Entry type',type:'select',options:['Level check','Pump maintenance','Water test','Algae treatment','De-silting','Fence repair','Wildlife note']},
+      {id:'rainfall',label:'Recent rainfall (mm)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_irrigation', cat:'Water & irrigation', emoji:'🚿', name:'Irrigation system', desc:'Zone schedules, maintenance and faults',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'zone',label:'Zone / area',type:'text',placeholder:'e.g. Orchard zone 1, Vege beds'},
+      {id:'type',label:'Entry type',type:'select',options:['Scheduled run','Fault found','Repair','Timer change','Emitter replaced','New zone installed','Winterised']},
+      {id:'duration',label:'Run duration (mins)',type:'number',placeholder:'0'},
+      {id:'pressure',label:'Pressure OK?',type:'select',options:['N/A','Yes','Low','High','Variable']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // MACHINERY
+  { id:'tpl_machinery', cat:'Machinery & tools', emoji:'🚜', name:'Machinery log', desc:'Service, fuel, faults for all equipment',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'machine',label:'Machine / tool',type:'text',placeholder:'e.g. Ride-on mower, Chainsaw, ATV'},
+      {id:'hours',label:'Hours / km on clock',type:'number',placeholder:'0'},
+      {id:'type',label:'Entry type',type:'select',options:['Fuel','Service — oil change','Service — filter','Service — blades/chain','Repair','Fault noted','Parts ordered','Warranty claim','Sold']},
+      {id:'cost',label:'Cost ($)',type:'number',placeholder:'0'},
+      {id:'nextService',label:'Next service due',type:'text',placeholder:'e.g. 50hrs, 6 months'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // PROPAGATION
+  { id:'tpl_propagation', cat:'Propagation', emoji:'🌱', name:'Propagation records', desc:'Seeds, cuttings, grafts — track from start',
+    fields:[
+      {id:'date',label:'Date started',type:'date',placeholder:''},
+      {id:'plant',label:'Plant / variety',type:'text',placeholder:''},
+      {id:'method',label:'Method',type:'select',options:['Seed — direct sow','Seed — tray','Cutting — softwood','Cutting — hardwood','Air layer','Graft — whip','Graft — bud','Division','Offset / pup']},
+      {id:'qty',label:'Quantity started',type:'number',placeholder:'0'},
+      {id:'medium',label:'Growing medium',type:'text',placeholder:'e.g. seed raising mix, perlite/peat'},
+      {id:'germinated',label:'Germinated / struck',type:'number',placeholder:'0'},
+      {id:'potted',label:'Potted on / planted out',type:'number',placeholder:'0'},
+      {id:'successRate',label:'Success rate (%)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Temperature, timing, issues'},
+    ]},
+
+  // SALES
+  { id:'tpl_market', cat:'Sales & markets', emoji:'🛒', name:'Market / stall sales', desc:'Track each market day or sale event',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'market',label:'Market / venue',type:'text',placeholder:'e.g. Farmers market, Roadside stall'},
+      {id:'products',label:'Products sold',type:'text',placeholder:'e.g. eggs, honey, finger limes'},
+      {id:'revenue',label:'Total revenue ($)',type:'number',placeholder:'0'},
+      {id:'costs',label:'Costs — stall, travel ($)',type:'number',placeholder:'0'},
+      {id:'bestSeller',label:'Best seller',type:'text',placeholder:''},
+      {id:'customers',label:'Approx. customers',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Weather, what sold out, feedback'},
+    ]},
+  { id:'tpl_restaurant', cat:'Sales & markets', emoji:'🍽️', name:'Restaurant / wholesale', desc:'Track orders and ongoing buyer relationships',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'buyer',label:'Restaurant / buyer',type:'text',placeholder:''},
+      {id:'contact',label:'Contact name / phone',type:'text',placeholder:''},
+      {id:'products',label:'Products ordered',type:'text',placeholder:''},
+      {id:'qty',label:'Quantity',type:'text',placeholder:'e.g. 200g finger limes, 2kg honey'},
+      {id:'price',label:'Price agreed ($)',type:'number',placeholder:'0'},
+      {id:'delivered',label:'Delivered?',type:'select',options:['Yes','Partial','No — pending']},
+      {id:'paid',label:'Payment received?',type:'select',options:['Yes','Pending','Overdue']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+];
+
+
+  // COMPLIANCE & REGULATORY
+  { id:'tpl_chemical_register', cat:'Compliance', emoji:'⚗️', name:'Chemical use register', desc:'Legally required in QLD for registered agri-chemicals',
+    fields:[
+      {id:'date',label:'Date applied',type:'date',placeholder:''},
+      {id:'time',label:'Time applied',type:'text',placeholder:'e.g. 7:00am'},
+      {id:'product',label:'Product name',type:'text',placeholder:'Full registered product name'},
+      {id:'apvmaNo',label:'APVMA registration number',type:'text',placeholder:'On product label'},
+      {id:'pest',label:'Pest / disease / weed target',type:'text',placeholder:'What you were treating'},
+      {id:'area',label:'Area treated',type:'text',placeholder:'e.g. North paddock, Orchard row 1-3'},
+      {id:'areaSizeHa',label:'Area size (ha)',type:'number',placeholder:'0'},
+      {id:'rate',label:'Rate applied',type:'text',placeholder:'e.g. 5ml/L, 200g/100L'},
+      {id:'totalVolume',label:'Total volume / quantity used',type:'text',placeholder:'e.g. 20L spray mix'},
+      {id:'waterVol',label:'Water volume (L)',type:'number',placeholder:'0'},
+      {id:'method',label:'Application method',type:'select',options:['Knapsack sprayer','Boom spray','Spot spray','Drench','Bait','Granule spread','Other']},
+      {id:'applicator',label:'Applicator name',type:'text',placeholder:'Person who applied it'},
+      {id:'licence',label:'Applicator licence number',type:'text',placeholder:'ChemCert or equivalent — if applicable'},
+      {id:'windSpeed',label:'Wind speed (km/h)',type:'text',placeholder:'Estimate or reading'},
+      {id:'windDir',label:'Wind direction',type:'text',placeholder:'e.g. NE, Southerly'},
+      {id:'temp',label:'Temperature (°C)',type:'number',placeholder:''},
+      {id:'withholdingPeriod',label:'Withholding period',type:'text',placeholder:'From label e.g. 7 days, 14 days'},
+      {id:'reentryPeriod',label:'Re-entry period',type:'text',placeholder:'When area safe to re-enter'},
+      {id:'safeToHarvest',label:'Safe to harvest / graze from',type:'date',placeholder:''},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Efficacy, any drift, disposal of containers'},
+    ]},
+  { id:'tpl_livestock_movement', cat:'Compliance', emoji:'🏷️', name:'Livestock movement register', desc:'Legally required — goats and cattle on/off property',
+    fields:[
+      {id:'date',label:'Date of movement',type:'date',placeholder:''},
+      {id:'direction',label:'Direction',type:'select',options:['Onto property','Off property','Internal move — paddock to paddock']},
+      {id:'species',label:'Species',type:'select',options:['Goats','Cattle','Sheep','Pigs','Alpaca','Other']},
+      {id:'number',label:'Number of animals',type:'number',placeholder:'0'},
+      {id:'description',label:'Description / identification',type:'text',placeholder:'e.g. 4 does, 1 buck — ear tags 001-005'},
+      {id:'fromPic',label:'From PIC',type:'text',placeholder:'Property ID code of origin'},
+      {id:'toPic',label:'To PIC',type:'text',placeholder:'Property ID code of destination'},
+      {id:'yourPic',label:'Your PIC number',type:'text',placeholder:'Your property identification code'},
+      {id:'transporter',label:'Transporter name / company',type:'text',placeholder:''},
+      {id:'vehicleRego',label:'Vehicle registration',type:'text',placeholder:'Transport vehicle rego'},
+      {id:'nlis',label:'NLIS transaction number',type:'text',placeholder:'National Livestock ID System — if applicable'},
+      {id:'reason',label:'Reason for movement',type:'select',options:['Purchase','Sale','Agistment','Slaughter','Show / exhibition','Veterinary treatment','Return from agistment','Other']},
+      {id:'vendor',label:'Vendor / buyer name',type:'text',placeholder:''},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Any additional details'},
+    ]},
+  { id:'tpl_food_safety', cat:'Compliance', emoji:'🍳', name:'Food safety log', desc:'Market egg and produce handling records',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'product',label:'Product',type:'select',options:['Eggs','Honey','Fresh produce','Processed product','Other']},
+      {id:'type',label:'Entry type',type:'select',options:['Collection / harvest','Cleaning and grading','Storage temp check','Transport temp check','Packaging','Labelling check','Market sale','Customer complaint','Recall / withdrawal']},
+      {id:'qty',label:'Quantity',type:'text',placeholder:'e.g. 48 eggs, 5kg honey'},
+      {id:'storageTemp',label:'Storage temperature (°C)',type:'number',placeholder:''},
+      {id:'transportTemp',label:'Transport temperature (°C)',type:'number',placeholder:''},
+      {id:'batchNo',label:'Batch / lot number',type:'text',placeholder:'Your internal batch tracking number'},
+      {id:'bestBefore',label:'Best before / use by date',type:'date',placeholder:''},
+      {id:'handler',label:'Handler name',type:'text',placeholder:'Who handled the product'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Any issues, corrective actions taken'},
+    ]},
+  { id:'tpl_visitor_log', cat:'Compliance', emoji:'📋', name:'Visitor & biosecurity log', desc:'Property entry records for disease traceability',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'visitorName',label:'Visitor name',type:'text',placeholder:''},
+      {id:'organisation',label:'Organisation / role',type:'text',placeholder:'e.g. Vet, Inspector, Friend, Contractor'},
+      {id:'purpose',label:'Purpose of visit',type:'text',placeholder:''},
+      {id:'areasAccessed',label:'Areas accessed',type:'text',placeholder:'e.g. Goat paddock, goose shed, orchard'},
+      {id:'otherFarms',label:'Other farms visited recently?',type:'select',options:['No','Yes — same species','Yes — different species','Unknown']},
+      {id:'footwear',label:'Footwear cleaned on entry?',type:'select',options:['Yes','No','Provided disposable covers']},
+      {id:'timeIn',label:'Time in',type:'text',placeholder:'e.g. 9:30am'},
+      {id:'timeOut',label:'Time out',type:'text',placeholder:'e.g. 11:00am'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Any biosecurity concerns, what was discussed'},
+    ]},
+  { id:'tpl_training', cat:'Compliance', emoji:'📜', name:'Training & certifications', desc:'Courses, licences and certificates held',
+    fields:[
+      {id:'date',label:'Date completed',type:'date',placeholder:''},
+      {id:'person',label:'Person',type:'text',placeholder:'Who completed the training'},
+      {id:'course',label:'Course / certification',type:'text',placeholder:'e.g. ChemCert AQF2, Food handling, First aid'},
+      {id:'provider',label:'Training provider',type:'text',placeholder:''},
+      {id:'certNo',label:'Certificate / licence number',type:'text',placeholder:''},
+      {id:'expiry',label:'Expiry date',type:'date',placeholder:''},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // SOIL
+  { id:'tpl_soil_test', cat:'Soil', emoji:'🪱', name:'Soil test results', desc:'pH, nutrients and organic matter by paddock',
+    fields:[
+      {id:'date',label:'Date sampled',type:'date',placeholder:''},
+      {id:'area',label:'Paddock / area',type:'text',placeholder:'e.g. North paddock, Orchard block'},
+      {id:'lab',label:'Laboratory',type:'text',placeholder:''},
+      {id:'ph',label:'pH',type:'number',placeholder:'e.g. 6.5'},
+      {id:'organicMatter',label:'Organic matter (%)',type:'number',placeholder:''},
+      {id:'nitrogen',label:'Nitrogen (mg/kg)',type:'number',placeholder:''},
+      {id:'phosphorus',label:'Phosphorus (mg/kg)',type:'number',placeholder:''},
+      {id:'potassium',label:'Potassium (mg/kg)',type:'number',placeholder:''},
+      {id:'calcium',label:'Calcium (mg/kg)',type:'number',placeholder:''},
+      {id:'magnesium',label:'Magnesium (mg/kg)',type:'number',placeholder:''},
+      {id:'sulphur',label:'Sulphur (mg/kg)',type:'number',placeholder:''},
+      {id:'zinc',label:'Zinc (mg/kg)',type:'number',placeholder:''},
+      {id:'iron',label:'Iron (mg/kg)',type:'number',placeholder:''},
+      {id:'texture',label:'Soil texture',type:'select',options:['Sandy','Sandy loam','Loam','Clay loam','Clay','Silty','Unknown']},
+      {id:'depth',label:'Sampling depth (cm)',type:'number',placeholder:'e.g. 10'},
+      {id:'recommendations',label:'Lab recommendations',type:'textarea',placeholder:'Paste lab amendment recommendations here'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Visual observations, comparison to previous test'},
+    ]},
+  { id:'tpl_soil_amendment', cat:'Soil', emoji:'⛏️', name:'Soil amendments', desc:'Lime, gypsum, trace elements applied by area',
+    fields:[
+      {id:'date',label:'Date applied',type:'date',placeholder:''},
+      {id:'area',label:'Area treated',type:'text',placeholder:'e.g. North paddock, Orchard'},
+      {id:'areaHa',label:'Area size (ha)',type:'number',placeholder:'0'},
+      {id:'product',label:'Product',type:'text',placeholder:'e.g. Agricultural lime, Gypsum, Dolomite, Zeolite'},
+      {id:'rate',label:'Rate (kg/ha)',type:'number',placeholder:'0'},
+      {id:'totalQty',label:'Total quantity applied (kg)',type:'number',placeholder:'0'},
+      {id:'cost',label:'Cost ($)',type:'number',placeholder:'0'},
+      {id:'method',label:'Application method',type:'select',options:['Hand spread','Spreader','Incorporated','Watered in','Other']},
+      {id:'targetPh',label:'Target pH after amendment',type:'number',placeholder:''},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Based on soil test results, observations'},
+    ]},
+
+  // WEATHER
+  { id:'tpl_rainfall', cat:'Weather', emoji:'🌧️', name:'Rainfall log', desc:'Daily or weekly rainfall by gauge location',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'gauge',label:'Gauge location',type:'text',placeholder:'e.g. House gauge, Dam gauge'},
+      {id:'rainfall',label:'Rainfall (mm)',type:'number',placeholder:'0'},
+      {id:'period',label:'Period',type:'select',options:['Daily','Weekly','Storm event','Monthly total']},
+      {id:'intensity',label:'Rain intensity',type:'select',options:['Light drizzle','Steady rain','Heavy rain','Storm / intense','Hail']},
+      {id:'runoff',label:'Noticeable runoff?',type:'select',options:['None','Minor','Moderate — some erosion','Significant — erosion concern']},
+      {id:'cumMonthly',label:'Monthly cumulative (mm)',type:'number',placeholder:'Running total for the month'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Dam response, pasture response, flooding'},
+    ]},
+  { id:'tpl_weather_event', cat:'Weather', emoji:'🌩️', name:'Significant weather events', desc:'Frost, heatwave, storm, flood records',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'type',label:'Event type',type:'select',options:['Frost','Heatwave','Storm — wind','Storm — hail','Flooding','Drought onset','Drought break','Cyclone / ex-tropical','Fire weather','Other']},
+      {id:'minTemp',label:'Minimum temperature (°C)',type:'number',placeholder:''},
+      {id:'maxTemp',label:'Maximum temperature (°C)',type:'number',placeholder:''},
+      {id:'windSpeed',label:'Wind speed estimate (km/h)',type:'number',placeholder:''},
+      {id:'damage',label:'Damage observed',type:'textarea',placeholder:'Crops, trees, animals, infrastructure affected'},
+      {id:'response',label:'Actions taken',type:'textarea',placeholder:'What you did in response'},
+      {id:'insurance',label:'Insurance claim lodged?',type:'select',options:['No','Yes — pending','Yes — approved','Not applicable']},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // ENTERPRISE PROFITABILITY
+  { id:'tpl_enterprise_summary', cat:'Finance', emoji:'📊', name:'Enterprise profit & loss', desc:'Costs and income broken down by enterprise',
+    fields:[
+      {id:'period',label:'Period',type:'text',placeholder:'e.g. 2026 Q1, FY2026, July 2026'},
+      {id:'enterprise',label:'Enterprise',type:'select',options:['Geese — eggs','Geese — birds','Goats — grazing','Goats — meat','European bees — honey','Native bees — honey','Finger limes','Vanilla','Wasabi','Nasturtium','Fruit trees','Vege garden','Other specialty plant','Farm-wide total']},
+      {id:'revenue',label:'Total revenue ($)',type:'number',placeholder:'0'},
+      {id:'directCosts',label:'Direct costs ($)',type:'number',placeholder:'Feed, treatments, packaging etc'},
+      {id:'labourHours',label:'Labour hours',type:'number',placeholder:'0'},
+      {id:'labourRate',label:'Labour rate used ($/hr)',type:'number',placeholder:'e.g. 30'},
+      {id:'labourCost',label:'Labour cost ($)',type:'number',placeholder:'Auto-calculated or enter manually'},
+      {id:'overheadShare',label:'Overhead share ($)',type:'number',placeholder:'Proportion of water, electricity, insurance etc'},
+      {id:'grossProfit',label:'Gross profit ($)',type:'number',placeholder:'Revenue minus direct costs'},
+      {id:'netProfit',label:'Net profit ($)',type:'number',placeholder:'After labour and overheads'},
+      {id:'unitsSold',label:'Units sold',type:'text',placeholder:'e.g. 240 eggs, 12kg honey, 800g finger limes'},
+      {id:'avgPrice',label:'Average price per unit ($)',type:'number',placeholder:''},
+      {id:'notes',label:'Notes / observations',type:'textarea',placeholder:'What worked, what to improve next period'},
+    ]},
+  { id:'tpl_depreciation', cat:'Finance', emoji:'📉', name:'Asset & depreciation register', desc:'Machinery, infrastructure and trees for tax',
+    fields:[
+      {id:'date',label:'Date purchased / installed',type:'date',placeholder:''},
+      {id:'asset',label:'Asset name',type:'text',placeholder:'e.g. Ride-on mower, Goose shelter, Orchard irrigation'},
+      {id:'category',label:'Category',type:'select',options:['Machinery','Vehicle','Infrastructure — fencing','Infrastructure — buildings','Infrastructure — irrigation','Fruit trees / perennials','Tools and equipment','Other']},
+      {id:'cost',label:'Purchase / install cost ($)',type:'number',placeholder:'0'},
+      {id:'supplier',label:'Supplier',type:'text',placeholder:''},
+      {id:'depMethod',label:'Depreciation method',type:'select',options:['Diminishing value','Prime cost / straight line','Instant asset write-off','Pool — low value','Not depreciating']},
+      {id:'effectiveLife',label:'Effective life (years)',type:'number',placeholder:'ATO table or estimate'},
+      {id:'depRate',label:'Depreciation rate (%)',type:'number',placeholder:''},
+      {id:'annualDep',label:'Annual depreciation ($)',type:'number',placeholder:''},
+      {id:'openingValue',label:'Opening book value ($)',type:'number',placeholder:''},
+      {id:'closingValue',label:'Closing book value ($)',type:'number',placeholder:''},
+      {id:'disposedDate',label:'Date disposed (if sold/scrapped)',type:'date',placeholder:''},
+      {id:'salePrice',label:'Sale price if disposed ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+  { id:'tpl_budget', cat:'Finance', emoji:'📋', name:'Annual budget vs actual', desc:'Planned vs real spend and income by enterprise',
+    fields:[
+      {id:'period',label:'Period / year',type:'text',placeholder:'e.g. FY2027'},
+      {id:'enterprise',label:'Enterprise / category',type:'text',placeholder:'e.g. Bees, Goats, Farm total'},
+      {id:'item',label:'Budget item',type:'text',placeholder:'e.g. Feed costs, Honey sales, Vet expenses'},
+      {id:'budgeted',label:'Budgeted ($)',type:'number',placeholder:'0'},
+      {id:'actual',label:'Actual ($)',type:'number',placeholder:'0'},
+      {id:'variance',label:'Variance ($)',type:'number',placeholder:'Actual minus budget'},
+      {id:'type',label:'Income or expense',type:'select',options:['Income','Expense']},
+      {id:'notes',label:'Notes / explanation',type:'textarea',placeholder:'Why variance occurred, adjust next year'},
+    ]},
+
+  // LABOUR
+  { id:'tpl_labour', cat:'Labour', emoji:'⏱️', name:'Labour time tracking', desc:'Hours by task and enterprise — find what is profitable',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'person',label:'Person',type:'text',placeholder:'Name or initials'},
+      {id:'enterprise',label:'Enterprise / area',type:'select',options:['Geese','Goats','European bees','Native bees','Finger limes','Vanilla','Wasabi','Nasturtium','Fruit trees','Vege garden','Pasture / fencing','Water / irrigation','Compost','Machinery','Markets / sales','Admin / records','General farm','Other']},
+      {id:'task',label:'Task description',type:'text',placeholder:'e.g. Collect eggs, Check hive, Weed bed 3'},
+      {id:'hours',label:'Hours spent',type:'number',placeholder:'0'},
+      {id:'rate',label:'Rate ($/hr) if paid labour',type:'number',placeholder:'0 if owner labour'},
+      {id:'cost',label:'Labour cost ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:''},
+    ]},
+
+  // INVENTORY
+  { id:'tpl_inventory', cat:'Inventory', emoji:'📦', name:'Consumables inventory', desc:'Stock levels for feed, chemicals, packaging, seed',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'item',label:'Item',type:'text',placeholder:'e.g. Wheat grain, Nitragin spray, Egg cartons, Peat moss'},
+      {id:'category',label:'Category',type:'select',options:['Animal feed','Chemical / pesticide','Fertiliser / amendment','Packaging','Seeds','Propagation supplies','Beekeeping supplies','Fencing materials','Fuel','Other']},
+      {id:'type',label:'Entry type',type:'select',options:['Stock take','Purchased','Used / consumed','Disposed','Low stock alert']},
+      {id:'qty',label:'Quantity on hand',type:'text',placeholder:'e.g. 80kg, 3 bottles, 200 cartons'},
+      {id:'unit',label:'Unit',type:'text',placeholder:'kg, L, units, rolls'},
+      {id:'reorderPoint',label:'Reorder at',type:'text',placeholder:'e.g. Below 20kg'},
+      {id:'supplier',label:'Supplier',type:'text',placeholder:''},
+      {id:'cost',label:'Unit cost ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Expiry date, storage location'},
+    ]},
+  { id:'tpl_seed_inventory', cat:'Inventory', emoji:'🫘', name:'Seed bank', desc:'Seed varieties on hand, viability and source',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'plant',label:'Plant / variety',type:'text',placeholder:'e.g. Nasturtium Alaska, Capsicum Cayenne'},
+      {id:'source',label:'Seed source',type:'select',options:['Own saved seed','Commercial packet','Seed library / swap','Gift','Wild collected']},
+      {id:'year',label:'Harvest / packet year',type:'text',placeholder:'e.g. 2025'},
+      {id:'qty',label:'Quantity (approx seeds or grams)',type:'text',placeholder:''},
+      {id:'germRate',label:'Last germination rate (%)',type:'number',placeholder:''},
+      {id:'storage',label:'Storage location',type:'text',placeholder:'e.g. Fridge, cool dark shelf'},
+      {id:'viableUntil',label:'Viable until (approx)',type:'text',placeholder:'e.g. 2027, 3 years'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Special stratification needs, sourcing notes'},
+    ]},
+
+  // NEIGHBOURS AND BOUNDARIES
+  { id:'tpl_boundary', cat:'Property', emoji:'🗺️', name:'Boundary & fence register', desc:'Condition, responsibility and maintenance history',
+    fields:[
+      {id:'date',label:'Date',type:'date',placeholder:''},
+      {id:'boundary',label:'Boundary section',type:'text',placeholder:'e.g. North boundary — Jones property'},
+      {id:'fenceType',label:'Fence type',type:'select',options:['Ringlock / hinge joint','Barbed wire','Electric — permanent','Electric — temporary','Post and rail','Steel panel','Shared — cost split','No fence']},
+      {id:'responsibility',label:'Maintenance responsibility',type:'select',options:['Our responsibility','Neighbours responsibility','Shared 50/50','Disputed','Council / road authority']},
+      {id:'condition',label:'Condition',type:'select',options:['Excellent','Good','Fair — monitor','Poor — needs work','Failed — urgent']},
+      {id:'length',label:'Length (m)',type:'number',placeholder:'0'},
+      {id:'type',label:'Entry type',type:'select',options:['Initial survey','Inspection','Repair','Replacement','Neighbour discussion','Dispute note']},
+      {id:'cost',label:'Cost ($)',type:'number',placeholder:'0'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Neighbour name, contact, any agreements made'},
+    ]},
+  { id:'tpl_agreements', cat:'Property', emoji:'🤝', name:'Neighbour & property agreements', desc:'Water rights, access, easements, verbal deals',
+    fields:[
+      {id:'date',label:'Date of agreement',type:'date',placeholder:''},
+      {id:'party',label:'Other party (name / property)',type:'text',placeholder:''},
+      {id:'type',label:'Agreement type',type:'select',options:['Water access / sharing','Fence cost sharing','Grazing / agistment','Road / track access','Easement','Verbal agreement — other','Written agreement','Council / authority permit']},
+      {id:'description',label:'Description of agreement',type:'textarea',placeholder:'What was agreed in plain language'},
+      {id:'written',label:'Is it in writing?',type:'select',options:['Yes — document filed','Verbal only','Partial — emails / texts only']},
+      {id:'reviewDate',label:'Review / renewal date',type:'date',placeholder:''},
+      {id:'contact',label:'Contact details of other party',type:'text',placeholder:'Phone or email'},
+      {id:'notes',label:'Notes',type:'textarea',placeholder:'Any disputes, history, things to watch'},
+    ]},
+];
+
+const TEMPLATE_CATS = ['All', 'Bees', 'Fruit trees', 'High value plants', 'Vege garden', 'Livestock', 'Water & irrigation', 'Machinery & tools', 'Propagation', 'Sales & markets', 'Compliance', 'Soil', 'Weather', 'Finance', 'Labour', 'Inventory', 'Property'];
+
+let templateFilter = '';
+let templateCat = 'All';
+
+function renderTemplateLibrary() {
+  const el = document.getElementById('templateLibrary');
+  if (!el) return;
+  const custom = loadCustomSections();
+  const addedIds = new Set(custom.map(s => s._templateId).filter(Boolean));
+
+  const q = templateFilter.toLowerCase();
+  const filtered = TEMPLATES.filter(t => {
+    const matchCat = templateCat === 'All' || t.cat === templateCat;
+    const matchQ = !q || t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  // Group by category
+  const groups = {};
+  filtered.forEach(t => { if (!groups[t.cat]) groups[t.cat] = []; groups[t.cat].push(t); });
+
+  const catBtns = TEMPLATE_CATS.map(c =>
+    `<button class="template-cat-btn${templateCat===c?' active':''}" onclick="setTemplateCat('${c}')">${c}</button>`
+  ).join('');
+
+  let gridHTML = '';
+  Object.keys(groups).forEach(cat => {
+    if (templateCat === 'All') gridHTML += `<div class="tpl-section-label">${cat}</div>`;
+    groups[cat].forEach(t => {
+      const added = addedIds.has(t.id);
+      const clickFn = added ? 'void(0)' : "addTemplate('" + t.id + "')";
+      gridHTML += '<button class="template-card' + (added ? ' already-added' : '') + '" onclick="' + clickFn + '">'
+        + (added ? '<span class="template-added-badge">Added ✓</span>' : '')
+        + '<span class="template-emoji">' + t.emoji + '</span>'
+        + '<div class="template-name">' + esc(t.name) + '</div>'
+        + '<div class="template-desc">' + esc(t.desc) + '</div>'
+        + '<div class="template-fields-count">' + t.fields.length + ' fields</div>'
+        + '</button>';
+    });
+  });
+
+  if (!filtered.length) {
+    gridHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-light);font-size:0.85rem;">No templates match — try a different search or <button class="add-btn" style="display:inline;padding:0.3rem 0.8rem;font-size:0.8rem" onclick="openNewSectionModal()">build your own</button></div>`;
+  }
+
+  el.innerHTML = `
+    <div class="template-search-wrap">
+      <span class="template-search-icon">🔍</span>
+      <input class="template-search" type="text" placeholder="Search templates — bees, vanilla, machinery, markets…" value="${esc(templateFilter)}" oninput="templateFilter=this.value;renderTemplateLibrary()"/>
+    </div>
+    <div class="template-cats">${catBtns}</div>
+    <div class="template-grid">${gridHTML}</div>
+    ${custom.length ? '<div class="tpl-section-label">Your sections</div>' : ''}
+  `;
+}
+
+function setTemplateCat(cat) {
+  templateCat = cat;
+  renderTemplateLibrary();
+}
+
+function addTemplate(templateId) {
+  const tpl = TEMPLATES.find(t => t.id === templateId);
+  if (!tpl) return;
+  const custom = loadCustomSections();
+  if (custom.find(s => s._templateId === templateId)) { showToast('Already added'); return; }
+  const id = 'custom_' + Date.now();
+  custom.push({ id, label: tpl.name, fields: tpl.fields, _templateId: templateId, emoji: tpl.emoji });
+  saveCustomSections(custom);
+  const db = loadLocal();
+  if (!db[id]) { db[id] = []; saveLocal(db); }
+  showToast(tpl.emoji + ' ' + tpl.name + ' added');
+  const c = getCloudConfig(); if (c.apiKey && c.binId) doSync(true);
+  showSection(id);
+}
+
+function renderCustomSectionsList() {
+  renderTemplateLibrary();
+  const custom=loadCustomSections();
+  const db=loadLocal();
+  const el=document.getElementById('customSectionsList');
+  if(!el) return;
+  if(!custom.length){ el.innerHTML=''; return; }
+  el.innerHTML='<div class="tpl-section-label">Your sections</div>'+custom.map(s=>{
+    const count=(db[s.id]||[]).length;
+    const emoji = s.emoji ? s.emoji+' ' : '';
+    return `<div class="custom-sec-card">
+      <div><div class="custom-sec-name">${emoji}${esc(s.label)}</div><div class="custom-sec-meta">${s.fields.length} fields · ${count} record${count!==1?'s':''}</div></div>
+      <div class="custom-sec-actions">
+        <button class="icon-btn" onclick="showSection('${s.id}')">Open</button>
+        <button class="icon-btn" onclick="openEditSection('${s.id}')">Edit</button>
+        <button class="icon-btn delete" onclick="confirmDeleteSection('${s.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER SECTIONS
+// ═══════════════════════════════════════════════════════
+
+function renderBuiltinSection(name, filter) {
+  const sec=BUILTIN_SECTIONS.find(s=>s.id===name); if(!sec) return;
+  const form=BUILTIN_FORMS[sec.formKey];
+  const db=loadLocal();
+  let records=db[form.dbKey]||[];
+  if(filter){ const q=filter.toLowerCase(); records=records.filter(r=>JSON.stringify(r).toLowerCase().includes(q)); }
+  const el=document.getElementById('list-'+name); if(!el) return;
+  el.innerHTML=records.length?records.map(r=>builtinCard(r,form.dbKey,name,sec.formKey)).join(''):emptyState(name);
+}
+
+function builtinCard(r, dbKey, sName, formKey) {
+  const tagCls={geese:'tag-goose',goats:'tag-goat',eggs:'tag-egg',breeding:'tag-breeding',health:'tag-health',pasture:'tag-pasture',water:'tag-water',compost:'tag-compost',finance:'tag-finance',bas:'tag-bas',loans:'tag-loans',infra:'tag-infra'}[sName]||'tag-infra';
+  const title=r.name||r.date||r.season||r.description||r.type||'Entry';
+  const meta=r.date?fmtDate(r.date):(r._saved?fmtDate(r._saved.split('T')[0]):'');
+  const detail=builtinDetail(r,sName);
+  return `<div class="record-card"><div class="record-main">
+    <div class="record-title">${esc(title)}</div>
+    ${meta?`<div class="record-meta">${meta}</div>`:''}
+    ${detail?`<div class="record-detail">${detail}</div>`:''}
+    ${renderCardPhotos(r._photos)}
+    <div class="record-tags"><span class="tag ${tagCls}">${sName}</span></div>
+  </div><div class="record-actions">
+    <button class="icon-btn" onclick="openRecordModal('${formKey}','${r.id}')">Edit</button>
+    <button class="icon-btn delete" onclick="deleteRecord('${dbKey}','${r.id}')">Delete</button>
+  </div></div>`;
+}
+
+function builtinDetail(r,n) {
+  const p=[];
+  if(n==='geese'){if(r.sex)p.push(r.sex);if(r.breed)p.push(r.breed);if(r.source)p.push('From: '+r.source);}
+  else if(n==='goats'){if(r.sex)p.push(r.sex);if(r.breed)p.push(r.breed);if(r.price)p.push('$'+r.price);}
+  else if(n==='eggs'){if(r.count)p.push(r.count+' eggs');if(r.disposition)p.push(r.disposition);if(r.price&&r.price!='0')p.push('$'+r.price+' received');}
+  else if(n==='breeding'){if(r.gander)p.push('Gander: '+r.gander);if(r.females)p.push('Females: '+r.females);if(r.hatched)p.push(r.hatched+' hatched');}
+  else if(n==='health'){if(r.animal)p.push(r.animal);if(r.species)p.push(r.species);if(r.type)p.push(r.type);if(r.nextDue)p.push('Next due: '+fmtDate(r.nextDue));}
+  else if(n==='pasture'){if(r.type)p.push(r.type);if(r.section)p.push(r.section);if(r.grassCover&&r.grassCover!='N/A')p.push('Cover: '+r.grassCover);}
+  else if(n==='water'){if(r.tankLevel)p.push('Tank: '+r.tankLevel+'%');if(r.creekStatus)p.push('Creek: '+r.creekStatus);}
+  else if(n==='compost'){if(r.bay)p.push(r.bay);if(r.action)p.push(r.action);if(r.materials)p.push(r.materials);}
+  else if(n==='finance'){
+    if(r.type)p.push(r.type);
+    if(r.taxCategory&&r.taxCategory!=='— Expenses —'&&r.taxCategory!=='— Income —')p.push(r.taxCategory);
+    if(r.enterprise&&r.enterprise!=='Farm-wide / general')p.push(r.enterprise);
+    if(r.amount)p.push('$'+parseFloat(r.amount||0).toFixed(2));
+    if(r.gstAmount&&parseFloat(r.gstAmount)>0)p.push('GST $'+parseFloat(r.gstAmount).toFixed(2));
+    if(r.reconciled==='Yes — reconciled')p.push('✓ Reconciled');
+    else if(r.reconciled)p.push('⚠ '+r.reconciled);
+    if(r.basQuarter)p.push(r.basQuarter);
+  }
+  else if(n==='bas'){
+    if(r.quarter)p.push(r.quarter);
+    if(r.year)p.push(r.year);
+    if(r.netGst)p.push('Net GST $'+parseFloat(r.netGst||0).toFixed(2));
+    if(r.status)p.push(r.status);
+    if(r.dueDate)p.push('Due: '+fmtDate(r.dueDate));
+  }
+  else if(n==='loans'){
+    if(r.lender)p.push(r.lender);
+    if(r.purpose)p.push(r.purpose);
+    if(r.balance)p.push('Balance $'+parseFloat(r.balance||0).toFixed(2));
+    if(r.type)p.push(r.type);
+    if(r.nextPayment)p.push('Next: '+fmtDate(r.nextPayment));
+  }
+  else if(n==='infra'){if(r.type)p.push(r.type);if(r.location)p.push(r.location);if(r.voltage)p.push('Voltage: '+r.voltage);}
+  if(r.notes)p.push(r.notes);
+  return p.filter(Boolean).map(esc).join(' · ');
+}
+
+function renderCustomSection(sectionId, filter) {
+  const section=loadCustomSections().find(s=>s.id===sectionId); if(!section) return;
+  const db=loadLocal();
+  let records=db[sectionId]||[];
+  if(filter){ const q=filter.toLowerCase(); records=records.filter(r=>JSON.stringify(r).toLowerCase().includes(q)); }
+  const el=document.getElementById('list-'+sectionId); if(!el) return;
+  el.innerHTML=records.length?records.map(r=>customCard(r,sectionId,section)).join(''):emptyState(section.label);
+}
+
+function customCard(r, sectionId, section) {
+  const title=r.date||Object.values(r).find(v=>v&&typeof v==='string'&&!v.startsWith('{'))||'Entry';
+  const meta=r.date?fmtDate(r.date):(r._saved?fmtDate(r._saved.split('T')[0]):'');
+  const skip=new Set(['id','_type','_saved','date']);
+  const parts=section.fields.filter(f=>!skip.has(f.id)&&r[f.id]).slice(0,3).map(f=>esc(f.label)+': '+esc(r[f.id]));
+  return `<div class="record-card"><div class="record-main">
+    <div class="record-title">${esc(title)}</div>
+    ${meta?`<div class="record-meta">${meta}</div>`:''}
+    ${parts.length?`<div class="record-detail">${parts.join(' · ')}</div>`:''}
+    ${renderCardPhotos(r._photos)}
+    <div class="record-tags"><span class="tag tag-custom">${esc(section.label)}</span></div>
+  </div><div class="record-actions">
+    <button class="icon-btn" onclick="openCustomRecordModal('${sectionId}','${r.id}')">Edit</button>
+    <button class="icon-btn delete" onclick="deleteRecord('${sectionId}','${r.id}')">Delete</button>
+  </div></div>`;
+}
+
+function renderDashboard() {
+  const db=loadLocal(); const custom=loadCustomSections();
+  const last=localStorage.getItem('farmLastLocal');
+  const el=document.getElementById('lastUpdated');
+  if(el) el.textContent=last?'Last saved: '+fmtDate(last.split('T')[0]):'';
+  const s=loadSettings();
+  const grid=document.getElementById('dashGrid');
+  if(grid) grid.innerHTML=[
+    {num:(db.geese||[]).length,label:'Geese on record'},
+    {num:(db.goats||[]).length,label:'Goats on record'},
+    {num:(db.eggs||[]).reduce((a,r)=>a+parseInt(r.count||0),0),label:'Total eggs logged'},
+    {num:(db.health||[]).length,label:'Health records'},
+    {num:(db.finance||[]).length,label:'Finance entries'},
+    {num:custom.length,label:'Custom sections'},
+  ].map(x=>`<div class="dash-card"><div class="dash-num">${x.num}</div><div class="dash-label">${x.label}</div></div>`).join('');
+
+  const all=[];
+  ['geese','goats','eggs','breeding','health','pasture','water','compost','finance','bas','loans','infra'].forEach(key=>(db[key]||[]).forEach(r=>all.push({...r,_sk:key,_custom:false})));
+  custom.forEach(s=>(db[s.id]||[]).forEach(r=>all.push({...r,_sk:s.id,_custom:true,_cs:s})));
+  all.sort((a,b)=>(b._saved||'').localeCompare(a._saved||''));
+  const rl=document.getElementById('recentList');
+  if(!rl) return;
+  const recent=all.slice(0,6);
+  rl.innerHTML=recent.length?recent.map(r=>{
+    if(r._custom) return customCard(r,r._sk,r._cs);
+    const sec=BUILTIN_SECTIONS.find(s=>BUILTIN_FORMS[s.formKey||'']?.dbKey===r._sk);
+    return builtinCard(r,r._sk,r._sk,sec?.formKey||r._sk);
+  }).join(''):'<div class="empty"><div class="empty-sub">No records yet — add entries using the tabs above</div></div>';
+}
+
+function renderFinanceStats() {
+  const db=loadLocal(); const records=db.finance||[];
+  const income=records.filter(r=>r.type==='Income').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+  const expense=records.filter(r=>r.type==='Expense').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+  const gstCollected=records.filter(r=>r.type==='Income'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+  const gstPaid=records.filter(r=>r.type==='Expense'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+  const unreconciled=records.filter(r=>r.reconciled!=='Yes — reconciled').length;
+  const el=document.getElementById('financeStats'); if(!el) return;
+
+  // BAS quarter summary
+  const quarters=['Q1 — Jul to Sep','Q2 — Oct to Dec','Q3 — Jan to Mar','Q4 — Apr to Jun'];
+  const qRows=quarters.map(q=>{
+    const qRecs=records.filter(r=>r.basQuarter===q);
+    const qInc=qRecs.filter(r=>r.type==='Income').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+    const qExp=qRecs.filter(r=>r.type==='Expense').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+    const qGstCol=qRecs.filter(r=>r.type==='Income'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+    const qGstPd=qRecs.filter(r=>r.type==='Expense'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+    const netGst=qGstCol-qGstPd;
+    const qLabel=q.replace('— ','');
+    return `<tr style="border-top:0.5px solid var(--border)">
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--text-mid)">${qLabel}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--sage-dark);text-align:right">$${qInc.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--rust);text-align:right">$${qExp.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--text-mid);text-align:right">$${qGstCol.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--text-mid);text-align:right">$${qGstPd.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;font-weight:600;color:${netGst>=0?'var(--rust)':'var(--sage-dark)'};text-align:right">${netGst>=0?'Pay':'Refund'} $${Math.abs(netGst).toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+
+  // Enterprise breakdown
+  const enterprises={};
+  records.forEach(r=>{
+    const ent=r.enterprise||'Farm-wide / general';
+    if(!enterprises[ent]) enterprises[ent]={inc:0,exp:0};
+    if(r.type==='Income') enterprises[ent].inc+=parseFloat(r.amount||0);
+    else enterprises[ent].exp+=parseFloat(r.amount||0);
+  });
+  const entRows=Object.entries(enterprises).sort((a,b)=>(b[1].inc-b[1].exp)-(a[1].inc-a[1].exp)).map(([ent,v])=>`
+    <tr style="border-top:0.5px solid var(--border)">
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--text-mid)">${esc(ent)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--sage-dark);text-align:right">$${v.inc.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;color:var(--rust);text-align:right">$${v.exp.toFixed(2)}</td>
+      <td style="padding:6px 10px;font-size:0.8rem;font-weight:600;color:${v.inc-v.exp>=0?'var(--sage-dark)':'var(--rust)'};text-align:right">$${(v.inc-v.exp).toFixed(2)}</td>
+    </tr>`).join('');
+
+  el.innerHTML=`
+    <div class="dash-card"><div class="dash-num" style="color:var(--sage-dark)">$${income.toFixed(2)}</div><div class="dash-label">Total income</div></div>
+    <div class="dash-card"><div class="dash-num" style="color:var(--rust)">$${expense.toFixed(2)}</div><div class="dash-label">Total expenses</div></div>
+    <div class="dash-card"><div class="dash-num" style="color:${income-expense>=0?'var(--sage-dark)':'var(--rust)'}">$${(income-expense).toFixed(2)}</div><div class="dash-label">Net profit / loss</div></div>
+    <div class="dash-card"><div class="dash-num" style="color:var(--rust)">$${(gstCollected-gstPaid).toFixed(2)}</div><div class="dash-label">Net GST owing</div></div>
+    <div class="dash-card"><div class="dash-num" style="color:${unreconciled>0?'var(--rust)':'var(--sage-dark)'}">${unreconciled}</div><div class="dash-label">Unreconciled entries</div></div>
+
+    <div style="grid-column:1/-1;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:4px">
+      <div style="padding:0.7rem 1rem;font-size:0.76rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border)">BAS quarter summary</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--cream-dark)">
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:left">Quarter</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Income</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Expenses</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">GST collected</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">GST paid</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Net GST</th>
+        </tr></thead>
+        <tbody>${qRows}</tbody>
+      </table>
+    </div>
+
+    <div style="grid-column:1/-1;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:4px">
+      <div style="padding:0.7rem 1rem;font-size:0.76rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--border)">Enterprise breakdown</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--cream-dark)">
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:left">Enterprise</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Income</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Expenses</th>
+          <th style="padding:6px 10px;font-size:0.75rem;color:var(--text-light);font-weight:500;text-align:right">Net</th>
+        </tr></thead>
+        <tbody>${entRows}</tbody>
+      </table>
+    </div>
+
+    <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <button class="export-btn" onclick="exportAccountantCSV()">📊 Export accountant CSV</button>
+      <button class="export-btn" onclick="exportGSTReport()">🧾 Export GST report</button>
+      <button class="export-btn" onclick="exportUnreconciled()">⚠ Export unreconciled</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// DELETE / EXPORT
+// ═══════════════════════════════════════════════════════
+
+function deleteRecord(dbKey,id) {
+  if(!confirm('Delete this record? Cannot be undone.')) return;
+  const db=loadLocal(); db[dbKey]=(db[dbKey]||[]).filter(r=>r.id!==id); saveLocal(db);
+  showSection(currentSection); showToast('Deleted');
+  const c=getCloudConfig(); if(c.apiKey&&c.binId) doSync(true);
+}
+
+function exportAll() {
+  const blob=new Blob([JSON.stringify({db:loadLocal(),customSections:loadCustomSections()},null,2)],{type:'application/json'});
+  dlBlob(blob,'farm_records_'+todayStr()+'.json'); showToast('Exported');
+}
+
+function exportCSVSection(name) {
+  const sec=BUILTIN_SECTIONS.find(s=>s.id===name); if(!sec) return;
+  exportCSVKey(BUILTIN_FORMS[sec.formKey].dbKey,name);
+}
+
+function exportCSVKey(key,label) {
+  const db=loadLocal(); const data=db[key]||[];
+  if(!data.length){ showToast('No records to export'); return; }
+  const headers=Object.keys(data[0]).filter(k=>!k.startsWith('_'));
+  const csv=[headers.join(','),...data.map(r=>headers.map(h=>JSON.stringify(r[h]||'')).join(','))].join('\n');
+  dlBlob(new Blob([csv],{type:'text/csv'}),label+'_'+todayStr()+'.csv'); showToast('CSV exported');
+}
+
+function dlBlob(blob,name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
+
+function exportAccountantCSV() {
+  const db=loadLocal(); const records=db.finance||[];
+  if(!records.length){ showToast('No finance records'); return; }
+  const headers=['Date','Type','ATO Tax Category','Enterprise','Description','Supplier','ABN','Invoice No','Total Amount','GST Status','GST Amount','Ex-GST Amount','BAS Quarter','Payment Method','Reconciled','Capital Item','Notes'];
+  const rows=records.map(r=>[
+    r.date||'', r.type||'', r.taxCategory||'', r.enterprise||'', r.description||'',
+    r.supplier||'', r.abn||'', r.invoiceNo||'',
+    r.amount||'0',
+    r.gstStatus||'',
+    r.gstAmount||'0',
+    ((parseFloat(r.amount||0)-parseFloat(r.gstAmount||0)).toFixed(2)),
+    r.basQuarter||'', r.paymentMethod||'', r.reconciled||'', r.capitalItem||'', r.notes||''
+  ].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const csv=[headers.map(h=>'"'+h+'"').join(','),...rows].join('\n');
+  dlBlob(new Blob([csv],{type:'text/csv'}),'accountant_finance_'+todayStr()+'.csv');
+  showToast('Accountant CSV exported');
+}
+
+function exportGSTReport() {
+  const db=loadLocal(); const records=db.finance||[];
+  if(!records.length){ showToast('No finance records'); return; }
+  const quarters=['Q1 — Jul to Sep','Q2 — Oct to Dec','Q3 — Jan to Mar','Q4 — Apr to Jun'];
+  let csv='"BAS GST Report — '+todayStr()+'"\n\n';
+  quarters.forEach(q=>{
+    const qr=records.filter(r=>r.basQuarter===q);
+    if(!qr.length) return;
+    csv+='"'+q+'"\n';
+    csv+='"Type","Description","Supplier","Amount","GST Status","GST Amount","Ex-GST"\n';
+    qr.forEach(r=>{
+      const exGst=(parseFloat(r.amount||0)-parseFloat(r.gstAmount||0)).toFixed(2);
+      csv+=[r.type,r.description,r.supplier,r.amount,r.gstStatus,r.gstAmount||'0',exGst].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(',')+  '\n';
+    });
+    const gstCol=qr.filter(r=>r.type==='Income'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+    const gstPd=qr.filter(r=>r.type==='Expense'&&r.gstStatus==='GST inclusive (10%)').reduce((a,r)=>a+parseFloat(r.gstAmount||0),0);
+    csv+='"","","","","GST collected","'+gstCol.toFixed(2)+'"\n';
+    csv+='"","","","","GST credits","'+gstPd.toFixed(2)+'"\n';
+    csv+='"","","","","NET GST OWING","'+(gstCol-gstPd).toFixed(2)+'"\n\n';
+  });
+  dlBlob(new Blob([csv],{type:'text/csv'}),'gst_report_'+todayStr()+'.csv');
+  showToast('GST report exported');
+}
+
+function exportUnreconciled() {
+  const db=loadLocal(); const records=(db.finance||[]).filter(r=>r.reconciled!=='Yes — reconciled');
+  if(!records.length){ showToast('All entries reconciled ✓'); return; }
+  const headers=['Date','Type','Description','Supplier','Amount','GST Amount','Reconciled Status','Notes'];
+  const rows=records.map(r=>[r.date,r.type,r.description,r.supplier,r.amount,r.gstAmount||'0',r.reconciled,r.notes].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(','));
+  const csv=[headers.map(h=>'"'+h+'"').join(','),...rows].join('\n');
+  dlBlob(new Blob([csv],{type:'text/csv'}),'unreconciled_'+todayStr()+'.csv');
+  showToast('Unreconciled entries exported ('+records.length+' items)');
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+
+function todayStr(){ return new Date().toISOString().split('T')[0]; }
+function fmtDate(d){ if(!d) return ''; const p=d.split('-'); if(p.length<3) return d; return p[2]+'/'+p[1]+'/'+p[0]; }
+function esc(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function emptyState(name){ return `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No records yet</div><div class="empty-sub">Add your first ${esc(name)} entry using the button above</div></div>`; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); editingId=null; editingFormKey=null; editingIsCustom=false; editingCustomSectionId=null; }
+function handleOverlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+
+// ═══════════════════════════════════════════════════════
+// PHOTO SYSTEM
+// ═══════════════════════════════════════════════════════
+
+const UPLOAD_QUEUE_KEY = 'farmUploadQueue_v1';
+let draftPhotos = []; // [{thumb, url, status:'local'|'uploading'|'uploaded'|'queued', cloudUrl, recordId, photoId}]
+let lightboxUrl = '';
+
+function loadUploadQueue() {
+  try { return JSON.parse(localStorage.getItem(UPLOAD_QUEUE_KEY)) || []; } catch(e) { return []; }
+}
+function saveUploadQueue(q) { localStorage.setItem(UPLOAD_QUEUE_KEY, JSON.stringify(q)); }
+
+function getCloudinaryConfig() {
+  const s = loadSettings();
+  return { cloudName: s.cloudinaryCloud||'', uploadPreset: s.cloudinaryPreset||'' };
+}
+
+// Compress image to thumbnail (max 400px, ~30KB)
+function compressImage(file, maxPx, quality) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality||0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Upload to Cloudinary, return secure URL or null
+async function uploadToCloudinary(dataUrl, photoId) {
+  const { cloudName, uploadPreset } = getCloudinaryConfig();
+  if (!cloudName || !uploadPreset) return null;
+  try {
+    const blob = await (await fetch(dataUrl)).blob();
+    const fd = new FormData();
+    fd.append('file', blob, photoId + '.jpg');
+    fd.append('upload_preset', uploadPreset);
+    fd.append('public_id', 'farm_records/' + photoId);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, { method:'POST', body:fd });
+    if (!res.ok) throw new Error('Upload failed');
+    const json = await res.json();
+    return json.secure_url || null;
+  } catch(e) {
+    console.warn('Cloudinary upload error:', e);
+    return null;
+  }
+}
+
+// Process upload queue — tries all queued items
+async function processUploadQueue() {
+  const { cloudName, uploadPreset } = getCloudinaryConfig();
+  if (!cloudName || !uploadPreset) return;
+  const queue = loadUploadQueue();
+  if (!queue.length) return;
+  const db = loadLocal();
+  let changed = false;
+  for (const item of queue) {
+    const cloudUrl = await uploadToCloudinary(item.thumb, item.photoId);
+    if (cloudUrl) {
+      // Update record in DB
+      const key = item.dbKey;
+      if (db[key]) {
+        const rec = db[key].find(r => r.id === item.recordId);
+        if (rec && rec._photos) {
+          const ph = rec._photos.find(p => p.id === item.photoId);
+          if (ph) { ph.cloudUrl = cloudUrl; ph.status = 'uploaded'; changed = true; }
+        }
+      }
+      // Remove from queue
+      queue.splice(queue.indexOf(item), 1);
+    }
+  }
+  if (changed) saveLocal(db);
+  saveUploadQueue(queue);
+  updateQueueBadge();
+}
+
+function updateQueueBadge() {
+  const q = loadUploadQueue();
+  document.querySelectorAll('.queue-badge').forEach(el => {
+    el.textContent = q.length;
+    el.style.display = q.length ? 'inline' : 'none';
+  });
+}
+
+// Called when user picks files in the record modal
+async function handlePhotoFiles(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+  for (const file of files) {
+    const photoId = 'ph_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    const thumb = await compressImage(file, 400, 0.75);
+    draftPhotos.push({ id: photoId, thumb, cloudUrl: null, status: 'local' });
+  }
+  renderPhotoGrid('draftPhotoGrid');
+  event.target.value = '';
+}
+
+function triggerPhotoPicker() {
+  document.getElementById('globalPhotoInput').click();
+}
+
+function renderPhotoGrid(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  let html = draftPhotos.map((p, i) => `
+    <div class="photo-thumb-wrap">
+      <img class="photo-thumb" src="${p.thumb}" onclick="openLightbox('${p.thumb}','${p.cloudUrl||''}')" alt="Photo"/>
+      <button class="photo-thumb-del" onclick="removeDraftPhoto(${i})">✕</button>
+      <span class="photo-thumb-status ${p.status==='uploaded'?'uploaded':p.status==='uploading'?'uploading':'queued'}">${p.status==='uploaded'?'✓':p.status==='uploading'?'…':'⏳'}</span>
+    </div>`).join('');
+  html += `<button class="photo-add-btn" onclick="triggerPhotoPicker()"><span class="photo-add-icon">📷</span><span>Add photo</span></button>`;
+  el.innerHTML = html;
+}
+
+function removeDraftPhoto(i) {
+  draftPhotos.splice(i, 1);
+  renderPhotoGrid('draftPhotoGrid');
+}
+
+// Inject photo picker into record modal body
+function injectPhotoPicker(existingPhotos) {
+  draftPhotos = existingPhotos ? JSON.parse(JSON.stringify(existingPhotos)) : [];
+  const body = document.getElementById('recordModalBody');
+  if (!body) return;
+  const picker = document.createElement('div');
+  picker.className = 'photo-picker';
+  picker.innerHTML = `<div class="photo-picker-label">Photos</div><div class="photo-grid" id="draftPhotoGrid"></div>`;
+  body.appendChild(picker);
+  renderPhotoGrid('draftPhotoGrid');
+}
+
+// Save photos: start uploads, add to queue if offline/fails
+async function savePhotosToRecord(record, dbKey) {
+  if (!draftPhotos.length) { record._photos = record._photos || []; return; }
+  const { cloudName, uploadPreset } = getCloudinaryConfig();
+  const queue = loadUploadQueue();
+  const saved = [];
+  for (const p of draftPhotos) {
+    if (p.status === 'uploaded' && p.cloudUrl) { saved.push(p); continue; }
+    p.status = 'uploading';
+    let cloudUrl = null;
+    if (cloudName && uploadPreset) {
+      cloudUrl = await uploadToCloudinary(p.thumb, p.id);
+    }
+    if (cloudUrl) {
+      p.cloudUrl = cloudUrl; p.status = 'uploaded';
+    } else {
+      p.status = 'queued';
+      // Add to upload queue for retry
+      if (!queue.find(q => q.photoId === p.id)) {
+        queue.push({ photoId: p.id, thumb: p.thumb, recordId: record.id, dbKey });
+      }
+    }
+    saved.push(p);
+  }
+  record._photos = saved.map(p => ({ id:p.id, thumb:p.thumb, cloudUrl:p.cloudUrl||null, status:p.status }));
+  saveUploadQueue(queue);
+  updateQueueBadge();
+}
+
+// Render photo strip on a record card
+function renderCardPhotos(photos, recordId) {
+  if (!photos || !photos.length) return '';
+  const show = photos.slice(0, 3);
+  const extra = photos.length - 3;
+  let html = '<div class="card-photos">';
+  show.forEach(p => {
+    const fullUrl = p.cloudUrl || p.thumb;
+    html += `<img class="card-photo" src="${p.thumb}" onclick="openLightbox('${p.thumb}','${p.cloudUrl||''}')" alt="Photo"/>`;
+  });
+  if (extra > 0) html += `<div class="card-photo-count">+${extra} more</div>`;
+  html += '</div>';
+  return html;
+}
+
+// Lightbox
+function openLightbox(thumbUrl, cloudUrl) {
+  lightboxUrl = cloudUrl || thumbUrl;
+  document.getElementById('lightboxImg').src = thumbUrl;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function closeLightboxOverlay(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+function openFullPhoto() { if (lightboxUrl) window.open(lightboxUrl, '_blank'); }
+
+// Process queue whenever online
+window.addEventListener('online', () => {
+  processUploadQueue();
+  const c = getCloudConfig(); if (c.apiKey && c.binId) doSync(true);
+});
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+showSection('dashboard');
+// Auto-sync on load if configured
+const _initCfg=getCloudConfig();
+if(_initCfg.apiKey&&_initCfg.binId){ setSyncStatus('syncing'); doSync(true); }
+</script>
+</body>
+</html>
