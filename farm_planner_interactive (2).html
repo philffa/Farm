@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olive Farm — Interactive Weekly Planner</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap');
+:root {
+  --bg: #f5f2eb;
+  --bg2: #ede9df;
+  --bg3: #e4dfd3;
+  --ink: #1e1c17;
+  --ink2: #5a5850;
+  --ink3: #9a9790;
+  --border: #d4cfC4;
+  --border2: #e8e4da;
+  --accent: #5c6b3a;
+  --accent2: #8a6c2a;
+  --danger: #8b3a2a;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.06);
+  --r: 8px;
+  --r2: 4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);min-height:100vh}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--ink);padding:20px 20px 60px;max-width:1260px;margin:0 auto}
+
+/* Header */
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;gap:16px;flex-wrap:wrap}
+.hdr-left h1{font-family:'Instrument Serif',serif;font-size:26px;font-weight:400;letter-spacing:-0.3px;color:var(--ink)}
+.hdr-left p{font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.6}
+.hdr-right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* Toolbar */
+.toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);font-size:11px}
+.toolbar-section{display:flex;align-items:center;gap:6px}
+.toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 2px}
+.tb-label{color:var(--ink3);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.tb-btn{padding:4px 10px;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg);color:var(--ink2);cursor:pointer;font-family:'DM Mono',monospace;font-size:10px;transition:all 0.12s;white-space:nowrap}
+.tb-btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tb-btn.danger:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.tb-btn.accent{background:var(--accent);color:white;border-color:var(--accent)}
+.tb-btn.accent:hover{opacity:0.85}
+.tb-btn:disabled{opacity:0.35;cursor:not-allowed}
+.shift-select{padding:4px 6px;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer}
+
+/* Month nav */
+.nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.nav-btn{padding:4px 11px;font-size:11px;border:1px solid var(--border);border-radius:20px;background:var(--bg);color:var(--ink2);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.12s}
+.nav-btn:hover{border-color:var(--ink2)}
+.nav-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Planner */
+.planner{display:none}
+.planner.show{display:block}
+.p-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:12px}
+.p-title{font-family:'Instrument Serif',serif;font-size:18px;font-weight:400;color:var(--ink)}
+.p-meta{font-size:10px;color:var(--ink3)}
+.seasonal-note{font-size:10px;color:var(--ink2);background:var(--bg2);padding:7px 11px;border-radius:var(--r2);margin-bottom:10px;line-height:1.6;border-left:2px solid var(--accent)}
+
+/* Grid */
+.week-grid{display:grid;grid-template-columns:72px repeat(7,minmax(0,1fr));border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--border2)}
+.wg-head{background:var(--bg2);font-size:10px;font-weight:500;color:var(--ink2);padding:7px 5px;text-align:center;border-bottom:1px solid var(--border);position:relative;user-select:none}
+.wg-head:first-child{border-right:1px solid var(--border)}
+.day-head-inner{display:flex;align-items:center;justify-content:center;gap:5px}
+.push-day-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--ink3);cursor:pointer;font-size:9px;line-height:1;transition:all 0.12s;flex-shrink:0}
+.push-day-btn:hover{background:var(--accent2);color:white;border-color:var(--accent2)}
+.wg-time{background:var(--bg2);font-size:9px;color:var(--ink3);padding:5px 6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border2);display:flex;align-items:flex-start;font-weight:500;white-space:nowrap;padding-top:8px}
+.wg-cell{font-size:10px;padding:4px 4px;border-right:1px solid var(--border2);border-bottom:1px solid var(--border2);min-height:56px;background:var(--bg);transition:background 0.12s;position:relative}
+.wg-cell:last-child{border-right:none}
+.wg-cell.empty{background:var(--bg2);opacity:0.7}
+.wg-cell.drag-over{background:#e8f0da !important;outline:2px dashed var(--accent);outline-offset:-2px}
+.wg-cell.drag-over-invalid{background:#fce8e4 !important;outline:2px dashed var(--danger);outline-offset:-2px}
+
+/* Tasks */
+.task{display:flex;align-items:flex-start;justify-content:space-between;gap:3px;padding:2px 4px;border-radius:3px;margin-bottom:2px;font-size:10px;line-height:1.35;cursor:grab;position:relative;transition:opacity 0.12s, transform 0.12s;user-select:none}
+.task:active{cursor:grabbing;opacity:0.7;transform:scale(0.97)}
+.task.dragging{opacity:0.35}
+.task.infreq{font-style:italic}
+.task-text{flex:1;min-width:0}
+.task-actions{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity 0.12s}
+.task:hover .task-actions{opacity:1}
+.ta-btn{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:2px;border:none;cursor:pointer;font-size:8px;line-height:1;padding:0;background:rgba(0,0,0,0.08);color:inherit;transition:background 0.1s}
+.ta-btn:hover{background:rgba(0,0,0,0.22)}
+.freq{display:inline-block;font-size:8px;padding:0 3px;border-radius:2px;font-weight:500;margin-left:2px;vertical-align:middle;flex-shrink:0}
+.fd{background:#daf0e6;color:#095040}
+.fw{background:#daeaf7;color:#0b3e6e}
+.fm{background:#faeada;color:#5e3506}
+.fs{background:#fae6e0;color:#6b2710}
+.fo{background:#ede9e0;color:#3e3d38}
+.t-green{background:#daf0e6;color:#095040}
+.t-amber{background:#faeada;color:#5e3506}
+.t-blue{background:#daeaf7;color:#0b3e6e}
+.t-coral{background:#fae6e0;color:#6b2710}
+.t-purple{background:#ebebfc;color:#332e7c}
+.t-gray{background:#ede9e0;color:#3e3d38}
+.t-sage{background:#e5f0d8;color:#224808}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;font-size:10px;color:var(--ink2);align-items:center}
+.li{display:flex;align-items:center;gap:3px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;z-index:9999;transition:transform 0.2s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Changed indicator */
+.task.moved{outline:1.5px dashed var(--accent2);outline-offset:1px}
+.task.moved::before{content:'↕';position:absolute;top:-1px;right:-1px;font-size:7px;background:var(--accent2);color:white;border-radius:2px;padding:0 2px;line-height:14px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg);border-radius:var(--r);padding:24px;max-width:360px;width:90%;box-shadow:var(--shadow)}
+.modal h3{font-family:'Instrument Serif',serif;font-size:18px;margin-bottom:8px}
+.modal p{font-size:11px;color:var(--ink2);line-height:1.6;margin-bottom:16px}
+.modal-row{display:flex;gap:8px;justify-content:flex-end}
+.modal-btn{padding:7px 16px;border-radius:var(--r2);border:1px solid var(--border);background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.12s}
+.modal-btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.modal-btn:hover{opacity:0.8}
+
+/* Task detail panel */
+.td-overlay{position:fixed;inset:0;background:rgba(20,18,12,0.55);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;backdrop-filter:blur(2px)}
+.td-overlay.show{display:flex}
+.td-panel{background:var(--bg);border-radius:12px;width:100%;max-width:560px;box-shadow:0 8px 40px rgba(0,0,0,0.18),0 2px 8px rgba(0,0,0,0.1);display:flex;flex-direction:column;position:relative;animation:panelIn 0.18s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.td-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--border2)}
+.td-header-left{flex:1;min-width:0}
+.td-tag-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.td-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.1s}
+.td-close:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.td-title-input{font-family:'Instrument Serif',serif;font-size:18px;font-weight:400;color:var(--ink);border:none;background:transparent;width:100%;outline:none;padding:0;line-height:1.3}
+.td-title-input:focus{background:var(--bg2);border-radius:4px;padding:2px 6px;margin:-2px -6px}
+.td-body{padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.td-section{display:flex;flex-direction:column;gap:6px}
+.td-section-label{font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3);font-weight:500}
+.td-meta-row{display:flex;gap:8px;flex-wrap:wrap}
+.td-meta-chip{display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);font-size:10px;color:var(--ink2);cursor:pointer;transition:all 0.1s;white-space:nowrap}
+.td-meta-chip:hover{border-color:var(--ink2)}
+.td-meta-chip select,.td-meta-chip input[type=number]{border:none;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink);outline:none;cursor:pointer;width:auto}
+/* Notes */
+.td-notes{width:100%;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg);padding:8px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);resize:vertical;min-height:64px;line-height:1.6;transition:border 0.1s}
+.td-notes:focus{outline:none;border-color:var(--accent)}
+/* Action steps */
+.steps-list{display:flex;flex-direction:column;gap:4px}
+.step-row{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--r2);border:1px solid var(--border2);background:var(--bg);transition:border 0.1s}
+.step-row:focus-within{border-color:var(--accent)}
+.step-row.done .step-text{text-decoration:line-through;color:var(--ink3)}
+.step-check{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;appearance:none;background:var(--bg);transition:all 0.1s;position:relative}
+.step-check:checked{background:var(--accent);border-color:var(--accent)}
+.step-check:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:white;line-height:1}
+.step-text{flex:1;border:none;background:transparent;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);outline:none;padding:0}
+.step-drag-handle{color:var(--ink3);cursor:grab;font-size:12px;opacity:0.4;flex-shrink:0;user-select:none}
+.step-drag-handle:hover{opacity:1}
+.step-del{width:16px;height:16px;border:none;background:transparent;color:var(--ink3);cursor:pointer;font-size:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:2px;opacity:0;transition:opacity 0.1s}
+.step-row:hover .step-del{opacity:1}
+.step-del:hover{background:var(--danger);color:white;opacity:1}
+.add-step-btn{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--r2);border:1px dashed var(--border);background:transparent;color:var(--ink3);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.12s;width:100%;text-align:left}
+.add-step-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* Save panel */
+.td-footer{padding:14px 20px;border-top:1px solid var(--border2);display:flex;flex-direction:column;gap:10px}
+.td-copy-section{display:flex;flex-direction:column;gap:6px}
+.td-copy-label{font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3)}
+.td-copy-row{display:flex;flex-wrap:wrap;gap:5px}
+.copy-chip{padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);font-size:10px;color:var(--ink2);cursor:pointer;transition:all 0.1s;font-family:'DM Mono',monospace}
+.copy-chip:hover{border-color:var(--accent);color:var(--accent)}
+.copy-chip.selected{background:var(--accent);color:white;border-color:var(--accent)}
+.copy-chip.select-all{border-style:dashed}
+.td-footer-btns{display:flex;gap:8px;justify-content:flex-end}
+.td-btn{padding:7px 18px;border-radius:var(--r2);border:1px solid var(--border);background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.12s}
+.td-btn:hover{background:var(--bg2)}
+.td-btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.td-btn.primary:hover{opacity:0.85}
+.td-btn.danger{border-color:var(--danger);color:var(--danger)}
+.td-btn.danger:hover{background:var(--danger);color:white}
+/* has-notes indicator */
+.task.has-detail::after{content:'·';position:absolute;bottom:2px;right:3px;font-size:10px;color:var(--ink3);line-height:1}
+
+/* ── Project / Enterprise builder ────────────────────────────────────────── */
+.pb-overlay{position:fixed;inset:0;background:rgba(20,18,12,0.6);z-index:3000;display:none;align-items:flex-start;justify-content:center;padding:32px 16px 40px;overflow-y:auto;backdrop-filter:blur(3px)}
+.pb-overlay.show{display:flex}
+.pb-panel{background:var(--bg);border-radius:14px;width:100%;max-width:620px;box-shadow:0 12px 48px rgba(0,0,0,0.22);animation:panelIn 0.2s ease;display:flex;flex-direction:column}
+.pb-head{padding:20px 22px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.pb-head-left{flex:1}
+.pb-title-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.pb-icon{font-size:20px;line-height:1}
+.pb-head h2{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;color:var(--ink)}
+.pb-head p{font-size:10px;color:var(--ink3);line-height:1.5}
+.pb-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg2);color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.1s}
+.pb-close:hover{background:var(--danger);color:white;border-color:var(--danger)}
+
+/* Steps indicator */
+.pb-steps-bar{display:flex;align-items:center;gap:0;padding:0 22px;border-bottom:1px solid var(--border2)}
+.pb-step-tab{flex:1;padding:10px 4px;text-align:center;font-size:10px;color:var(--ink3);cursor:default;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap}
+.pb-step-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
+.pb-step-tab.done{color:var(--ink2)}
+
+/* Step pages */
+.pb-body{padding:20px 22px;min-height:300px;display:flex;flex-direction:column;gap:16px}
+.pb-page{display:none;flex-direction:column;gap:14px}
+.pb-page.active{display:flex}
+.pb-field{display:flex;flex-direction:column;gap:5px}
+.pb-label{font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3);font-weight:500}
+.pb-label span{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink3);margin-left:4px}
+.pb-input{border:1px solid var(--border);border-radius:var(--r2);padding:8px 10px;font-family:'DM Mono',monospace;font-size:12px;color:var(--ink);background:var(--bg);width:100%;transition:border 0.1s;outline:none}
+.pb-input:focus{border-color:var(--accent)}
+.pb-input.serif{font-family:'Instrument Serif',serif;font-size:16px}
+.pb-textarea{border:1px solid var(--border);border-radius:var(--r2);padding:8px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);background:var(--bg);width:100%;min-height:72px;resize:vertical;line-height:1.6;transition:border 0.1s;outline:none}
+.pb-textarea:focus{border-color:var(--accent)}
+.pb-row{display:flex;gap:10px;flex-wrap:wrap}
+.pb-row .pb-field{flex:1;min-width:120px}
+/* Type cards */
+.pb-type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pb-type-card{border:1.5px solid var(--border);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all 0.12s;background:var(--bg)}
+.pb-type-card:hover{border-color:var(--accent);background:var(--bg2)}
+.pb-type-card.selected{border-color:var(--accent);background:#f0f5e8}
+.pb-type-card h4{font-size:12px;font-weight:500;margin-bottom:3px;color:var(--ink)}
+.pb-type-card p{font-size:10px;color:var(--ink3);line-height:1.4}
+.pb-type-card .tc-icon{font-size:18px;margin-bottom:6px}
+/* Colour swatches */
+.pb-swatch-row{display:flex;gap:6px;flex-wrap:wrap}
+.pb-swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform 0.1s}
+.pb-swatch:hover{transform:scale(1.15)}
+.pb-swatch.selected{border-color:var(--ink);transform:scale(1.1)}
+/* Day/time schedule builder */
+.pb-schedule{display:flex;flex-direction:column;gap:6px}
+.pb-sched-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--border2);border-radius:var(--r2);background:var(--bg)}
+.pb-sched-day{font-size:10px;width:32px;color:var(--ink2);flex-shrink:0}
+.pb-sched-slot{flex:1;border:none;background:transparent;font-family:'DM Mono',monospace;font-size:10px;color:var(--ink);outline:none;padding:0}
+.pb-sched-toggle{width:32px;text-align:right}
+.pb-day-toggle{width:18px;height:18px;border-radius:3px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;appearance:none;background:var(--bg);transition:all 0.1s;position:relative}
+.pb-day-toggle:checked{background:var(--accent);border-color:var(--accent)}
+.pb-day-toggle:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:white;line-height:1}
+/* Month range */
+.pb-month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.pb-month-chip{padding:5px 4px;border-radius:var(--r2);border:1px solid var(--border);background:var(--bg2);font-size:10px;color:var(--ink2);cursor:pointer;text-align:center;transition:all 0.1s;font-family:'DM Mono',monospace}
+.pb-month-chip:hover{border-color:var(--accent)}
+.pb-month-chip.selected{background:var(--accent);color:white;border-color:var(--accent)}
+.pb-month-chip.in-range{background:#ddeec8;border-color:#a8c87a;color:var(--accent)}
+/* Review */
+.pb-review{display:flex;flex-direction:column;gap:8px}
+.pb-review-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border2);font-size:11px;gap:10px}
+.pb-review-row:last-child{border-bottom:none}
+.pb-review-label{color:var(--ink3);flex-shrink:0;width:110px}
+.pb-review-val{color:var(--ink);text-align:right;flex:1}
+.pb-preview-task{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;font-size:10px;margin:2px}
+
+/* Footer */
+.pb-footer{padding:14px 22px;border-top:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pb-footer-left{font-size:10px;color:var(--ink3)}
+.pb-footer-right{display:flex;gap:8px}
+.pb-btn{padding:7px 18px;border-radius:var(--r2);border:1px solid var(--border);background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.12s}
+.pb-btn:hover{background:var(--bg2)}
+.pb-btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.pb-btn.primary:hover{opacity:0.85}
+.pb-btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* Projects sidebar strip */
+.projects-strip{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;min-height:0}
+.proj-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:20px;font-size:10px;cursor:pointer;transition:opacity 0.1s;border:1px solid transparent}
+.proj-badge:hover{opacity:0.75}
+.proj-badge .pb-del{opacity:0;font-size:10px;margin-left:2px;transition:opacity 0.1s}
+.proj-badge:hover .pb-del{opacity:1}
+.proj-add-btn{padding:3px 10px;border-radius:20px;border:1px dashed var(--border);background:transparent;color:var(--ink3);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all 0.12s}
+.proj-add-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .toolbar,.nav,.hdr-right,.push-day-btn,.task-actions,.toast,.td-overlay{display:none!important}
+  .planner{display:block!important;page-break-after:always}
+  body{padding:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>Olive Farm — Weekly Planner</h1>
+    <p>658 Lefthand Branch Road, Lockyer Valley QLD &nbsp;·&nbsp; Drag tasks between days · ↕ push day forward · Shift seasons with controls below</p>
+  </div>
+</div>
+
+<!-- Projects strip -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap" id="projectsStrip">
+  <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink3)">Projects</span>
+  <div class="projects-strip" id="projBadges"></div>
+  <button class="proj-add-btn" onclick="openProjectBuilder()">＋ New project</button>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-section">
+    <span class="tb-label">Enterprise shift</span>
+    <select class="shift-select" id="shiftTarget">
+      <option value="all">All months</option>
+      <option value="current">Current month</option>
+      <option value="may">May</option><option value="june">June</option>
+      <option value="july">July</option><option value="aug">Aug</option>
+      <option value="sep">Sep</option><option value="oct">Oct</option>
+      <option value="nov">Nov</option><option value="dec">Dec</option>
+      <option value="jan">Jan</option><option value="feb">Feb</option>
+      <option value="mar">Mar</option><option value="apr">Apr</option>
+    </select>
+    <select class="shift-select" id="shiftFreq">
+      <option value="all">All tasks</option>
+      <option value="fs">Seasonal (S)</option>
+      <option value="fo">Once-off (O)</option>
+      <option value="fm">Monthly (M)</option>
+      <option value="fw">Weekly (W)</option>
+    </select>
+    <button class="tb-btn" onclick="shiftDays(-1)">← 1 day earlier</button>
+    <button class="tb-btn" onclick="shiftDays(1)">1 day later →</button>
+    <button class="tb-btn" onclick="shiftDays(7)">1 week later →→</button>
+  </div>
+  <div class="toolbar-sep"></div>
+  <div class="toolbar-section">
+    <span class="tb-label">History</span>
+    <button class="tb-btn" id="undoBtn" onclick="undo()" disabled>↩ Undo</button>
+    <button class="tb-btn danger" onclick="confirmReset()">Reset all</button>
+  </div>
+  <div class="toolbar-sep"></div>
+  <div class="toolbar-section">
+    <span class="tb-label">View</span>
+    <button class="tb-btn" onclick="window.print()">🖨 Print</button>
+    <button class="tb-btn" id="showMovedBtn" onclick="toggleMoved()">Show moved</button>
+  </div>
+</div>
+
+<div class="legend">
+  <span class="li"><span class="freq fd">D</span> daily</span>
+  <span class="li"><span class="freq fw">W</span> weekly</span>
+  <span class="li"><span class="freq fm">M</span> monthly</span>
+  <span class="li"><span class="freq fs">S</span> seasonal</span>
+  <span class="li"><span class="freq fo">O</span> once/as needed</span>
+  &nbsp;·&nbsp;
+  <span class="li"><span class="task t-green" style="display:inline-block;padding:1px 6px">daily care</span></span>
+  <span class="li"><span class="task t-amber" style="display:inline-block;padding:1px 6px">harvest/garden</span></span>
+  <span class="li"><span class="task t-blue" style="display:inline-block;padding:1px 6px">bees/aquaponics</span></span>
+  <span class="li"><span class="task t-coral" style="display:inline-block;padding:1px 6px">seasonal</span></span>
+  <span class="li"><span class="task t-purple" style="display:inline-block;padding:1px 6px">desk/admin</span></span>
+  <span class="li"><span class="task t-sage" style="display:inline-block;padding:1px 6px">tree/field</span></span>
+  <span class="li"><span class="task t-gray" style="display:inline-block;padding:1px 6px">build/setup</span></span>
+  &nbsp;·&nbsp;
+  <span class="li" style="font-style:italic;color:var(--ink3)">italics = monthly or less frequent</span>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="planners"></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ── Project Builder Panel ───────────────────────────────────────────────── -->
+<div class="pb-overlay" id="pbOverlay" onclick="pbOverlayClick(event)">
+<div class="pb-panel" id="pbPanel">
+  <div class="pb-head">
+    <div class="pb-head-left">
+      <div class="pb-title-row"><span class="pb-icon">🌿</span><h2 id="pbHeadTitle">New Project</h2></div>
+      <p>Define a new enterprise or short project, set its timeframe, and it'll appear as tasks on the planner.</p>
+    </div>
+    <button class="pb-close" onclick="closePB()">✕</button>
+  </div>
+  <div class="pb-steps-bar">
+    <div class="pb-step-tab active" id="pbtab0">① What</div>
+    <div class="pb-step-tab" id="pbtab1">② When</div>
+    <div class="pb-step-tab" id="pbtab2">③ Schedule</div>
+    <div class="pb-step-tab" id="pbtab3">④ Review</div>
+  </div>
+  <div class="pb-body">
+    <!-- Page 0: What -->
+    <div class="pb-page active" id="pbp0">
+      <div class="pb-field">
+        <div class="pb-label">Project name</div>
+        <input class="pb-input serif" id="pbName" placeholder="e.g. New irrigation system, Macadamia grafting run…" oninput="pbUpdateHead()" />
+      </div>
+      <div class="pb-field">
+        <div class="pb-label">Description <span style="font-style:italic;font-weight:400;color:var(--ink3);margin-left:4px">(optional)</span></div>
+        <textarea class="pb-textarea" id="pbDesc" placeholder="What does this involve? Any notes about goals, constraints, or dependencies…"></textarea>
+      </div>
+      <div class="pb-field">
+        <div class="pb-label">Type</div>
+        <div class="pb-type-row">
+          <div class="pb-type-card selected" id="pbtc-enterprise" onclick="pbSelectType('enterprise')">
+            <div class="tc-icon">🏗</div><h4>Enterprise</h4>
+            <p>Multi-month initiative — e.g. a new crop, infrastructure build, or long-term system setup</p>
+          </div>
+          <div class="pb-type-card" id="pbtc-project" onclick="pbSelectType('project')">
+            <div class="tc-icon">📋</div><h4>Project</h4>
+            <p>Shorter, bounded work — e.g. a fencing job, one-time install, market prep push</p>
+          </div>
+        </div>
+      </div>
+      <div class="pb-field">
+        <div class="pb-label">Colour</div>
+        <div class="pb-swatch-row" id="pbSwatches"></div>
+      </div>
+    </div>
+    <!-- Page 1: When -->
+    <div class="pb-page" id="pbp1">
+      <div class="pb-field">
+        <div class="pb-label">Timeframe — click start month, then end month</div>
+        <div class="pb-month-grid" id="pbMonthGrid"></div>
+      </div>
+      <div class="pb-row" id="pbWeekRangeRow" style="display:none">
+        <div class="pb-field">
+          <div class="pb-label">Start week</div>
+          <select class="pb-input" id="pbStartWeek"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select>
+        </div>
+        <div class="pb-field">
+          <div class="pb-label">End week</div>
+          <select class="pb-input" id="pbEndWeek"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4" selected>Week 4</option></select>
+        </div>
+      </div>
+      <div class="pb-field">
+        <div class="pb-label">Time slot <span style="font-style:italic;font-weight:400;color:var(--ink3);margin-left:4px">— which part of the day does this sit in?</span></div>
+        <select class="pb-input" id="pbTimeSlot"></select>
+      </div>
+    </div>
+    <!-- Page 2: Schedule -->
+    <div class="pb-page" id="pbp2">
+      <div class="pb-field">
+        <div class="pb-label">Which days should tasks appear?</div>
+        <div class="pb-schedule" id="pbSchedule"></div>
+      </div>
+      <div class="pb-field" style="margin-top:4px">
+        <div class="pb-label">Frequency tag</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="pbFreqRow"></div>
+      </div>
+    </div>
+    <!-- Page 3: Review -->
+    <div class="pb-page" id="pbp3">
+      <div class="pb-field">
+        <div class="pb-label">Review & confirm</div>
+        <div class="pb-review" id="pbReview"></div>
+      </div>
+      <div class="pb-field">
+        <div class="pb-label">Preview — tasks that will be added</div>
+        <div id="pbPreviewTasks" style="display:flex;flex-wrap:wrap;gap:4px;padding:8px;border:1px solid var(--border2);border-radius:var(--r2);background:var(--bg2);min-height:40px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="pb-footer">
+    <div class="pb-footer-left" id="pbFooterHint"></div>
+    <div class="pb-footer-right">
+      <button class="pb-btn" id="pbBackBtn" onclick="pbBack()" style="display:none">← Back</button>
+      <button class="pb-btn" onclick="closePB()">Cancel</button>
+      <button class="pb-btn primary" id="pbNextBtn" onclick="pbNext()">Next →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Task Detail Panel -->
+<div class="td-overlay" id="tdOverlay" onclick="tdOverlayClick(event)">
+  <div class="td-panel" id="tdPanel">
+    <div class="td-header">
+      <div class="td-header-left">
+        <div class="td-tag-row" id="tdTagRow"></div>
+        <input class="td-title-input" id="tdTitle" type="text" placeholder="Task name" />
+      </div>
+      <button class="td-close" onclick="closeTD()">✕</button>
+    </div>
+    <div class="td-body">
+      <div class="td-section">
+        <div class="td-section-label">Context</div>
+        <div class="td-meta-row" id="tdMetaRow"></div>
+      </div>
+      <div class="td-section">
+        <div class="td-section-label">Notes</div>
+        <textarea class="td-notes" id="tdNotes" placeholder="Any notes, reminders, or observations for this task…"></textarea>
+      </div>
+      <div class="td-section">
+        <div class="td-section-label">Action steps <span style="color:var(--ink3);font-size:9px;font-style:italic;margin-left:4px">— check off as you go, drag to reorder</span></div>
+        <div class="steps-list" id="tdSteps"></div>
+        <button class="add-step-btn" onclick="addStep()">＋ Add step</button>
+      </div>
+    </div>
+    <div class="td-footer">
+      <div class="td-copy-section">
+        <div class="td-copy-label">Also copy notes + steps to matching tasks in…</div>
+        <div class="td-copy-row" id="tdCopyRow"></div>
+      </div>
+      <div class="td-footer-btns">
+        <button class="td-btn danger" onclick="deleteTask()">Delete task</button>
+        <button class="td-btn" onclick="closeTD()">Cancel</button>
+        <button class="td-btn primary" onclick="saveTD()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <h3>Reset all changes?</h3>
+    <p>This will restore every task to its original day across all months. Your drag, shift, and push changes will be lost.</p>
+    <div class="modal-row">
+      <button class="modal-btn" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="resetAll()">Reset everything</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const MONTHS_DEF = [
+  {id:'may',name:'May',season:'Autumn',rise:'6:10',set:'5:15',hrs:'11h',
+   note:'Olive harvest is the dominant task — 4 to 6 weeks of intensive morning work. All admin moves to evening. First nasturtiums should be flowering.',
+   rows:[
+    {time:'6–7am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'7–9am',cells:[[{t:'Flower harvest + pack',c:'t-amber',f:'fw'}],[],[],[],[],[{t:'Market pack + label',c:'t-amber',f:'fw'}],[]]},
+    {time:'9am–1pm',cells:[[{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Sat market stall — Toowoomba',c:'t-coral',f:'fw'}],[{t:'Olive harvest (if not done)',c:'t-coral',f:'fs',infreq:true}]]},
+    {time:'1–5pm',cells:[[{t:'Y1: bed build',c:'t-gray',f:'fo',infreq:true}],[{t:'Toowoomba delivery run',c:'t-sage',f:'fw'}],[],[{t:'Garden maintenance',c:'t-amber',f:'fw'}],[{t:'Succession sow',c:'t-amber',f:'fw'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[{t:'Rest',c:'t-gray',f:'fo',infreq:true}]]},
+    {time:'6–8pm',cells:[[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}],[{t:'Olive curing bath check',c:'t-sage',f:'fd'}]]},
+    {time:'8–10pm',cells:[[{t:'Admin + invoices',c:'t-purple',f:'fw'}],[{t:'Farm app records',c:'t-purple',f:'fd'}],[{t:'Delivery invoice prep',c:'t-purple',f:'fw'}],[{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],[{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly records review',c:'t-purple',f:'fw'}],[{t:'Seed order / planning',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+  {id:'june',name:'June',season:'Autumn',rise:'6:45',set:'5:05',hrs:'10.5h',
+   note:'Shortest working days of the year. Olive harvest winds down. Hive inspections need midday warmth — only unavoidable 9–5 task this month.',
+   rows:[
+    {time:'6:45–7:30am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'7:30–9:30am',cells:[[{t:'Flower + herb harvest',c:'t-amber',f:'fw'}],[],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Garden maintenance',c:'t-amber',f:'fw'}],[{t:'Succession sow',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[]]},
+    {time:'9:30am–12pm',cells:[[{t:'Olive pruning',c:'t-sage',f:'fs',infreq:true}],[{t:'Garlic bed prep',c:'t-sage',f:'fo',infreq:true}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Olive pruning',c:'t-sage',f:'fs',infreq:true}],[{t:'Ginger bed mulch',c:'t-sage',f:'fm',infreq:true}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk + check',c:'t-sage',f:'fw'}]]},
+    {time:'12–1pm',cells:[[{t:'Hive inspection (warmth needed)',c:'t-blue',f:'fw'}],[],[],[{t:'Hive inspection',c:'t-blue',f:'fw'}],[],[],[]]},
+    {time:'1–5pm',cells:[[{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],[{t:'Return from market',c:'t-gray',f:'fw'}],[{t:'Rest / maintenance',c:'t-gray',f:'fo',infreq:true}]]},
+    {time:'6–10pm',cells:[[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Admin + invoices',c:'t-purple',f:'fw'}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'DAF logs',c:'t-purple',f:'fw'}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Weekly review',c:'t-purple',f:'fw'}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Invoices + scan',c:'t-purple',f:'fw'}],[{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Planning + rest',c:'t-purple',f:'fw'}]]},
+  ]},
+  {id:'july',name:'July',season:'Winter',rise:'6:53',set:'5:13',hrs:'10.5h',
+   note:'Quieter month operationally. Good time for garlic planting, ginger bed prep, and infrastructure work. Hive inspections continue at midday.',
+   rows:[
+    {time:'6:53–7:45am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'7:45–9:30am',cells:[[{t:'Flower + veg harvest',c:'t-amber',f:'fw'}],[],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Garden maintenance',c:'t-amber',f:'fw'}],[{t:'Sat market box prep',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[]]},
+    {time:'9:30–11:30am',cells:[[{t:'Garlic planting',c:'t-sage',f:'fo',infreq:true}],[{t:'Rhizome bed prep',c:'t-sage',f:'fm',infreq:true}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Finger lime check',c:'t-sage',f:'fw'}],[{t:'Infrastructure work',c:'t-gray',f:'fo',infreq:true}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk',c:'t-sage',f:'fw'}]]},
+    {time:'11:30–1pm',cells:[[{t:'Hive inspection',c:'t-blue',f:'fw'}],[],[],[{t:'Hive inspection',c:'t-blue',f:'fw'}],[],[],[]]},
+    {time:'1–5pm',cells:[[{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'6–10pm',cells:[[{t:'Delivery planning + buyer comms',c:'t-purple',f:'fw'}],[{t:'Farm app records',c:'t-purple',f:'fd'}],[{t:'Admin + invoices',c:'t-purple',f:'fw'}],[{t:'DAF logs',c:'t-purple',f:'fw'}],[{t:'BAS + financial records',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly records review',c:'t-purple',f:'fw'}],[{t:'Seed order planning',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+  {id:'aug',name:'Aug',season:'Winter',rise:'6:30',set:'5:30',hrs:'11h',
+   note:'Best month for olive pruning. Peak cool-season flower and veg production. Aquaponics fully operational from Y2. Olive leaf drying needs daytime supervision.',
+   rows:[
+    {time:'6:30–7:15am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'7:15–9:15am',cells:[[{t:'Peak flower + veg harvest',c:'t-amber',f:'fw'}],[],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Peak flower + veg harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk + check',c:'t-amber',f:'fw'}]]},
+    {time:'9:15am–12pm',cells:[[{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],[{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],[{t:'Toowoomba delivery + Y2: aquaponics harvest',c:'t-sage',f:'fw'}],[{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],[{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property maintenance',c:'t-gray',f:'fw'}]]},
+    {time:'12–2pm',cells:[[{t:'Olive leaf drying — turn trays',c:'t-sage',f:'fs',infreq:true}],[{t:'Olive leaf drying — turn trays',c:'t-sage',f:'fs',infreq:true}],[{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],[{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],[{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'2–5:30pm',cells:[[{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}]]},
+    {time:'6–10pm',cells:[[{t:'Market Sat prep + box labels',c:'t-purple',f:'fw'}],[{t:'Farm records + invoice scan',c:'t-purple',f:'fw'}],[{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],[{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],[{t:'BAS Q1 prep (Jul–Sep)',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review + records',c:'t-purple',f:'fw'}],[{t:'Crop plan review + seed order',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+  {id:'sep',name:'Sep',season:'Spring',rise:'6:00',set:'5:50',hrs:'12h',
+   note:'Transition month. Cool-season crops finishing, summer crops going in. First zucchini, beans, basil planted. Wasabi establishing. Aquaponics first harvests from Y2.',
+   rows:[
+    {time:'6:00–6:45am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'6:45–8:30am',cells:[[{t:'Final cool-season harvest',c:'t-amber',f:'fw'}],[],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Summer succession sow',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'8:30–11am',cells:[[{t:'Plant zucchini + beans',c:'t-sage',f:'fo',infreq:true}],[{t:'Plant basil + butterfly pea',c:'t-sage',f:'fo',infreq:true}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Wasabi shade structure',c:'t-sage',f:'fo',infreq:true}],[{t:'Vanilla vine training',c:'t-sage',f:'fw'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk + pest check',c:'t-sage',f:'fw'}]]},
+    {time:'11am–1pm',cells:[[{t:'Y2+: aquaponics harvest pack',c:'t-blue',f:'fw'}],[{t:'Y2+: aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics harvest',c:'t-blue',f:'fw'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}]]},
+    {time:'1–5:50pm',cells:[[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Rest / aquaponics check',c:'t-blue',f:'fd'}],[{t:'Rest / aquaponics check',c:'t-blue',f:'fd'}]]},
+    {time:'6–10pm',cells:[[{t:'DAF compliance logs',c:'t-purple',f:'fw'}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],[{t:'Chemical register update',c:'t-purple',f:'fw'}],[{t:'Weekly financial review',c:'t-purple',f:'fw'}],[{t:'Records + market recount',c:'t-purple',f:'fw'}],[{t:'Planning + seed orders',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+  {id:'oct',name:'Oct',season:'Spring',rise:'5:30',set:'6:15',hrs:'13h',
+   note:'Heat building. Zucchini flowers must be harvested before 10am — only truly time-critical morning task. Hive inspections still need midday warmth.',
+   rows:[
+    {time:'5:30–6:15am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'6:15–8am',cells:[[{t:'Zucchini flower harvest (closes 10am)',c:'t-amber',f:'fw'}],[{t:'Herb + butterfly pea harvest',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Zucchini flower harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'8–10:30am',cells:[[{t:'Finger lime + macadamia check',c:'t-sage',f:'fw'}],[{t:'Hemp irrigation check',c:'t-sage',f:'fw'}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Garden pest management',c:'t-amber',f:'fw'}],[{t:'Vanilla vine training',c:'t-sage',f:'fw'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property maintenance',c:'t-gray',f:'fw'}]]},
+    {time:'10:30am–12pm',cells:[[{t:'Hive inspection (spring build-up)',c:'t-blue',f:'fw'}],[{t:'Y2+: aquaponics harvest',c:'t-blue',f:'fw'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],[{t:'Hive inspection',c:'t-blue',f:'fw'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}]]},
+    {time:'12–6:10pm',cells:[[{t:'Y1: remaining infra — shade work',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],[{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],[],[]]},
+    {time:'6:30–10pm',cells:[[{t:'Delivery pack + invoice prep',c:'t-purple',f:'fw'}],[{t:'Farm records + invoice scan',c:'t-purple',f:'fw'}],[{t:'Admin + buyer emails',c:'t-purple',f:'fw'}],[{t:'DAF logs + compliance',c:'t-purple',f:'fw'}],[{t:'BAS Q2 Oct–Dec open',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review',c:'t-purple',f:'fw'}],[]]},
+  ]},
+  {id:'nov',name:'Nov',season:'Spring',rise:'5:08',set:'6:35',hrs:'13.5h',
+   note:'Very early starts. DAF hemp inspectors may call during business hours — keep mornings free for outdoor work and stay available midday. Afternoon heat extreme.',
+   rows:[
+    {time:'5:08–5:50am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'5:50–7:30am',cells:[[{t:'Flower + herb harvest',c:'t-amber',f:'fw'}],[{t:'Butterfly pea + zucchini flower',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Flower harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'7:30–10am',cells:[[{t:'Rhizome beds — weed + mulch',c:'t-sage',f:'fm',infreq:true}],[{t:'Aquaponics harvest (Y2+)',c:'t-blue',f:'fw'}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Hemp irrigation + check',c:'t-sage',f:'fw'}],[{t:'Vanilla vine + finger lime',c:'t-sage',f:'fw'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk',c:'t-sage',f:'fw'}]]},
+    {time:'10am–12pm',cells:[[{t:'DAF hemp compliance (available for inspector)',c:'t-coral',f:'fs',infreq:true}],[{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],[{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],[{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],[{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'12–4:30pm',cells:[[{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],[{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],[{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],[{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],[{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],[],[]]},
+    {time:'4:30–6:30pm',cells:[[{t:'Evening garden round + pest bait',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}]]},
+    {time:'6:30–10pm',cells:[[{t:'Admin + invoice scan',c:'t-purple',f:'fw'}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],[{t:'Delivery invoices + buyer comms',c:'t-purple',f:'fw'}],[{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],[{t:'Market records + weekly review',c:'t-purple',f:'fw'}],[]]},
+  ]},
+  {id:'dec',name:'Dec',season:'Summer',rise:'4:59',set:'6:52',hrs:'13h 53m',
+   note:'Earliest starts of the year. All physical work done before 10:30am. Hemp harvest is a 2–3 week intensive burst. Afternoons are strictly indoor/shade only.',
+   rows:[
+    {time:'4:59–5:45am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'5:45–7:30am',cells:[[{t:'Full garden harvest before heat',c:'t-amber',f:'fw'}],[{t:'Zucchini flower + herb harvest',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Full garden harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden round',c:'t-amber',f:'fw'}]]},
+    {time:'7:30–10:30am',cells:[[{t:'Hemp harvest — finish before midday',c:'t-coral',f:'fs',infreq:true}],[{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Hemp harvest + Toowoomba delivery',c:'t-coral',f:'fs',infreq:true}],[{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Hemp harvest if behind',c:'t-coral',f:'fs',infreq:true}]]},
+    {time:'10:30am–4pm',cells:[[{t:'Shade: aquaponics harvest + cool-room pack (Y2+)',c:'t-blue',f:'fw'}],[{t:'Shade: aquaponics + equipment',c:'t-blue',f:'fw'}],[{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],[{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],[{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'4–6:45pm',cells:[[{t:'Evening garden round + irrigation check',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}]]},
+    {time:'7–10pm',cells:[[{t:'Invoicing + Christmas delivery planning',c:'t-purple',f:'fw'}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],[{t:'DAF logs + compliance records',c:'t-purple',f:'fw'}],[{t:'BAS Q2 close + invoice scan',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review + records',c:'t-purple',f:'fw'}],[]]},
+  ]},
+  {id:'jan',name:'Jan',season:'Summer',rise:'5:05',set:'6:52',hrs:'13h 47m',
+   note:'Hottest month. Aquaponics water temp is critical — check twice daily. Afternoon outdoor work is off the table. Honey extraction preparation begins.',
+   rows:[
+    {time:'5:05–5:50am',cells:[[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'5:50–7:30am',cells:[[{t:'Zucchini flower + herb harvest',c:'t-amber',f:'fw'}],[{t:'Butterfly pea + flower harvest',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Garden harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'7:30–9:30am',cells:[[{t:'Aquaponics — water temp critical check',c:'t-blue',f:'fd'}],[{t:'Aquaponics — full water test',c:'t-blue',f:'fd'}],[{t:'Aquaponics — harvest pack',c:'t-blue',f:'fw'}],[{t:'Aquaponics — water test',c:'t-blue',f:'fd'}],[{t:'Aquaponics — water test',c:'t-blue',f:'fd'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Aquaponics — check',c:'t-blue',f:'fd'}]]},
+    {time:'9:30am–4:30pm',cells:[[{t:'Shade: equipment repairs + honey prep',c:'t-gray',f:'fm',infreq:true}],[{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],[{t:'Shade: Toowoomba delivery + aquaponics',c:'t-blue',f:'fw'}],[{t:'Shade: equipment + cold room prep',c:'t-gray',f:'fw'}],[{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'4:30–6:45pm',cells:[[{t:'Evening garden round + irrigation',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}]]},
+    {time:'7–10pm',cells:[[{t:'Admin + invoice scanning',c:'t-purple',f:'fw'}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Buyer emails + delivery planning',c:'t-purple',f:'fw'}],[{t:'DAF logs + records',c:'t-purple',f:'fw'}],[{t:'BAS Q3 Jan–Mar open',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review',c:'t-purple',f:'fw'}],[]]},
+  ]},
+  {id:'feb',name:'Feb',season:'Summer',rise:'5:25',set:'6:40',hrs:'13h',
+   note:'Honey extraction happens twice a year — these are full-morning days. Vanilla hand pollination opens in Y4. BSFL feeding routine established from Y2.',
+   rows:[
+    {time:'5:25–6:10am',cells:[[{t:'Egg collection + BSFL feed (Y2+)',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}]]},
+    {time:'6:10–8:30am',cells:[[{t:'EXTRACTION DAY: honey harvest (Y2+)',c:'t-coral',f:'fs',infreq:true}],[{t:'Garden harvest + herb rounds',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Garden harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'8:30–10:30am',cells:[[{t:'Honey extraction continues',c:'t-coral',f:'fs',infreq:true}],[{t:'Vanilla vine — hand pollination (Y4+)',c:'t-sage',f:'fs',infreq:true}],[{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],[{t:'Vanilla + finger lime check',c:'t-sage',f:'fw'}],[{t:'Aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk',c:'t-sage',f:'fw'}]]},
+    {time:'10:30am–4:30pm',cells:[[{t:'Shade: honey bottling + labelling',c:'t-gray',f:'fs',infreq:true}],[{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],[{t:'Shade: Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Shade: equipment + cold room',c:'t-gray',f:'fw'}],[{t:'Shade: maintenance',c:'t-gray',f:'fw'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'4:30–6:30pm',cells:[[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round + irrigation',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}]]},
+    {time:'7–10pm',cells:[[{t:'Honey sales invoicing + records',c:'t-purple',f:'fs',infreq:true}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],[{t:'DAF logs',c:'t-purple',f:'fw'}],[{t:'BAS Q3 prep',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review',c:'t-purple',f:'fw'}],[]]},
+  ]},
+  {id:'mar',name:'Mar',season:'Autumn',rise:'5:45',set:'6:15',hrs:'12.5h',
+   note:'Rhizome and wasabi harvest. Wasabi must be delivered same day — the one unavoidable midday task. Cool-season succession sowing begins again in the evening.',
+   rows:[
+    {time:'5:45–6:30am',cells:[[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'6:30–8:30am',cells:[[{t:'Ginger + turmeric harvest, wash + pack',c:'t-sage',f:'fs',infreq:true}],[{t:'Garden harvest + herbs',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Ginger harvest',c:'t-sage',f:'fs',infreq:true}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'8:30–10:30am',cells:[[{t:'Wasabi harvest + immediate pack',c:'t-coral',f:'fw'}],[{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],[{t:'Aquaponics harvest (Y2+)',c:'t-blue',f:'fw'}],[{t:'Wasabi harvest + pack',c:'t-coral',f:'fw'}],[{t:'Aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk',c:'t-sage',f:'fw'}]]},
+    {time:'10:30am–2pm',cells:[[{t:'Toowoomba delivery — wasabi + aquaponics same run',c:'t-sage',f:'fw'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'2–6pm',cells:[[{t:'Cool-season succession sow — nasturtiums, violas',c:'t-amber',f:'fw'}],[{t:'Cool-season succession sow',c:'t-amber',f:'fw'}],[{t:'Cool-season sow',c:'t-amber',f:'fw'}],[{t:'Cool-season sow',c:'t-amber',f:'fw'}],[{t:'Cool-season sow + irrigation check',c:'t-amber',f:'fw'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[{t:'Evening garden round',c:'t-amber',f:'fd'}]]},
+    {time:'7–10pm',cells:[[{t:'Admin + rhizome sales invoices',c:'t-purple',f:'fw'}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'DAF logs + delivery invoices',c:'t-purple',f:'fw'}],[{t:'Records + financial review',c:'t-purple',f:'fw'}],[{t:'BAS Q3 finalise',c:'t-purple',f:'fm',infreq:true}],[{t:'Weekly review',c:'t-purple',f:'fw'}],[{t:'Seed order + crop planning',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+  {id:'apr',name:'Apr',season:'Autumn',rise:'6:05',set:'5:45',hrs:'11.5h',
+   note:'Best working month of the year — cool mornings, long enough days, no extreme heat. Good time for hemp planting, grafting, macadamia work, and BAS year-end.',
+   rows:[
+    {time:'6:05–6:50am',cells:[[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],[{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],[{t:'Egg collection',c:'t-green',f:'fd'}]]},
+    {time:'6:50–8:30am',cells:[[{t:'Cool-season flower planting',c:'t-amber',f:'fw'}],[{t:'Nasturtium + flower harvest',c:'t-amber',f:'fw'}],[{t:'Wed delivery pack',c:'t-amber',f:'fw'}],[{t:'Flower planting + harvest',c:'t-amber',f:'fw'}],[{t:'Sat market pack',c:'t-amber',f:'fw'}],[{t:'Market pack',c:'t-amber',f:'fw'}],[{t:'Garden walk',c:'t-amber',f:'fw'}]]},
+    {time:'8:30–11:30am',cells:[[{t:'Hemp planting (next crop)',c:'t-sage',f:'fs',infreq:true}],[{t:'Finger lime + macadamia grafts',c:'t-sage',f:'fw'}],[{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],[{t:'Hemp planting',c:'t-sage',f:'fs',infreq:true}],[{t:'Vanilla vine training',c:'t-sage',f:'fw'}],[{t:'Sat market stall',c:'t-coral',f:'fw'}],[{t:'Property walk + maintenance',c:'t-sage',f:'fw'}]]},
+    {time:'11:30am–1:30pm',cells:[[{t:'Toowoomba restaurant drop + relationship calls',c:'t-sage',f:'fw'}],[{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],[{t:'Aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],[{t:'Aquaponics water test',c:'t-blue',f:'fd'}],[{t:'Return from market',c:'t-gray',f:'fw'}],[]]},
+    {time:'1:30–5:40pm',cells:[[{t:'BSFL substrate change',c:'t-blue',f:'fm',infreq:true}],[{t:'Aquaponics deep clean',c:'t-blue',f:'fm',infreq:true}],[{t:'Aquaponics + BSFL maintenance',c:'t-blue',f:'fm',infreq:true}],[{t:'Garden maintenance + irrigation',c:'t-amber',f:'fw'}],[{t:'Equipment service + maintenance',c:'t-gray',f:'fm',infreq:true}],[{t:'Evening garden round',c:'t-amber',f:'fd'}],[]]},
+    {time:'6–10pm',cells:[[{t:'BAS Q4 year-end finalise',c:'t-purple',f:'fm',infreq:true}],[{t:'Farm records',c:'t-purple',f:'fd'}],[{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],[{t:'DAF logs + compliance',c:'t-purple',f:'fw'}],[{t:'Accountant export + invoice archive',c:'t-purple',f:'fm',infreq:true}],[{t:'Annual crop plan review',c:'t-purple',f:'fm',infreq:true}],[{t:'Seed orders + rest',c:'t-purple',f:'fm',infreq:true}]]},
+  ]},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+// state[monthId][rowIdx][dayIdx] = [{t,c,f,infreq,moved}]
+let state = {};
+let history = [];
+let showMoved = false;
+let dragData = null;
+let currentMonth = MONTHS_DEF[0].id;
+let taskDetails = {};   // keyed by task title — declared here so renderTask can reference it immediately
+let tdContext = null;
+let tdCopySelected = new Set();
+let stepDragSrc = null;
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+
+function initState(){
+  MONTHS_DEF.forEach(m=>{
+    state[m.id] = m.rows.map(row=>row.cells.map(cell=>deepClone(cell)));
+  });
+}
+
+function pushHistory(){
+  history.push(deepClone(state));
+  if(history.length>40) history.shift();
+  document.getElementById('undoBtn').disabled = false;
+}
+
+function undo(){
+  if(!history.length) return;
+  state = history.pop();
+  document.getElementById('undoBtn').disabled = history.length===0;
+  renderAll();
+  toast('Undone ↩');
+}
+
+function resetAll(){
+  closeModal();
+  pushHistory();
+  initState();
+  renderAll();
+  toast('Reset to original plan');
+}
+
+// ─── SHIFT ───────────────────────────────────────────────────────────────────
+function shiftDays(n){
+  pushHistory();
+  const target = document.getElementById('shiftTarget').value;
+  const freq = document.getElementById('shiftFreq').value;
+  const months = target==='all' ? MONTHS_DEF.map(m=>m.id)
+               : target==='current' ? [currentMonth]
+               : [target];
+
+  months.forEach(mid=>{
+    const mDef = MONTHS_DEF.find(m=>m.id===mid);
+    mDef.rows.forEach((row,ri)=>{
+      // collect tasks matching freq from all days in this row
+      const tasks = [];
+      for(let di=0;di<7;di++){
+        (state[mid][ri][di]||[]).forEach(tk=>{
+          if(freq==='all'||tk.f===freq){
+            tasks.push({task:deepClone(tk),fromDay:di,rowIdx:ri});
+          }
+        });
+      }
+      // remove them from current days
+      tasks.forEach(({task,fromDay})=>{
+        state[mid][ri][fromDay] = (state[mid][ri][fromDay]||[]).filter(tk=>tk!==undefined && !(tk.t===task.t&&tk.f===task.f));
+      });
+      // re-insert shifted
+      tasks.forEach(({task,fromDay})=>{
+        let newDay = (fromDay + n % 7 + 7) % 7;
+        if(!state[mid][ri][newDay]) state[mid][ri][newDay]=[];
+        task.moved = true;
+        state[mid][ri][newDay].push(task);
+      });
+    });
+  });
+  renderAll();
+  const dir = n>0?`+${n}`:`${n}`;
+  toast(`Shifted ${freq==='all'?'all tasks':freq+' tasks'} by ${dir} day${Math.abs(n)!==1?'s':''}`);
+}
+
+// push all non-daily tasks in a specific day column forward by 1
+function pushDay(dayIdx){
+  pushHistory();
+  const mid = currentMonth;
+  const mDef = MONTHS_DEF.find(m=>m.id===mid);
+  let moved = 0;
+  mDef.rows.forEach((row,ri)=>{
+    const shiftable = (state[mid][ri][dayIdx]||[]).filter(tk=>tk.f!=='fd');
+    if(!shiftable.length) return;
+    state[mid][ri][dayIdx] = (state[mid][ri][dayIdx]||[]).filter(tk=>tk.f==='fd');
+    const nextDay = (dayIdx+1)%7;
+    if(!state[mid][ri][nextDay]) state[mid][ri][nextDay]=[];
+    shiftable.forEach(tk=>{ tk.moved=true; state[mid][ri][nextDay].push(tk); moved++; });
+  });
+  renderPlanner(mid);
+  toast(`Pushed ${DAYS[dayIdx]} → ${DAYS[(dayIdx+1)%7]} (${moved} task${moved!==1?'s':''})`);
+}
+
+// ─── DRAG & DROP ─────────────────────────────────────────────────────────────
+function onDragStart(e, mid, ri, di, ti){
+  dragData = {mid,ri,di,ti};
+  e.dataTransfer.effectAllowed='move';
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+}
+function onDragEnd(e){ e.target.classList.remove('dragging'); }
+
+function onDragOver(e, cell){
+  e.preventDefault();
+  if(!dragData) return;
+  const tk = state[dragData.mid][dragData.ri][dragData.di][dragData.ti];
+  const valid = dragData.mid === currentMonth;
+  cell.classList.toggle('drag-over', valid);
+  cell.classList.toggle('drag-over-invalid', !valid);
+  e.dataTransfer.dropEffect = valid ? 'move' : 'none';
+}
+function onDragLeave(e, cell){ cell.classList.remove('drag-over','drag-over-invalid'); }
+
+function onDrop(e, mid, ri, di){
+  e.preventDefault();
+  const cell = e.currentTarget;
+  cell.classList.remove('drag-over','drag-over-invalid');
+  if(!dragData || dragData.mid!==mid) return;
+  if(dragData.ri===ri && dragData.di===di) return;
+  pushHistory();
+  const src = state[mid][dragData.ri][dragData.di];
+  const task = src.splice(dragData.ti,1)[0];
+  task.moved = true;
+  if(!state[mid][ri][di]) state[mid][ri][di]=[];
+  state[mid][ri][di].push(task);
+  dragData = null;
+  renderPlanner(mid);
+  toast('Task moved ↕');
+}
+
+// push individual task forward one day
+function pushTaskDay(mid, ri, di, ti){
+  pushHistory();
+  const src = state[mid][ri][di];
+  const task = src.splice(ti,1)[0];
+  task.moved = true;
+  const next = (di+1)%7;
+  if(!state[mid][ri][next]) state[mid][ri][next]=[];
+  state[mid][ri][next].push(task);
+  renderPlanner(mid);
+  toast(`Task → ${DAYS[next]}`);
+}
+
+// clear moved flag on a task
+function clearMoved(mid, ri, di, ti){
+  state[mid][ri][di][ti].moved = false;
+  renderPlanner(mid);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderTask(task, mid, ri, di, ti){
+  const italic = task.infreq?' infreq':'';
+  const moved = (task.moved&&showMoved)?' moved':'';
+  const label = {fd:'D',fw:'W',fm:'M',fs:'S',fo:'O'}[task.f]||'?';
+  const det = taskDetails[getTaskKey(task)];
+  const hasDetail = task.hasDetail || (det && (det.notes||det.steps.length)) ? ' has-detail' : '';
+  const stepCount = det && det.steps.length ? ` <span style="font-size:8px;opacity:0.6">${det.steps.filter(s=>s.done).length}/${det.steps.length}</span>` : '';
+  return `<div class="task ${task.c}${italic}${moved}${hasDetail}"
+    draggable="true"
+    ondragstart="onDragStart(event,'${mid}',${ri},${di},${ti})"
+    ondragend="onDragEnd(event)"
+    onclick="handleTaskClick(event,'${mid}',${ri},${di},${ti})"
+    title="Click to view/edit · drag to move">
+    <span class="task-text">${task.t}${stepCount}<span class="freq ${task.f}">${label}</span></span>
+    <span class="task-actions">
+      <button class="ta-btn" onclick="event.stopPropagation();pushTaskDay('${mid}',${ri},${di},${ti})" title="Push to next day">→</button>
+      ${task.moved?`<button class="ta-btn" onclick="event.stopPropagation();clearMoved('${mid}',${ri},${di},${ti})" title="Clear moved marker">✓</button>`:''}
+    </span>
+  </div>`;
+}
+
+function handleTaskClick(e, mid, ri, di, ti){
+  // Don't open if we're starting a drag
+  if(e.defaultPrevented) return;
+  openTD(mid, ri, di, ti);
+}
+
+function renderPlanner(mid){
+  const m = MONTHS_DEF.find(x=>x.id===mid);
+  const el = document.getElementById('p-'+mid);
+  if(!el) return;
+  let h=`<div class="p-header"><span class="p-title">${m.name} — ${m.season}</span><span class="p-meta">Eff. sunrise ${m.rise} · Sunset ${m.set} · ${m.hrs} daylight</span></div>`;
+  h+=`<div class="seasonal-note">${m.note}</div>`;
+  h+=`<div class="week-grid">`;
+  h+=`<div class="wg-head"></div>`;
+  DAYS.forEach((dy,di)=>h+=`<div class="wg-head"><div class="day-head-inner">${dy}<button class="push-day-btn" onclick="pushDay(${di})" title="Push all non-daily tasks on ${dy} to ${DAYS[(di+1)%7]}">→</button></div></div>`);
+  m.rows.forEach((row,ri)=>{
+    h+=`<div class="wg-time">${row.time}</div>`;
+    for(let di=0;di<7;di++){
+      const tasks = state[mid][ri][di]||[];
+      const isEmpty = tasks.length===0;
+      h+=`<div class="wg-cell${isEmpty?' empty':''}"
+        ondragover="onDragOver(event,this)"
+        ondragleave="onDragLeave(event,this)"
+        ondrop="onDrop(event,'${mid}',${ri},${di})">`;
+      tasks.forEach((tk,ti)=>{ h+=renderTask(tk,mid,ri,di,ti); });
+      h+=`</div>`;
+    }
+  });
+  h+=`</div>`;
+  el.innerHTML=h;
+}
+
+function renderAll(){
+  MONTHS_DEF.forEach(m=>renderPlanner(m.id));
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+initState();
+const nav=document.getElementById('nav');
+const cont=document.getElementById('planners');
+MONTHS_DEF.forEach((m,i)=>{
+  const btn=document.createElement('button');
+  btn.className='nav-btn'+(i===0?' active':'');
+  btn.id='navbtn-'+m.id;
+  btn.textContent=m.name;
+  btn.onclick=()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.planner').forEach(p=>p.classList.remove('show'));
+    document.getElementById('p-'+m.id).classList.add('show');
+    currentMonth=m.id;
+  };
+  nav.appendChild(btn);
+  const p=document.createElement('div');
+  p.className='planner'+(i===0?' show':'');
+  p.id='p-'+m.id;
+  cont.appendChild(p);
+});
+renderAll();
+
+// ─── TASK DETAIL PANEL ───────────────────────────────────────────────────────
+// taskDetails[taskKey] = {notes, steps:[{text,done}], duration}
+// taskKey = task title; tdContext/taskDetails/tdCopySelected/stepDragSrc declared in STATE block above
+
+function getTaskKey(task){ return task.t; }
+
+function getDetail(task){
+  const k = getTaskKey(task);
+  if(!taskDetails[k]) taskDetails[k] = {notes:'', steps:[], duration:''};
+  return taskDetails[k];
+}
+
+function openTD(mid, ri, di, ti){
+  const task = state[mid][ri][di][ti];
+  tdContext = {mid, ri, di, ti};
+  tdCopySelected = new Set();
+
+  // Header tag row
+  const freqLabel = {fd:'Daily',fw:'Weekly',fm:'Monthly',fs:'Seasonal',fo:'Once-off'}[task.f]||'';
+  const catLabel = {
+    'td-green':'Daily care','td-amber':'Harvest / Garden','td-blue':'Bees / Aquaponics',
+    'td-coral':'Seasonal','td-purple':'Admin / Desk','td-sage':'Tree / Field','td-gray':'Build / Setup'
+  }[task.c]||task.c;
+  const mDef = MONTHS_DEF.find(m=>m.id===mid);
+  document.getElementById('tdTagRow').innerHTML =
+    `<span class="freq ${task.f}">${freqLabel}</span>` +
+    `<span class="task ${task.c}" style="padding:1px 7px;font-size:9px">${catLabel}</span>` +
+    `<span style="font-size:10px;color:var(--ink3)">${mDef.name} · ${DAYS[di]} · ${mDef.rows[ri].time}</span>`;
+
+  // Title
+  document.getElementById('tdTitle').value = task.t;
+
+  // Meta row: duration
+  const det = getDetail(task);
+  document.getElementById('tdMetaRow').innerHTML =
+    `<label class="td-meta-chip" title="Estimated duration">
+      ⏱ <input type="number" min="5" max="480" step="5" value="${det.duration||''}" placeholder="min" style="width:40px" id="tdDuration" /> min
+    </label>`;
+
+  // Notes
+  document.getElementById('tdNotes').value = det.notes||'';
+
+  // Steps
+  renderSteps(det.steps);
+
+  // Copy-to chips: find all other months where a task with same name exists
+  buildCopyChips(task);
+
+  document.getElementById('tdOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('tdTitle').focus(), 80);
+}
+
+function buildCopyChips(task){
+  const key = getTaskKey(task);
+  const row = document.getElementById('tdCopyRow');
+  const matches = [];
+  MONTHS_DEF.forEach(m=>{
+    if(m.id === tdContext.mid) return;
+    let found = false;
+    state[m.id].forEach(rowArr=>{
+      rowArr.forEach(cell=>{
+        cell.forEach(tk=>{ if(tk.t===task.t) found=true; });
+      });
+    });
+    if(found) matches.push(m);
+  });
+
+  if(!matches.length){
+    row.innerHTML = `<span style="font-size:10px;color:var(--ink3);font-style:italic">No matching tasks found in other months</span>`;
+    return;
+  }
+
+  let html = `<button class="copy-chip select-all" onclick="toggleSelectAll()" id="selectAllChip">All</button>`;
+  matches.forEach(m=>{
+    html += `<button class="copy-chip" onclick="toggleCopyMonth('${m.id}',this)" data-mid="${m.id}">${m.name}</button>`;
+  });
+  row.innerHTML = html;
+}
+
+function toggleSelectAll(){
+  const chips = document.querySelectorAll('#tdCopyRow .copy-chip:not(.select-all)');
+  const allSelected = [...chips].every(c=>c.classList.contains('selected'));
+  chips.forEach(c=>{
+    const mid = c.dataset.mid;
+    if(allSelected){ c.classList.remove('selected'); tdCopySelected.delete(mid); }
+    else { c.classList.add('selected'); tdCopySelected.add(mid); }
+  });
+  document.getElementById('selectAllChip').classList.toggle('selected', !allSelected);
+}
+
+function toggleCopyMonth(mid, btn){
+  if(tdCopySelected.has(mid)){ tdCopySelected.delete(mid); btn.classList.remove('selected'); }
+  else { tdCopySelected.add(mid); btn.classList.add('selected'); }
+  const chips = document.querySelectorAll('#tdCopyRow .copy-chip:not(.select-all)');
+  const allSel = [...chips].every(c=>c.classList.contains('selected'));
+  const allChip = document.getElementById('selectAllChip');
+  if(allChip) allChip.classList.toggle('selected', allSel);
+}
+
+function renderSteps(steps){
+  const list = document.getElementById('tdSteps');
+  list.innerHTML = steps.map((s,i)=>`
+    <div class="step-row${s.done?' done':''}" draggable="true"
+         ondragstart="stepDragStart(event,${i})"
+         ondragover="stepDragOver(event,${i})"
+         ondrop="stepDrop(event,${i})"
+         ondragend="stepDragEnd()">
+      <span class="step-drag-handle" title="Drag to reorder">⠿</span>
+      <input type="checkbox" class="step-check" ${s.done?'checked':''} onchange="toggleStep(${i},this)" />
+      <input class="step-text${s.done?' done':''}" type="text" value="${escHtml(s.text)}" placeholder="Action step…"
+             oninput="updateStepText(${i},this.value)"
+             onkeydown="stepKeyDown(event,${i})" />
+      <button class="step-del" onclick="deleteStep(${i})" title="Remove">✕</button>
+    </div>`).join('');
+}
+
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function getWorkingSteps(){
+  // read current live DOM state into an array
+  const rows = document.querySelectorAll('#tdSteps .step-row');
+  return [...rows].map((row,i)=>{
+    const txt = row.querySelector('.step-text').value;
+    const done = row.querySelector('.step-check').checked;
+    return {text:txt, done};
+  });
+}
+
+function addStep(){
+  const steps = getWorkingSteps();
+  steps.push({text:'',done:false});
+  renderSteps(steps);
+  const inputs = document.querySelectorAll('#tdSteps .step-text');
+  if(inputs.length) inputs[inputs.length-1].focus();
+}
+
+function toggleStep(i, el){
+  const row = el.closest('.step-row');
+  row.classList.toggle('done', el.checked);
+  row.querySelector('.step-text').classList.toggle('done', el.checked);
+}
+
+function updateStepText(i, val){} // live, read on save
+
+function deleteStep(i){
+  const steps = getWorkingSteps();
+  steps.splice(i,1);
+  renderSteps(steps);
+}
+
+function stepKeyDown(e, i){
+  if(e.key==='Enter'){ e.preventDefault(); addStep(); }
+  if(e.key==='Backspace' && e.target.value===''){ e.preventDefault(); deleteStep(i); }
+}
+
+// Step drag-reorder
+function stepDragStart(e,i){ stepDragSrc=i; e.dataTransfer.effectAllowed='move'; }
+function stepDragEnd(){ stepDragSrc=null; }
+function stepDragOver(e,i){ e.preventDefault(); }
+function stepDrop(e,i){
+  e.preventDefault();
+  if(stepDragSrc===null||stepDragSrc===i) return;
+  const steps = getWorkingSteps();
+  const [moved] = steps.splice(stepDragSrc,1);
+  steps.splice(i,0,moved);
+  renderSteps(steps);
+  stepDragSrc = null;
+}
+
+function saveTD(){
+  if(!tdContext) return;
+  pushHistory();
+  const {mid,ri,di,ti} = tdContext;
+  const task = state[mid][ri][di][ti];
+
+  // Collect edits
+  const newTitle = document.getElementById('tdTitle').value.trim() || task.t;
+  const newNotes = document.getElementById('tdNotes').value;
+  const dur = document.getElementById('tdDuration').value;
+  const newSteps = getWorkingSteps().filter(s=>s.text.trim()!=='');
+
+  // Save to this task
+  task.t = newTitle;
+  const key = newTitle;
+  taskDetails[key] = {notes: newNotes, steps: newSteps, duration: dur};
+  // flag as having detail
+  task.hasDetail = !!(newNotes || newSteps.length);
+
+  // Copy to selected months
+  if(tdCopySelected.size){
+    tdCopySelected.forEach(cmid=>{
+      state[cmid].forEach(rowArr=>{
+        rowArr.forEach(cell=>{
+          cell.forEach(tk=>{
+            if(tk.t === task.t || tk.t === getTaskKey({t:newTitle})){
+              tk.t = newTitle;
+              tk.hasDetail = task.hasDetail;
+              taskDetails[getTaskKey(tk)] = deepClone(taskDetails[key]);
+            }
+          });
+        });
+      });
+    });
+  }
+
+  closeTD();
+  renderAll();
+  const copyMsg = tdCopySelected.size ? ` + copied to ${tdCopySelected.size} month${tdCopySelected.size>1?'s':''}` : '';
+  toast(`Saved${copyMsg} ✓`);
+}
+
+function deleteTask(){
+  if(!tdContext) return;
+  pushHistory();
+  const {mid,ri,di,ti} = tdContext;
+  state[mid][ri][di].splice(ti,1);
+  closeTD();
+  renderPlanner(mid);
+  toast('Task deleted');
+}
+
+function closeTD(){
+  document.getElementById('tdOverlay').classList.remove('show');
+  tdContext = null;
+}
+
+function tdOverlayClick(e){
+  if(e.target === document.getElementById('tdOverlay')) closeTD();
+}
+
+// Keyboard close
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && document.getElementById('tdOverlay').classList.contains('show')) closeTD();
+});
+
+
+// ─── PROJECT BUILDER ─────────────────────────────────────────────────────────
+const SWATCHES = [
+  {cls:'t-coral', bg:'#fae6e0', border:'#e8b4a4', label:'Coral'},
+  {cls:'t-sage',  bg:'#e5f0d8', border:'#a8c87a', label:'Sage'},
+  {cls:'t-blue',  bg:'#daeaf7', border:'#8bbde0', label:'Blue'},
+  {cls:'t-amber', bg:'#faeada', border:'#e0b870', label:'Amber'},
+  {cls:'t-purple',bg:'#ebebfc', border:'#b0aef0', label:'Purple'},
+  {cls:'t-gray',  bg:'#ede9e0', border:'#b8b4a8', label:'Stone'},
+  {cls:'t-green', bg:'#daf0e6', border:'#80c8a0', label:'Green'},
+];
+const FREQ_OPTIONS = [
+  {f:'fo', label:'Once-off', hint:'appears on those days, once only'},
+  {f:'fs', label:'Seasonal', hint:'recurring across the season, shown in italics'},
+  {f:'fw', label:'Weekly',   hint:'recurring every week'},
+  {f:'fm', label:'Monthly',  hint:'appears ~once a month, shown in italics'},
+];
+
+let pbStep = 0;
+let pbData = { name:'', desc:'', type:'enterprise', color: SWATCHES[0], months:[], timeSlot:'0', days:[0,2,4], dayLabels:['','','','','','',''], freq:'fo' };
+let pbMonthClickState = 0;
+let projects = [];
+
+function openProjectBuilder(){
+  pbStep=0; pbMonthClickState=0;
+  pbData = { name:'', desc:'', type:'enterprise', color: SWATCHES[0], months:[], timeSlot:'0', days:[0,2,4], dayLabels:['','','','','','',''], freq:'fo' };
+  document.getElementById('pbName').value='';
+  document.getElementById('pbDesc').value='';
+  pbSelectType('enterprise');
+  initSwatches();
+  initMonthGrid();
+  initSchedule();
+  initFreqRow();
+  pbGoTo(0);
+  document.getElementById('pbOverlay').classList.add('show');
+  setTimeout(()=>document.getElementById('pbName').focus(),80);
+}
+function closePB(){ document.getElementById('pbOverlay').classList.remove('show'); }
+function pbOverlayClick(e){ if(e.target===document.getElementById('pbOverlay')) closePB(); }
+function pbUpdateHead(){
+  const v=document.getElementById('pbName').value.trim();
+  document.getElementById('pbHeadTitle').textContent=v||'New Project';
+  pbData.name=v;
+}
+function pbSelectType(t){
+  pbData.type=t;
+  document.getElementById('pbtc-enterprise').classList.toggle('selected',t==='enterprise');
+  document.getElementById('pbtc-project').classList.toggle('selected',t==='project');
+  document.getElementById('pbWeekRangeRow').style.display=t==='project'?'flex':'none';
+}
+function initSwatches(){
+  const row=document.getElementById('pbSwatches');
+  row.innerHTML=SWATCHES.map((s,i)=>
+    `<div class="pb-swatch${i===0?' selected':''}" style="background:${s.bg};border-color:${i===0?'var(--ink)':s.border}"
+      title="${s.label}" onclick="pbSelectColor(${i})"></div>`).join('');
+}
+function pbSelectColor(i){
+  pbData.color=SWATCHES[i];
+  document.querySelectorAll('.pb-swatch').forEach((el,j)=>{
+    el.classList.toggle('selected',j===i);
+    el.style.borderColor=j===i?'var(--ink)':SWATCHES[j].border;
+  });
+}
+function initMonthGrid(){
+  const grid=document.getElementById('pbMonthGrid');
+  grid.innerHTML=MONTHS_DEF.map(m=>
+    `<div class="pb-month-chip" data-mid="${m.id}" onclick="pbMonthClick('${m.id}')">${m.name}</div>`).join('');
+  const slotSel=document.getElementById('pbTimeSlot');
+  slotSel.innerHTML=MONTHS_DEF[0].rows.map((r,ri)=>`<option value="${ri}">${r.time}</option>`).join('');
+  pbUpdateMonthGrid();
+}
+function pbMonthClick(mid){
+  const mids=MONTHS_DEF.map(m=>m.id);
+  const idx=mids.indexOf(mid);
+  if(pbMonthClickState===0||!pbData.months.length){
+    pbData.months=[mid]; pbMonthClickState=1;
+  } else {
+    const si=mids.indexOf(pbData.months[0]);
+    const [lo,hi]=si<=idx?[si,idx]:[idx,si];
+    pbData.months=mids.slice(lo,hi+1);
+    pbMonthClickState=0;
+  }
+  pbUpdateMonthGrid();
+}
+function pbUpdateMonthGrid(){
+  document.querySelectorAll('.pb-month-chip').forEach(el=>{
+    const mid=el.dataset.mid;
+    const inRange=pbData.months.includes(mid);
+    const isEnd=pbData.months.length>0&&(mid===pbData.months[0]||mid===pbData.months[pbData.months.length-1]);
+    el.classList.toggle('selected',isEnd);
+    el.classList.toggle('in-range',inRange&&!isEnd);
+  });
+  const hint=document.getElementById('pbFooterHint');
+  if(pbStep===1){
+    if(!pbData.months.length) hint.textContent='Click a start month';
+    else if(pbMonthClickState===1) hint.textContent=`From ${MONTHS_DEF.find(m=>m.id===pbData.months[0])?.name} — now click end month`;
+    else hint.textContent=`${pbData.months.length} month${pbData.months.length!==1?'s':''} selected`;
+  }
+}
+function initSchedule(){
+  const sched=document.getElementById('pbSchedule');
+  sched.innerHTML=DAYS.map((d,i)=>`
+    <div class="pb-sched-row">
+      <input type="checkbox" class="pb-day-toggle" id="pbday${i}" ${pbData.days.includes(i)?'checked':''} onchange="pbToggleDay(${i},this)" />
+      <span class="pb-sched-day">${d}</span>
+      <input class="pb-sched-slot" type="text" placeholder="Task label for this day (or leave blank to use project name)…"
+        id="pbdaylabel${i}" value="${pbData.dayLabels[i]||''}" oninput="pbData.dayLabels[${i}]=this.value" />
+    </div>`).join('');
+}
+function pbToggleDay(i,el){
+  if(el.checked){if(!pbData.days.includes(i))pbData.days.push(i);}
+  else{pbData.days=pbData.days.filter(d=>d!==i);}
+}
+function initFreqRow(){
+  document.getElementById('pbFreqRow').innerHTML=FREQ_OPTIONS.map(f=>`
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:10px;color:var(--ink2);flex-wrap:wrap">
+      <input type="radio" name="pbfreq" value="${f.f}" ${f.f===pbData.freq?'checked':''} onchange="pbData.freq=this.value" style="accent-color:var(--accent)" />
+      <span class="freq ${f.f}">${{fo:'O',fs:'S',fw:'W',fm:'M'}[f.f]}</span>
+      <strong style="font-size:10px">${f.label}</strong>
+      <span style="color:var(--ink3);font-style:italic">— ${f.hint}</span>
+    </label>`).join('<br/>');
+}
+function pbGoTo(step){
+  pbStep=step;
+  for(let i=0;i<4;i++){
+    document.getElementById('pbp'+i).classList.toggle('active',i===step);
+    const tab=document.getElementById('pbtab'+i);
+    tab.classList.toggle('active',i===step);
+    tab.classList.toggle('done',i<step);
+  }
+  document.getElementById('pbBackBtn').style.display=step>0?'':'none';
+  document.getElementById('pbNextBtn').textContent=step===3?'✓ Add to planner':'Next →';
+  document.getElementById('pbFooterHint').textContent='';
+  if(step===1) pbUpdateMonthGrid();
+  if(step===2) initSchedule();
+  if(step===3) pbBuildReview();
+}
+function pbNext(){
+  if(pbStep===0){
+    if(!document.getElementById('pbName').value.trim()){
+      document.getElementById('pbName').focus();
+      document.getElementById('pbFooterHint').textContent='Please enter a project name';
+      return;
+    }
+    pbData.name=document.getElementById('pbName').value.trim();
+    pbData.desc=document.getElementById('pbDesc').value.trim();
+    pbGoTo(1); return;
+  }
+  if(pbStep===1){
+    if(!pbData.months.length||pbMonthClickState===1){
+      if(pbData.months.length&&pbMonthClickState===1){
+        // single month — accept it
+        pbMonthClickState=0;
+      } else {
+        document.getElementById('pbFooterHint').textContent='Select at least one month';
+        return;
+      }
+    }
+    pbData.timeSlot=document.getElementById('pbTimeSlot').value;
+    pbGoTo(2); return;
+  }
+  if(pbStep===2){
+    DAYS.forEach((_,i)=>{pbData.dayLabels[i]=document.getElementById('pbdaylabel'+i)?.value||'';});
+    pbData.freq=document.querySelector('input[name="pbfreq"]:checked')?.value||'fo';
+    if(!pbData.days.length){document.getElementById('pbFooterHint').textContent='Select at least one day';return;}
+    pbGoTo(3); return;
+  }
+  if(pbStep===3) pbCommit();
+}
+function pbBack(){ if(pbStep>0) pbGoTo(pbStep-1); }
+function pbBuildReview(){
+  const mNames=pbData.months.map(mid=>MONTHS_DEF.find(m=>m.id===mid)?.name).join(', ');
+  const dNames=pbData.days.map(d=>DAYS[d]).join(', ');
+  const freqObj=FREQ_OPTIONS.find(f=>f.f===pbData.freq);
+  const riNum=parseInt(pbData.timeSlot)||0;
+  const slotName=MONTHS_DEF[0].rows[riNum]?.time||'—';
+  document.getElementById('pbReview').innerHTML=`
+    <div class="pb-review-row"><span class="pb-review-label">Name</span><span class="pb-review-val">${escHtml(pbData.name)}</span></div>
+    <div class="pb-review-row"><span class="pb-review-label">Type</span><span class="pb-review-val">${pbData.type==='enterprise'?'🏗 Enterprise':'📋 Project'}</span></div>
+    <div class="pb-review-row"><span class="pb-review-label">Months</span><span class="pb-review-val">${mNames}</span></div>
+    <div class="pb-review-row"><span class="pb-review-label">Time slot</span><span class="pb-review-val">${slotName}</span></div>
+    <div class="pb-review-row"><span class="pb-review-label">Days</span><span class="pb-review-val">${dNames}</span></div>
+    <div class="pb-review-row"><span class="pb-review-label">Frequency</span><span class="pb-review-val">${freqObj.label}</span></div>
+    ${pbData.desc?`<div class="pb-review-row"><span class="pb-review-label">Notes</span><span class="pb-review-val" style="font-style:italic">${escHtml(pbData.desc)}</span></div>`:''}
+  `;
+  const preview=document.getElementById('pbPreviewTasks');
+  let chips='';
+  pbData.months.slice(0,4).forEach(mid=>{
+    const mDef=MONTHS_DEF.find(m=>m.id===mid);
+    pbData.days.forEach(di=>{
+      const label=pbData.dayLabels[di]?.trim()||pbData.name;
+      chips+=`<span class="pb-preview-task ${pbData.color.cls}" style="font-style:${['fm','fs'].includes(pbData.freq)?'italic':'normal'}">
+        ${escHtml(label)}<span class="freq ${pbData.freq}" style="margin-left:3px">${{fo:'O',fs:'S',fw:'W',fm:'M'}[pbData.freq]}</span>
+        <span style="font-size:8px;opacity:0.55;margin-left:3px">${mDef.name} ${DAYS[di]}</span>
+      </span>`;
+    });
+  });
+  if(pbData.months.length>4) chips+=`<span style="font-size:10px;color:var(--ink3);padding:4px">…+ ${pbData.months.length-4} more month${pbData.months.length-4!==1?'s':''}</span>`;
+  preview.innerHTML=chips||'<span style="font-size:10px;color:var(--ink3)">No tasks to preview</span>';
+}
+function pbCommit(){
+  pushHistory();
+  const ri=parseInt(pbData.timeSlot)||0;
+  const infreq=['fm','fs'].includes(pbData.freq);
+  const projId='proj_'+Date.now();
+  const proj={id:projId,name:pbData.name,color:pbData.color,months:[...pbData.months],taskRefs:[]};
+  pbData.months.forEach(mid=>{
+    if(!state[mid]) return;
+    pbData.days.forEach(di=>{
+      if(!state[mid][ri]) return;
+      const label=pbData.dayLabels[di]?.trim()||pbData.name;
+      const task={t:label,c:pbData.color.cls,f:pbData.freq,infreq,proj:projId};
+      if(!state[mid][ri][di]) state[mid][ri][di]=[];
+      state[mid][ri][di].push(task);
+      proj.taskRefs.push({mid,ri,di});
+    });
+  });
+  projects.push(proj);
+  renderProjectBadges();
+  renderAll();
+  closePB();
+  const firstMid=pbData.months[0];
+  if(firstMid){
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('navbtn-'+firstMid)?.classList.add('active');
+    document.querySelectorAll('.planner').forEach(p=>p.classList.remove('show'));
+    document.getElementById('p-'+firstMid)?.classList.add('show');
+    currentMonth=firstMid;
+  }
+  const nTasks=pbData.months.length*pbData.days.length;
+  toast(`"${pbData.name}" added — ${nTasks} task${nTasks!==1?'s':''} across ${pbData.months.length} month${pbData.months.length!==1?'s':''} ✓`);
+}
+function renderProjectBadges(){
+  const el=document.getElementById('projBadges');
+  el.innerHTML=projects.map(p=>`
+    <span class="proj-badge ${p.color.cls}" style="border-color:${p.color.border};background:${p.color.bg}"
+      onclick="jumpToProject('${p.id}')" title="Jump to first month">
+      ${escHtml(p.name)}<span class="pb-del" onclick="event.stopPropagation();deleteProject('${p.id}')" title="Remove all tasks">✕</span>
+    </span>`).join('');
+}
+function jumpToProject(id){
+  const proj=projects.find(p=>p.id===id);
+  if(!proj||!proj.months.length) return;
+  const mid=proj.months[0];
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('navbtn-'+mid)?.classList.add('active');
+  document.querySelectorAll('.planner').forEach(p=>p.classList.remove('show'));
+  document.getElementById('p-'+mid)?.classList.add('show');
+  currentMonth=mid;
+}
+function deleteProject(id){
+  pushHistory();
+  MONTHS_DEF.forEach(m=>{
+    state[m.id].forEach((rowArr,ri)=>{
+      rowArr.forEach((cell,di)=>{ state[m.id][ri][di]=cell.filter(tk=>tk.proj!==id); });
+    });
+  });
+  projects=projects.filter(p=>p.id!==id);
+  renderProjectBadges();
+  renderAll();
+  toast('Project removed');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function toggleMoved(){
+  showMoved=!showMoved;
+  document.getElementById('showMovedBtn').textContent=showMoved?'Hide moved':'Show moved';
+  renderAll();
+}
+function confirmReset(){ document.getElementById('resetModal').classList.add('show'); }
+function closeModal(){ document.getElementById('resetModal').classList.remove('show'); }
+</script>
+</body>
+</html>

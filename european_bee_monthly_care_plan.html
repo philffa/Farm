@@ -1,0 +1,370 @@
+
+<h2 class="sr-only">Interactive monthly care plan for a new European honeybee hive including varroa management tasks by day</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin:1rem 0}
+.day-head{text-align:center;font-size:11px;color:var(--color-text-tertiary);padding:4px 0;font-weight:500}
+.day{border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);padding:6px 5px;min-height:64px;cursor:pointer;background:var(--color-background-primary);transition:border-color .15s}
+.day:hover{border-color:var(--color-border-secondary)}
+.day.active{border:1.5px solid var(--color-border-info);background:var(--color-background-info)}
+.day.empty{background:transparent;border-color:transparent;cursor:default}
+.day-num{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;font-weight:500}
+.day.active .day-num{color:var(--color-text-info)}
+.tags{display:flex;flex-wrap:wrap;gap:2px}
+.tag{display:inline-block;font-size:9px;font-weight:500;padding:1px 5px;border-radius:4px;white-space:nowrap}
+.t-obs{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.t-ins{background:var(--color-background-info);color:var(--color-text-info)}
+.t-var{background:var(--color-background-danger);color:var(--color-text-danger)}
+.t-mech{background:var(--color-background-warning);color:var(--color-text-warning)}
+.t-rec{background:var(--color-background-success);color:var(--color-text-success)}
+.t-feed{background:var(--color-background-tertiary);color:var(--color-text-tertiary)}
+.panel{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin:1rem 0;border:0.5px solid var(--color-border-tertiary)}
+.panel-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+.task-row{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start}
+.task-row:last-child{border-bottom:none}
+.task-time{font-size:11px;color:var(--color-text-secondary);min-width:60px;margin-top:2px}
+.task-body{flex:1}
+.task-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.task-desc{font-size:12px;color:var(--color-text-secondary);margin-top:2px;line-height:1.5}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.info-box{border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;line-height:1.5;margin:8px 0}
+.i-info{background:var(--color-background-info);color:var(--color-text-info)}
+.i-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.i-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.i-succ{background:var(--color-background-success);color:var(--color-text-success)}
+.tabs{display:flex;gap:4px;margin:1rem 0}
+.tbtn{padding:5px 12px;font-size:12px;border-radius:20px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary)}
+.tbtn.on{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;font-weight:500}
+.sec{display:none}
+.sec.on{display:block}
+.ipm-row{display:grid;grid-template-columns:28px 1fr 80px 80px;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:start;font-size:12px}
+.ipm-row:last-child{border-bottom:none}
+.ipm-head{font-weight:500;color:var(--color-text-secondary);font-size:11px}
+.pill{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+.p-hi{background:var(--color-background-success);color:var(--color-text-success)}
+.p-med{background:var(--color-background-warning);color:var(--color-text-warning)}
+.p-lo{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+</style>
+
+<div class="wrap">
+
+<div class="tabs">
+  <button class="tbtn on" onclick="showTab('cal')">Monthly calendar</button>
+  <button class="tbtn" onclick="showTab('ipm')">Varroa IPM layers</button>
+  <button class="tbtn" onclick="showTab('inspect')">Inspection guide</button>
+</div>
+
+<div id="cal" class="sec on">
+  <div class="legend">
+    <span class="leg-item"><span class="tag t-obs">obs</span> Observation</span>
+    <span class="leg-item"><span class="tag t-ins">inspect</span> Full inspection</span>
+    <span class="leg-item"><span class="tag t-var">varroa</span> Varroa monitoring</span>
+    <span class="leg-item"><span class="tag t-mech">mech</span> Mechanical control</span>
+    <span class="leg-item"><span class="tag t-rec">records</span> Record keeping</span>
+    <span class="leg-item"><span class="tag t-feed">feed</span> Feeding check</span>
+  </div>
+  <div class="info-box i-info">This plan assumes a new nuc installed in spring (Oct–Nov, Lockyer Valley). Click any day to see exactly what to do and why.</div>
+
+  <div class="cal" id="cal-grid"></div>
+
+  <div class="panel" id="day-panel" style="display:none">
+    <div class="panel-title" id="day-title"></div>
+    <div id="day-tasks"></div>
+  </div>
+</div>
+
+<div id="ipm" class="sec">
+  <div class="info-box i-danger" style="margin-bottom:12px"><strong>Varroa is confirmed in the Lockyer Valley (March 2025).</strong> You must manage it from day one. The layered approach below is the Queensland DPI recommended integrated pest management (IPM) framework. Mechanical controls go first — chemicals are the last line, not the first.</div>
+
+  <div class="panel">
+    <div class="panel-title">Layer 1 — Stock selection (do once, permanent benefit)</div>
+    <div class="ipm-row ipm-head"><div></div><div>Method</div><div>Effort</div><div>Effectiveness</div></div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">1</div>
+      <div><div class="task-name">VSH (Varroa Sensitive Hygiene) queen</div><div class="task-desc">Buy a VSH-bred or hygienic-trait queen when you start. These bees detect and remove mite-infested pupae, suppressing population growth from the inside. Non-negotiable in SE QLD.</div></div>
+      <div><span class="pill p-lo">One-off</span></div>
+      <div><span class="pill p-hi">High</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">2</div>
+      <div><div class="task-name">Screened bottom board</div><div class="task-desc">Replace solid hive floor with 8-mesh wire screen. Mites that fall off bees drop through and cannot climb back up. Build into your Langstroth base from day one — costs $0 extra if DIY.</div></div>
+      <div><span class="pill p-lo">Passive</span></div>
+      <div><span class="pill p-med">Medium</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Layer 2 — Mechanical controls (ongoing, integrated into routine)</div>
+    <div class="ipm-row ipm-head"><div></div><div>Method</div><div>Frequency</div><div>Effectiveness</div></div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">3</div>
+      <div><div class="task-name">Drone brood removal (trap frame)</div><div class="task-desc">Varroa reproduces 8-10× faster in drone cells (capped longer). Add one frame of drone-sized foundation. Bees draw it out, queen lays drone brood, mites flood in. Remove and freeze the whole frame before drones emerge (~21 days). Return the empty frame. Repeat. This is your single most powerful mechanical tool.</div></div>
+      <div><span class="pill p-med">Every 21 days</span></div>
+      <div><span class="pill p-hi">High</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">4</div>
+      <div><div class="task-name">Brood break (splits or queen caging)</div><div class="task-desc">Cage or remove the queen for 21 days. All brood hatches, forcing mites onto adult bees where they are vulnerable to treatment. Combine with oxalic acid dribble immediately after for devastating one-two punch. Also happens naturally when you split (spring/summer).</div></div>
+      <div><span class="pill p-lo">1-2× per year</span></div>
+      <div><span class="pill p-hi">Very high</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">5</div>
+      <div><div class="task-name">Powdered sugar dusting</div><div class="task-desc">Dust bees lightly with icing sugar (not flour) during inspections. Forces increased grooming, dislodging phoretic mites onto the screened bottom board. Best used with the screen, not on its own. Takes 3 minutes per inspection.</div></div>
+      <div><span class="pill p-med">Each inspection</span></div>
+      <div><span class="pill p-lo">Low-medium</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Layer 3 — Monitoring (monthly, mandatory in QLD)</div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">6</div>
+      <div><div class="task-name">Alcohol wash (gold standard)</div><div class="task-desc">Collect ~300 bees (half cup) from the brood nest frames into a jar of methylated spirits. Shake for 60 seconds. Pour through a sieve and count mites on the white surface below. Threshold: act if ≥2% in spring (≥6 mites per 300 bees), ≥3% in summer. This is the most accurate method and required monthly under QLD biosecurity obligations. Report all results via Bee 123 form at business.qld.gov.au.</div></div>
+      <div><span class="pill p-med">Monthly</span></div>
+      <div><span class="pill p-hi">Diagnostic</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">7</div>
+      <div><div class="task-name">Sticky board check</div><div class="task-desc">Slide a white card (smeared with Vaseline) under the screened bottom board for 24 hours. Count mites that have fallen through. Less precise than alcohol wash but good for trend-tracking between washes. More than 10 mites per day = investigate further.</div></div>
+      <div><span class="pill p-med">Fortnightly</span></div>
+      <div><span class="pill p-lo">Trend only</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Layer 4 — Chemical treatments (threshold-triggered, rotated)</div>
+    <div class="info-box i-warn" style="margin-bottom:10px">Only treat when alcohol wash exceeds threshold. Treating below threshold accelerates resistance. Always rotate modes of action — never use the same chemical twice in a row. Pyrethroid resistance (Bayvarol/Apistan) is already confirmed in SE QLD — do not use pyrethroids.</div>
+    <div class="ipm-row ipm-head"><div></div><div>Treatment</div><div>Timing</div><div>Use when</div></div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">A</div>
+      <div><div class="task-name">Oxalic acid — dribble or vapour (Oxybee/Api-Bioxal)</div><div class="task-desc">Most effective soft treatment. Only works on phoretic mites (not in capped brood). Best after a brood break or in winter when brood is minimal. Dribble 5ml per seam of bees. Vapour penetrates more evenly. Kills 90%+ of phoretic mites in one application. Available from QLD beekeeping suppliers, now on general permit.</div></div>
+      <div><span class="pill p-lo">Broodless window</span></div>
+      <div><span class="pill p-hi">First choice</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">B</div>
+      <div><div class="task-name">Formic acid (MAQS / Formic Pro)</div><div class="task-desc">The only soft treatment that penetrates capped brood. Use when brood is present and mites are above threshold. Temperature-sensitive: apply only when daytime temps are 10–29°C — in the Lockyer Valley this means autumn or spring only, not summer. Can stress queens if too hot. Follow label exactly.</div></div>
+      <div><span class="pill p-med">Autumn/spring</span></div>
+      <div><span class="pill p-med">With brood present</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">C</div>
+      <div><div class="task-name">Thymol (Apiguard)</div><div class="task-desc">Natural thyme oil extract. Works on adult bees with brood present. Needs warm temperatures (above 15°C, below 40°C) — suitable for Lockyer Valley spring/autumn. Slower-acting but gentle on colony. Good for rotation.</div></div>
+      <div><span class="pill p-med">Spring or autumn</span></div>
+      <div><span class="pill p-lo">Rotation option</span></div>
+    </div>
+    <div class="ipm-row">
+      <div style="font-size:18px;text-align:center;color:var(--color-text-secondary)">D</div>
+      <div><div class="task-name">Amitraz (Apivar strips)</div><div class="task-desc">Effective synthetic treatment for high mite loads. Use only when soft treatments have failed or mites are critically high. Remove before honey supers. Risk of resistance if overused — keep as a last resort and rotate away from it immediately after use.</div></div>
+      <div><span class="pill p-lo">Last resort only</span></div>
+      <div><span class="pill p-danger" style="background:var(--color-background-danger);color:var(--color-text-danger)">High load only</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="inspect" class="sec">
+  <div class="info-box i-info" style="margin-bottom:12px">Open the hive weekly for the first 3 months. Each inspection should take 20–30 minutes. Always inspect on a warm, sunny, still day (above 20°C). Suit up fully every time until you know your colony's temperament.</div>
+
+  <div class="panel">
+    <div class="panel-title">Before you open — lighting the smoker</div>
+    <div class="task-row">
+      <div class="task-time">5 min before</div>
+      <div class="task-body"><div class="task-name">Light smoker with dry hessian, cardboard, or wood chips</div><div class="task-desc">Smoke must be cool and white, not hot and dark. Test on your wrist — should feel like a warm breath. Hot smoke harms bees. Puff 2–3 times at the entrance, wait 30 seconds. Puff once under the cover before lifting.</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Inspection checklist — work through in order</div>
+    <div class="task-row">
+      <div class="task-time">Step 1</div>
+      <div class="task-body"><div class="task-name">Entrance observation (before opening)</div><div class="task-desc">Bees flying in with pollen on legs = queen laying, colony active. Dead bees with deformed wings outside = varroa-related DWV virus — act urgently. Bees fanning = hive is warm, normal in summer. Very few bees = investigate.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 2</div>
+      <div class="task-body"><div class="task-name">Remove and check supers (if fitted)</div><div class="task-desc">Set aside on an upturned lid. Note if honey is being capped — capped = ready to harvest once 80%+ capped. Don't leave frames in direct sun.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 3</div>
+      <div class="task-body"><div class="task-name">Check brood pattern</div><div class="task-desc">A healthy brood pattern is solid (few empty cells), domed, and tan/brown. Sunken, punctured, or discoloured cappings = disease. Scattered, pepperpot pattern = laying worker (queenless) or sick queen. Photograph any abnormal pattern.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 4</div>
+      <div class="task-body"><div class="task-name">Find eggs (or evidence of laying queen)</div><div class="task-desc">Eggs look like tiny white grains of rice standing upright in cells, visible only in bright light angled across the frame. If you see eggs, the queen was present within the last 3 days — you don't need to find her every time. No eggs for 2+ inspections = queen issue, investigate.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 5</div>
+      <div class="task-body"><div class="task-name">Check stores (honey and pollen)</div><div class="task-desc">Frames should feel heavy. A new colony needs at least 2 full frames of capped honey to be comfortable. If stores are low and there's no flow on, feed 1:1 sugar syrup. Pollen should be present in multiple colors near the brood — this is their protein source.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 6</div>
+      <div class="task-body"><div class="task-name">Check for swarm cells</div><div class="task-desc">Queen cells on the bottom edge of frames = swarm preparation. A peanut-shaped cell anywhere = supersedure (queen replacement). If you see charged (larvae inside) queen cells and the colony is strong, you have 7–9 days before they swarm. Either split now or remove all but one queen cell.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 7</div>
+      <div class="task-body"><div class="task-name">Check drone frame and remove if capped</div><div class="task-desc">If your drone trap frame has capped drone brood, remove it immediately (bees will have filled it in ~10 days, capped in ~14). Place in a sealed bag in the freezer for 48 hours to kill mites, then return empty frame to hive. Record the date you returned it.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 8</div>
+      <div class="task-body"><div class="task-name">Powdered sugar dust</div><div class="task-desc">Lightly sift icing sugar over the top bars before replacing the cover. Don't clump it — a fine dusting is enough. Bees clean it off over the next hour, increasing grooming and dropping mites through the screen below.</div></div>
+    </div>
+    <div class="task-row">
+      <div class="task-time">Step 9</div>
+      <div class="task-body"><div class="task-name">Close up and record</div><div class="task-desc">Replace frames in exact order. Replace super. Close hive gently — no banging. Immediately write down: date, weather, queen seen/eggs seen, brood pattern (good/patchy), stores level, swarm cells (y/n), drone frame status, any concerns. Without records you cannot track trends.</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Red flags — act the same day</div>
+    <div class="info-box i-danger" style="margin-bottom:6px">Deformed wings on young bees — varroa-linked DWV virus, do alcohol wash immediately</div>
+    <div class="info-box i-danger" style="margin-bottom:6px">Foul smell when opening hive — possibly American foulbrood (AFB), do NOT treat yourself, call Biosecurity QLD on 13 25 23</div>
+    <div class="info-box i-danger" style="margin-bottom:6px">No eggs or brood for 2 consecutive inspections — queen lost or failed, requeen urgently</div>
+    <div class="info-box i-warn">Rapid population drop with no obvious cause — could be pesticide drift, robbing, or high mite load. Alcohol wash first, then investigate.</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const DAYS = {
+  1:{tags:['obs'],tasks:[
+    {type:'obs',name:'Morning entrance observation',time:'5 min',desc:'Watch the entrance for 2 minutes. Bees flying with pollen = colony is active and queen is laying. Note activity level — this is your daily health check. Takes no equipment, no opening. Do this every day you walk past.'},
+    {type:'rec',name:'Start your hive journal',time:'10 min',desc:'Date your first entry. Record: colony source, queen status (marked?), number of frames of bees, rough stores estimate, weather. A notebook in a ziplock bag lives with the hive. Every task gets a date and a note.'}
+  ]},
+  2:{tags:['obs'],tasks:[
+    {type:'obs',name:'Entrance observation',time:'3 min',desc:'Pollen coming in? Bees orienting (flying in circles near entrance) = new foragers learning hive location. Normal and healthy for a new colony.'}
+  ]},
+  3:{tags:['obs'],tasks:[
+    {type:'obs',name:'Entrance observation + heft',time:'3 min',desc:'Lift the back of the hive slightly — does it feel heavy? A new nuc on 5 frames should feel substantial. Light = check stores urgently at next inspection.'}
+  ]},
+  5:{tags:['feed'],tasks:[
+    {type:'feed',name:'Check feeder (if fitted)',time:'5 min',desc:'A new nuc benefits from 1:1 sugar syrup for the first 2–3 weeks while they draw out new comb. Check feeder level. Do not open hive. Refill if empty.'}
+  ]},
+  7:{tags:['inspect','mech','rec'],tasks:[
+    {type:'ins',name:'First full inspection — Week 1',time:'30 min',desc:'Suit up fully. Light smoker. This is your first look inside. Work through the checklist on the Inspection guide tab. Key things to confirm: queen present (eggs visible), bees are calm, no signs of disease.'},
+    {type:'mech',name:'Insert drone trap frame',time:'5 min',desc:'On your first inspection, place one frame of drone foundation (larger cells) on the outer edge of the brood nest. Bees will begin drawing it out immediately. Date the frame with a thumbtack or marker. You will remove it in 21 days when brood is capped.'},
+    {type:'mech',name:'Powdered sugar dust',time:'2 min',desc:'Lightly sift icing sugar over the top bars before closing. Use a fine sieve. Increases grooming, drops phoretic mites through the screened bottom board.'},
+    {type:'rec',name:'Record inspection results',time:'5 min',desc:'Write: frames of bees (estimate), eggs seen (y/n), brood pattern (solid/patchy), stores (full/half/low), queen seen (y/n), any concerns. Sign and date.'}
+  ]},
+  10:{tags:['obs','var'],tasks:[
+    {type:'obs',name:'Entrance observation',time:'3 min',desc:'Normal foraging activity expected by now. If activity is lower than day 7, note it.'},
+    {type:'var',name:'Insert sticky board',time:'2 min',desc:'Slide a white card smeared with Vaseline under the screened bottom board. Leave for 24 hours, then remove and count mites. Baseline reading — any number is worth recording at this stage. More than 10 mites in 24 hours = investigate with alcohol wash.'}
+  ]},
+  11:{tags:['var'],tasks:[
+    {type:'var',name:'Read and record sticky board',time:'5 min',desc:'Remove sticky board. Count mites under good light with a magnifying glass if needed. Varroa are reddish-brown oval dots, ~1.5mm wide. Record the count and date. This is your baseline trend data.'}
+  ]},
+  14:{tags:['inspect','mech','var','rec'],tasks:[
+    {type:'ins',name:'Full inspection — Week 2',time:'25 min',desc:'Second full inspection. By now you should see both capped and uncapped larvae if the queen has been laying. Brood pattern should be more established. Check the drone trap frame — is it drawn out? Any capped drone brood yet?'},
+    {type:'var',name:'First alcohol wash',time:'15 min',desc:'Collect 300 bees (half a cup) from a brood nest frame into methylated spirits. Shake 60 seconds. Pour through fine mesh over a white tray. Count mites. Calculate: mites ÷ 300 × 100 = infestation %. Under 2% = good. 2–3% = monitor closely. Over 3% = treat. Report result at business.qld.gov.au Bee 123 form — this is legally required in QLD.'},
+    {type:'mech',name:'Powdered sugar dust',time:'2 min',desc:'Dust lightly over top bars on closing.'},
+    {type:'rec',name:'Record all results',time:'5 min',desc:'Alcohol wash result, drone frame status, brood frame count, stores, queen activity. Compare to week 1 — is the colony growing?'}
+  ]},
+  17:{tags:['obs'],tasks:[
+    {type:'obs',name:'Entrance observation',time:'3 min',desc:'By week 2–3, a new colony should be visibly busier than week 1. More foragers returning with pollen. If not, investigate at next inspection.'}
+  ]},
+  19:{tags:['feed'],tasks:[
+    {type:'feed',name:'Check and remove feeder',time:'5 min',desc:'If bees are foraging well and stores looked healthy at week 2 inspection, remove the feeder. Feeding past this point can disrupt natural comb drawing and honey storage.'}
+  ]},
+  21:{tags:['inspect','mech','rec'],tasks:[
+    {type:'ins',name:'Full inspection — Week 3',time:'25 min',desc:'Third full inspection. The drone trap frame inserted on day 7 should now have capped drone brood — remove it immediately. Check for swarm cells (bottom of frames, peanut-shaped). By week 3 you should see adult workers emerging from cells that were capped in week 1 — healthy sign.'},
+    {type:'mech',name:'Remove drone trap frame — freeze and return',time:'10 min',desc:'The drone frame should be mostly capped now (21 days after insertion). Remove the entire frame. Seal in a plastic bag and put in your freezer for 48 hours. This kills all mites reproducing inside. Return the empty frame to the hive. Insert a new drone frame in the same position. Date the new frame. Repeat cycle every 21 days — this is your most powerful ongoing mechanical control.'},
+    {type:'mech',name:'Powdered sugar dust',time:'2 min',desc:'Dust lightly over top bars before closing.'},
+    {type:'rec',name:'Record + plan',time:'5 min',desc:'Record inspection results. Note the drone frame return date (+21 days from today) in your calendar. Is the colony filling available frames? If 70%+ of frames are full, you will need to add a second brood box soon.'}
+  ]},
+  24:{tags:['var'],tasks:[
+    {type:'var',name:'Insert sticky board',time:'2 min',desc:'Another 24-hour sticky board check. Compare to day 10–11 reading — is the trend up, down, or stable? Rising trend = plan alcohol wash at next full inspection.'}
+  ]},
+  25:{tags:['var'],tasks:[
+    {type:'var',name:'Read sticky board',time:'5 min',desc:'Count and record. If significantly higher than your day 10 reading (more than double), do not wait for the week 4 inspection — do an alcohol wash now and consider treatment if above threshold.'}
+  ]},
+  28:{tags:['inspect','var','mech','rec'],tasks:[
+    {type:'ins',name:'Full inspection — Week 4 (end of month)',time:'30 min',desc:'Monthly wrap-up inspection. Review the whole hive with fresh eyes. Is the colony noticeably larger than week 1? Are they filling comb well? Any issues that have developed?'},
+    {type:'var',name:'Monthly alcohol wash',time:'15 min',desc:'Mandatory monthly QLD biosecurity check. Same method as week 2 — 300 bees from brood nest, methylated spirits, count mites. Compare to week 2 result. If above 2% threshold, plan treatment. If below, continue mechanical controls and monitor. Submit result to Bee 123 regardless of outcome.'},
+    {type:'mech',name:'Powdered sugar dust',time:'2 min',desc:'Dust on closing.'},
+    {type:'rec',name:'Monthly summary',time:'10 min',desc:'Review your month of records. Write a one-paragraph summary: colony trajectory (growing/stable/declining), varroa trend (both wash results and sticky board readings), any treatments needed, what to watch next month. This is the document that will guide your spring management.'}
+  ]}
+};
+
+function buildCal(){
+  const grid = document.getElementById('cal-grid');
+  const heads = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  heads.forEach(h=>{
+    const d = document.createElement('div');
+    d.className='day-head'; d.textContent=h;
+    grid.appendChild(d);
+  });
+  for(let i=0;i<2;i++){const e=document.createElement('div');e.className='day empty';grid.appendChild(e);}
+  for(let day=1;day<=28;day++){
+    const d=document.createElement('div');
+    d.className='day';
+    const dn=document.createElement('div');
+    dn.className='day-num'; dn.textContent='Day '+day;
+    d.appendChild(dn);
+    const data=DAYS[day];
+    if(data){
+      const tags=document.createElement('div');
+      tags.className='tags';
+      data.tags.forEach(t=>{
+        const s=document.createElement('span');
+        s.className='tag t-'+t;
+        const labels={obs:'obs',ins:'inspect',var:'varroa',mech:'mech',rec:'records',feed:'feed'};
+        s.textContent=labels[t]||t;
+        tags.appendChild(s);
+      });
+      d.appendChild(tags);
+      d.addEventListener('click',()=>showDay(day,data));
+    } else {
+      const obs=document.createElement('div');
+      obs.style.cssText='font-size:10px;color:var(--color-text-tertiary);margin-top:4px';
+      obs.textContent='observe entrance';
+      d.appendChild(obs);
+      d.addEventListener('click',()=>showQuickDay(day));
+    }
+    grid.appendChild(d);
+  }
+}
+
+function showDay(day,data){
+  document.querySelectorAll('.day').forEach(d=>d.classList.remove('active'));
+  const days=document.querySelectorAll('.day:not(.empty)');
+  if(days[day-1]) days[day-1].classList.add('active');
+  const panel=document.getElementById('day-panel');
+  const title=document.getElementById('day-title');
+  const tasks=document.getElementById('day-tasks');
+  title.textContent='Day '+day+' tasks';
+  tasks.innerHTML='';
+  const typeColors={obs:'t-obs',ins:'t-ins',var:'t-var',mech:'t-mech',rec:'t-rec',feed:'t-feed'};
+  data.tasks.forEach(t=>{
+    const row=document.createElement('div');
+    row.className='task-row';
+    row.innerHTML=`<div class="task-time"><span class="tag ${typeColors[t.type]||'t-obs'}">${t.time}</span></div><div class="task-body"><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>`;
+    tasks.appendChild(row);
+  });
+  panel.style.display='block';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showQuickDay(day){
+  document.querySelectorAll('.day').forEach(d=>d.classList.remove('active'));
+  const days=document.querySelectorAll('.day:not(.empty)');
+  if(days[day-1]) days[day-1].classList.add('active');
+  const panel=document.getElementById('day-panel');
+  const title=document.getElementById('day-title');
+  const tasks=document.getElementById('day-tasks');
+  title.textContent='Day '+day;
+  tasks.innerHTML=`<div class="task-row"><div class="task-time"><span class="tag t-obs">2 min</span></div><div class="task-body"><div class="task-name">Entrance observation</div><div class="task-desc">Walk past and glance at the entrance. Active foraging with pollen loads = healthy and queen-right. You don't need to stop — just note if anything looks unusual. Bees bearding on the outside in hot weather is normal. Bees carrying out dead bees = normal undertaker behaviour. Unusual: bees fighting at entrance (robbing), crawling bees with deformed wings, no activity at all in warm weather.</div></div></div>`;
+  panel.style.display='block';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showTab(id){
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+
+buildCal();
+</script>

@@ -1,0 +1,269 @@
+
+<h2 class="sr-only">Optimised annual farm work calendar with desk and admin tasks moved to evenings, outdoor tasks scheduled around daylight hours at Lefthand Branch Road, month by month across the year.</h2>
+<style>
+*{box-sizing:border-box}
+.cal-wrap{margin:0.5rem 0}
+.season-label{font-size:12px;font-weight:500;color:var(--color-text-secondary);letter-spacing:0.05em;text-transform:uppercase;margin:1.2rem 0 0.5rem;padding-bottom:4px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.month-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:0.5rem}
+.mc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.mc-head{padding:7px 11px 5px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:baseline}
+.mc-name{font-weight:500;font-size:13px;color:var(--color-text-primary)}
+.mc-sun{font-size:10px;color:var(--color-text-tertiary)}
+.blocks{padding:6px 10px 8px;display:flex;flex-direction:column;gap:0}
+.block{display:flex;gap:7px;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start}
+.block:last-child{border-bottom:none}
+.b-time{font-size:10px;color:var(--color-text-tertiary);min-width:82px;flex-shrink:0;padding-top:2px;font-variant-numeric:tabular-nums}
+.b-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch;margin-top:2px}
+.b-text{font-size:11px;color:var(--color-text-primary);line-height:1.4}
+.b-flag{display:inline-block;font-size:10px;padding:0 4px;border-radius:2px;font-weight:500;margin-left:3px;vertical-align:middle}
+.f-night{background:#E6F1FB;color:#185FA5}
+.f-warn{background:#FCEBEB;color:#A32D2D}
+.f-peak{background:#FAEEDA;color:#854F0B}
+.divider{font-size:10px;font-weight:500;color:var(--color-text-tertiary);padding:4px 0 2px;letter-spacing:0.04em;text-transform:uppercase}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 0.8rem;font-size:11px;color:var(--color-text-secondary)}
+.li{display:flex;align-items:center;gap:4px}
+.ld{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.note{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 13px;font-size:11px;color:var(--color-text-secondary);line-height:1.65;margin-top:0.8rem}
+.sun-bar-wrap{margin:4px 10px 6px;height:16px;position:relative;background:var(--color-background-tertiary);border-radius:3px;overflow:hidden}
+.sun-seg{position:absolute;top:0;height:100%}
+</style>
+
+<div class="legend">
+  <span class="li"><span class="ld" style="background:#1D9E75"></span>daily care</span>
+  <span class="li"><span class="ld" style="background:#EF9F27"></span>harvest/garden</span>
+  <span class="li"><span class="ld" style="background:#639922"></span>tree/field work</span>
+  <span class="li"><span class="ld" style="background:#378ADD"></span>bees/aquaponics</span>
+  <span class="li"><span class="ld" style="background:#D85A30"></span>seasonal intensive</span>
+  <span class="li"><span class="ld" style="background:#888780"></span>build/setup (Y1)</span>
+  <span class="li"><span class="ld" style="background:#7F77DD"></span>desk work (evening)</span>
+  <span class="li"><span class="f-night">evening ok</span></span>
+  <span class="li"><span class="f-warn">9–5 unavoidable</span></span>
+  <span class="li"><span class="f-peak">peak season</span></span>
+</div>
+
+<!-- ══ AUTUMN ══ -->
+<div class="season-label">Autumn — May, Jun, Jul — days short, mornings cool, olive harvest</div>
+<div class="month-grid">
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">May</span><span class="mc-sun">eff. rise 6:10 · set 5:15 · 11h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:10–7:00</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection, feed + water check</span></div>
+    <div class="block"><span class="b-time">7:00–8:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Nasturtium + flower harvest, pack for delivery</span></div>
+    <div class="block"><span class="b-time">8:30–1:00</span><span class="b-bar" style="background:#D85A30"></span><span class="b-text">Olive harvest <span class="f-peak">peak 4–6wks</span></span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">1:00–2:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Delivery run Toowoomba + garden maintenance</span></div>
+    <div class="block"><span class="b-time">2:30–5:10</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Y1: raised bed build, irrigation install</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–7:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Olive curing bath checks + top-up <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">7:30–9:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Admin, delivery invoices, farm app records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">June</span><span class="mc-sun">eff. rise 6:45 · set 5:05 · 10.5h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:45–7:30</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection, cool morning animal check</span></div>
+    <div class="block"><span class="b-time">7:30–9:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Flower + herb harvest, pack Wed delivery</span></div>
+    <div class="block"><span class="b-time">9:30–11:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Olive pruning, succession sowing</span></div>
+    <div class="block"><span class="b-time">11:30–1:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Hive inspection (needs warmth) <span class="f-warn">9–5 unavoidable</span></span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">1:00–5:00</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Y1: aquaponics tank + plumbing build</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–7:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Olive curing bath maintenance <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">7:00–9:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">BAS prep, DAF compliance logs, records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">July</span><span class="mc-sun">eff. rise 6:53 · set 5:13 · 10.5h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:53–7:45</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection + weekly shed clean</span></div>
+    <div class="block"><span class="b-time">7:45–9:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Flower + veg harvest, pack Sat market boxes</span></div>
+    <div class="block"><span class="b-time">9:30–11:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Garlic planting, ginger bed prep, rhizomes</span></div>
+    <div class="block"><span class="b-time">11:30–1:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Hive inspection (mid-day warmth) <span class="f-warn">9–5 unavoidable</span></span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">1:00–5:10</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Y1: infrastructure, fencing, plumbing</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–7:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Delivery run planning, buyer comms, invoices <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">7:30–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Farm app records, seed order planning <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══ WINTER ══ -->
+<div class="season-label">Winter — Aug, Sep, Oct — days lengthening, best outdoor work temps, spring prep</div>
+<div class="month-grid">
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">August</span><span class="mc-sun">eff. rise 6:30 · set 5:30 · 11h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:30–7:15</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection, feed + water</span></div>
+    <div class="block"><span class="b-time">7:15–9:15</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Peak cool-season flower + veg harvest</span></div>
+    <div class="block"><span class="b-time">9:15–12:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Major olive prune — best month for it</span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">12:00–2:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Olive leaf processing from prunings (outdoors, turn + dry) <span class="f-warn">9–5 unavoidable — needs supervision</span></span></div>
+    <div class="block"><span class="b-time">2:00–5:25</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Y2+: aquaponics water test, fish feed, harvest prep</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–8:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Market Sat prep, box + label, print invoices <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">8:00–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Crop plan review, next-season seed orders <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">September</span><span class="mc-sun">eff. rise 6:00 · set 5:50 · 12h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:00–6:45</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection before heat builds</span></div>
+    <div class="block"><span class="b-time">6:45–8:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Final cool-season harvest + summer succession sow</span></div>
+    <div class="block"><span class="b-time">8:30–11:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Plant zucchini, beans, basil, butterfly pea</span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">11:00–1:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Y2+: aquaponics harvest + pack for Wed delivery</span></div>
+    <div class="block"><span class="b-time">1:00–5:45</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Wasabi shade structure, vanilla vine training</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–7:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">DAF compliance logs, chemical register update <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">7:30–9:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Admin, records, invoicing <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">October</span><span class="mc-sun">eff. rise 5:30 · set 6:15 · 13h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">5:30–6:15</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection — early, before heat builds</span></div>
+    <div class="block"><span class="b-time">6:15–8:00</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Zucchini flower harvest (closes by 10am) <span class="f-warn">9–5 unavoidable</span></span></div>
+    <div class="block"><span class="b-time">8:00–10:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Finger lime check, macadamia grafts, hemp irrigation</span></div>
+    <div class="block"><span class="b-time">10:30–12:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Hive inspection (spring build-up) <span class="f-warn">9–5 unavoidable</span></span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">12:00–6:10</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Y1: remaining build + infrastructure — hottest time, shade work</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:30–8:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Delivery pack, invoice prep, buyer emails <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">8:00–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">BAS quarter close, farm records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══ SPRING ══ -->
+<div class="season-label">Spring — Nov, Dec, Jan — earliest starts, all work front-loaded before heat</div>
+<div class="month-grid">
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">November</span><span class="mc-sun">eff. rise 5:08 · set 6:35 · 13.5h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">5:08–5:50</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection at first light</span></div>
+    <div class="block"><span class="b-time">5:50–7:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Flower + herb harvest, butterfly pea, pack deliveries</span></div>
+    <div class="block"><span class="b-time">7:30–10:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Rhizome beds — weed + mulch before wet season</span></div>
+    <div class="block"><span class="b-time">10:00–12:00</span><span class="b-bar" style="background:#D85A30"></span><span class="b-text">Hemp pre-harvest check + DAF compliance (inspector access) <span class="f-warn">9–5 unavoidable</span></span></div>
+    <div class="divider">afternoon — too hot for most outdoor work</div>
+    <div class="block"><span class="b-time">12:00–4:30</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Rest / shade work — equipment maintenance, repairs</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">4:30–6:00</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Evening garden round — water check, pest control</span></div>
+    <div class="block"><span class="b-time">6:30–8:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Market Sat prep, admin, invoice scanning <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">8:30–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">DAF log entry, spray register, farm records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">December</span><span class="mc-sun">eff. rise 4:59 · set 6:52 · 13h 53m</span></div>
+  <div class="blocks">
+    <div class="divider">morning — all important work done before 10am</div>
+    <div class="block"><span class="b-time">4:59–5:45</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection — earliest start of year</span></div>
+    <div class="block"><span class="b-time">5:45–7:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Full garden harvest before heat arrives</span></div>
+    <div class="block"><span class="b-time">7:30–10:30</span><span class="b-bar" style="background:#D85A30"></span><span class="b-text">Hemp harvest <span class="f-peak">peak 2–3wks</span> — physically heavy, finish before midday</span></div>
+    <div class="divider">afternoon — shade + indoor work only</div>
+    <div class="block"><span class="b-time">10:30–4:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Y2+: aquaponics harvest, pack, cool-room staging for delivery</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">5:00–6:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Evening garden round, irrigation check</span></div>
+    <div class="block"><span class="b-time">6:30–8:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Invoicing, Christmas delivery run planning, BAS Q2 close <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">8:30–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Farm app records, financial scan, DAF logs <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">January</span><span class="mc-sun">eff. rise 5:05 · set 6:52 · 13h 47m</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">5:05–5:50</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection at first light</span></div>
+    <div class="block"><span class="b-time">5:50–7:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Harvest — zucchini flowers, herbs, butterfly pea</span></div>
+    <div class="block"><span class="b-time">7:30–9:30</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Aquaponics check — hottest month, water temp critical</span></div>
+    <div class="divider">afternoon — hottest month, minimise outdoor exposure</div>
+    <div class="block"><span class="b-time">9:30–4:30</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Shade work — equipment repairs, potting up, cold prep for honey</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">4:30–6:00</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Evening garden round, irrigation check, pest bait</span></div>
+    <div class="block"><span class="b-time">6:30–8:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Admin, invoice scanning, buyer relationship emails <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">8:00–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Farm records, planning next harvest run <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══ SUMMER ══ -->
+<div class="season-label">Summer — Feb, Mar, Apr — honey harvest, rhizome harvest, cool-season reset</div>
+<div class="month-grid">
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">February</span><span class="mc-sun">eff. rise 5:25 · set 6:40 · 13h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">5:25–6:10</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection + BSFL feed (Y2+)</span></div>
+    <div class="block"><span class="b-time">6:10–8:30</span><span class="b-bar" style="background:#D85A30"></span><span class="b-text">Honey extraction days (Y2+) <span class="f-peak">twice/yr</span> — warm morning helps flow <span class="f-warn">9–5 unavoidable on extraction days</span></span></div>
+    <div class="block"><span class="b-time">6:10–8:00</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Non-extraction days: garden rounds, herb harvest</span></div>
+    <div class="block"><span class="b-time">8:00–10:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Vanilla vine check — hand pollination window (Y4+)</span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">10:00–4:30</span><span class="b-bar" style="background:#888780"></span><span class="b-text">Shade work — honey bottling, labelling, equipment clean</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">5:00–6:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Evening garden round, irrigation + pest check</span></div>
+    <div class="block"><span class="b-time">6:30–9:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">BAS Q3 prep, honey sales invoicing, records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">March</span><span class="mc-sun">eff. rise 5:45 · set 6:15 · 12.5h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">5:45–6:30</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection, daily animal check</span></div>
+    <div class="block"><span class="b-time">6:30–8:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Ginger + turmeric harvest, wash + pack</span></div>
+    <div class="block"><span class="b-time">8:30–10:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Wasabi harvest + same-day delivery pack <span class="f-warn">9–5 unavoidable — degrades in 48hrs</span></span></div>
+    <div class="block"><span class="b-time">10:30–12:00</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">Aquaponics harvest pack for Wed restaurant run</span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">12:00–2:00</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Toowoomba delivery run (wasabi + aquaponics same trip)</span></div>
+    <div class="block"><span class="b-time">2:00–6:10</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Sow cool-season succession — nasturtiums, violas, cornflower</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:30–9:00</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Admin, rhizome sales invoices, DAF records <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+<div class="mc">
+  <div class="mc-head"><span class="mc-name">April</span><span class="mc-sun">eff. rise 6:05 · set 5:45 · 11.5h</span></div>
+  <div class="blocks">
+    <div class="divider">morning</div>
+    <div class="block"><span class="b-time">6:05–6:50</span><span class="b-bar" style="background:#1D9E75"></span><span class="b-text">Egg collection — mornings cooling, nice working weather</span></div>
+    <div class="block"><span class="b-time">6:50–8:30</span><span class="b-bar" style="background:#EF9F27"></span><span class="b-text">Cool-season flower planting, nasturtium window opens</span></div>
+    <div class="block"><span class="b-time">8:30–11:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Hemp planting, finger lime check, macadamia grafts</span></div>
+    <div class="divider">afternoon</div>
+    <div class="block"><span class="b-time">11:30–1:30</span><span class="b-bar" style="background:#639922"></span><span class="b-text">Toowoomba restaurant drop, market relationship calls</span></div>
+    <div class="block"><span class="b-time">1:30–5:40</span><span class="b-bar" style="background:#378ADD"></span><span class="b-text">BSFL substrate change, aquaponics deep clean (monthly)</span></div>
+    <div class="divider">evening</div>
+    <div class="block"><span class="b-time">6:00–7:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">BAS Q4 finalise, accountant export prep <span class="f-night">evening ok</span></span></div>
+    <div class="block"><span class="b-time">7:30–9:30</span><span class="b-bar" style="background:#7F77DD"></span><span class="b-text">Annual crop plan review, seed orders, farm app update <span class="f-night">evening ok</span></span></div>
+  </div>
+</div>
+
+</div>
+
+<div class="note">
+  <strong style="color:var(--color-text-primary);font-weight:500;">Tasks that remain 9–5 unavoidable and why they can't move</strong><br>
+  <strong style="font-weight:500;">Hive inspections (Jun–Oct, 10am–2pm):</strong> bees need ambient warmth above 18°C and calm conditions. Winter mornings are too cold and evenings too dark and cold. No workaround.<br>
+  <strong style="font-weight:500;">Zucchini flowers (Oct–Feb, 6–9am):</strong> flowers physically open at sunrise and close by 10am. Actually falls outside 9–5 — just flagged because it's time-critical.<br>
+  <strong style="font-weight:500;">Hemp DAF compliance (Nov–Jan):</strong> inspectors work business hours. Can't control this — schedule other tasks around it when an inspection is booked.<br>
+  <strong style="font-weight:500;">Honey extraction (Feb, 2 days/yr):</strong> warm ambient temperature assists flow, and extraction is a multi-hour process. Realistically a 7am–2pm job on those days.<br>
+  <strong style="font-weight:500;">Wasabi delivery (Mar–May):</strong> rhizome harvested in morning, restaurant delivered same afternoon. The drive to Toowoomba falls in business hours but the work either side of it does not.<br>
+  <strong style="font-weight:500;">Olive leaf drying (Aug):</strong> trays need turning every few hours outdoors during daylight. Can start at sunrise and finish before 5pm — partially avoidable with good morning start.
+</div>

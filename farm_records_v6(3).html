@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Farm Records — 658 Lefthand Branch Rd</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --soil:#3d2b1f;--bark:#6b4c35;--straw:#c8a96e;--sage:#7a9e7e;
+  --sage-dark:#4e7453;--sage-light:#b8d4ba;--cream:#f5f0e8;
+  --cream-dark:#ede5d8;--rust:#b85c38;--text:#2a1f16;
+  --text-mid:#5c4535;--text-light:#9a7d6a;
+  --border:rgba(107,76,53,.15);--border-strong:rgba(107,76,53,.3);
+  --red:#c0392b;--amber:#d68910;--green:#27ae60;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+.hdr{background:var(--soil);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.hdr-title{color:#f5f0e8;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;}
+.hdr-sub{color:var(--straw);font-size:.72rem;margin-top:1px;}
+.hdr-date{color:var(--straw);font-size:.72rem;text-align:right;}
+.nav{background:var(--bark);overflow-x:auto;display:flex;-webkit-overflow-scrolling:touch;border-bottom:2px solid var(--straw);scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex-shrink:0;padding:.65rem .9rem;color:rgba(245,240,232,.6);font-size:.75rem;font-weight:500;cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.nav-btn .ni{font-size:1rem;}
+.nav-btn:hover{color:rgba(245,240,232,.85);}
+.nav-btn.active{color:#f5f0e8;border-bottom-color:var(--straw);}
+.main{max-width:800px;margin:0 auto;padding:1rem;}
+.card{background:white;border-radius:10px;border:1px solid var(--border);overflow:hidden;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.card-hdr{padding:.85rem 1.1rem;display:flex;align-items:center;gap:.65rem;cursor:pointer;}
+.card-icon{font-size:1.4rem;}
+.card-title{font-size:.95rem;font-weight:600;}
+.card-sub{font-size:.73rem;color:var(--text-light);margin-top:1px;}
+.card-hdr-right{margin-left:auto;display:flex;align-items:center;gap:.4rem;}
+.chevron{font-size:.75rem;color:var(--text-light);transition:transform .2s;}
+.chevron.open{transform:rotate(180deg);}
+.card-body{border-top:1px solid var(--border);}
+.card-body.hidden{display:none;}
+.sec-lbl{font-size:.63rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.65rem 1.1rem .25rem;border-bottom:1px solid var(--border);}
+.date-bar{background:var(--cream);padding:.45rem 1.1rem;display:flex;align-items:center;justify-content:space-between;font-size:.78rem;color:var(--text-mid);}
+.date-bar input[type=date]{border:1px solid var(--border-strong);border-radius:5px;padding:.3rem .5rem;font-size:.78rem;color:var(--text);background:white;font-family:inherit;}
+/* SPECIES GRID */
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.45rem;padding:.75rem 1.1rem;}
+.sp-cell{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;}
+.sp-name{font-size:.72rem;font-weight:600;color:var(--text-mid);display:flex;align-items:center;gap:.25rem;margin-bottom:.35rem;}
+.sp-ctr{display:flex;align-items:center;justify-content:space-between;gap:.35rem;}
+.sp-num{font-size:1.3rem;font-weight:700;color:var(--text);min-width:1.8rem;text-align:center;}
+.pm{width:30px;height:30px;border-radius:6px;border:1px solid var(--border-strong);background:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--bark);font-weight:700;-webkit-tap-highlight-color:transparent;user-select:none;}
+.pm:active{background:var(--cream-dark);}
+.sp-hint{font-size:.64rem;color:var(--text-light);text-align:center;margin-top:.2rem;}
+/* DISP BUTTONS */
+.disp-row{display:flex;gap:.35rem;padding:.45rem 1.1rem;flex-wrap:wrap;}
+.disp-btn{flex:1;min-width:70px;padding:.38rem .4rem;border:1px solid var(--border-strong);border-radius:6px;background:white;font-size:.72rem;cursor:pointer;text-align:center;color:var(--text-mid);-webkit-tap-highlight-color:transparent;}
+.disp-btn.sel{background:var(--sage-dark);color:white;border-color:var(--sage-dark);}
+/* PARAM STRIP */
+.param-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.4rem;padding:.75rem 1.1rem;}
+.param-cell{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:.55rem .6rem;}
+.param-cell.ok{border-color:var(--green);background:#f0faf4;}
+.param-cell.warn{border-color:var(--amber);background:#fef9ec;}
+.param-cell.bad{border-color:var(--red);background:#fdf3f2;}
+.p-lbl{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-light);}
+.p-input{border:none;background:transparent;font-size:1.2rem;font-weight:700;color:var(--text);width:100%;padding:.1rem 0;font-family:inherit;}
+.p-input:focus{outline:none;}
+.p-unit{font-size:.62rem;color:var(--text-light);}
+.p-status{font-size:.6rem;font-weight:600;margin-top:.15rem;}
+.ok .p-status{color:var(--green);}
+.warn .p-status{color:var(--amber);}
+.bad .p-status{color:var(--red);}
+/* IBC CHIPS */
+.chips{display:flex;gap:.35rem;padding:.65rem 1.1rem;overflow-x:auto;scrollbar-width:none;}
+.chip{flex-shrink:0;padding:.35rem .75rem;border:1px solid var(--border-strong);border-radius:20px;background:white;font-size:.75rem;cursor:pointer;color:var(--text-mid);-webkit-tap-highlight-color:transparent;}
+.chip.sel{background:var(--bark);color:white;border-color:var(--bark);}
+/* FORM ROWS */
+.sel-row,.num-row{display:flex;align-items:center;gap:.6rem;padding:.38rem 1.1rem;}
+.sel-row label,.num-row label{font-size:.8rem;color:var(--text-mid);flex:1;min-width:0;}
+.sel-row select,.sel-row input,.num-row input{border:1px solid var(--border-strong);border-radius:6px;padding:.35rem .55rem;font-size:.8rem;font-family:inherit;color:var(--text);background:white;flex:0 0 auto;max-width:200px;}
+.num-row input{width:90px;text-align:right;font-weight:600;}
+.notes-row{padding:.4rem 1.1rem .7rem;}
+.notes-row textarea{width:100%;border:1px solid var(--border-strong);border-radius:6px;padding:.45rem .65rem;font-size:.8rem;font-family:inherit;color:var(--text);background:white;resize:vertical;min-height:50px;}
+.notes-row textarea::placeholder{color:var(--text-light);}
+/* SAVE ROW */
+.save-row{padding:.45rem 1.1rem .85rem;display:flex;gap:.45rem;}
+.btn-save{flex:1;background:var(--sage-dark);color:white;border:none;border-radius:8px;padding:.65rem;font-size:.86rem;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;}
+.btn-save:active{background:var(--sage);}
+.btn-photo{width:40px;height:40px;background:var(--cream-dark);border:1px solid var(--border-strong);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;flex-shrink:0;}
+/* RECORDS SECTION */
+.rec-panel{border-top:1px solid var(--border);}
+.rec-hdr{padding:.55rem 1.1rem;background:var(--cream-dark);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.rec-hdr span{font-size:.76rem;font-weight:600;color:var(--text-mid);}
+.rec-body{display:none;max-height:300px;overflow-y:auto;}
+.rec-body.open{display:block;}
+.rec-row{padding:.5rem 1.1rem;border-bottom:1px solid var(--border);display:flex;gap:.55rem;align-items:flex-start;}
+.rec-row:last-child{border-bottom:none;}
+.rec-date{font-size:.7rem;color:var(--text-light);white-space:nowrap;flex-shrink:0;width:60px;}
+.rec-txt{flex:1;font-size:.78rem;color:var(--text);line-height:1.45;}
+.rec-txt strong{color:var(--bark);}
+.rec-txt .dim{color:var(--text-light);font-size:.7rem;}
+.rec-del{color:var(--text-light);cursor:pointer;font-size:.78rem;flex-shrink:0;padding:.1rem .3rem;margin-top:1px;}
+.rec-del:hover{color:var(--red);}
+.empty{padding:1rem 1.1rem;font-size:.8rem;color:var(--text-light);text-align:center;font-style:italic;}
+/* OVERVIEW */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.55rem;margin-bottom:.8rem;}
+.ov-card{background:white;border:1px solid var(--border);border-radius:10px;padding:.75rem .85rem;cursor:pointer;transition:box-shadow .15s;}
+.ov-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1);}
+.ov-ico{font-size:1.6rem;margin-bottom:.25rem;}
+.ov-name{font-size:.8rem;font-weight:600;}
+.ov-stat{font-size:.7rem;color:var(--text-light);margin-top:2px;}
+/* FINANCE */
+.fin-strip{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;padding:.75rem 1.1rem;}
+.fin-card{background:var(--cream);border:1px solid var(--border);border-radius:7px;padding:.55rem .85rem;}
+.fin-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:2px;}
+.fin-val{font-size:1.2rem;font-weight:700;}
+.fin-val.pos{color:var(--green);}
+.fin-val.neg{color:var(--red);}
+/* SPRAY TABLE */
+.sp-table{width:100%;border-collapse:collapse;font-size:.76rem;}
+.sp-table th{background:var(--cream-dark);padding:.38rem .7rem;text-align:left;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-mid);border-bottom:1px solid var(--border-strong);}
+.sp-table td{padding:.42rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;}
+/* CURING */
+.cure-item{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;margin:.4rem 1.1rem;}
+.cure-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;}
+.cure-id{font-weight:700;font-size:.83rem;}
+.cure-stage{font-size:.7rem;padding:.18rem .55rem;border-radius:10px;background:var(--sage-light);color:var(--sage-dark);}
+.cure-meta{font-size:.71rem;color:var(--text-mid);display:flex;flex-wrap:wrap;gap:.5rem;}
+.prog{height:5px;background:var(--border);border-radius:3px;margin-top:.45rem;overflow:hidden;}
+.prog-fill{height:100%;background:var(--sage-dark);border-radius:3px;}
+/* PHOTO STUB */
+.photo-stub{margin:.4rem 1.1rem;background:var(--cream-dark);border:1.5px dashed var(--border-strong);border-radius:8px;padding:.7rem;text-align:center;cursor:pointer;font-size:.78rem;color:var(--text-light);}
+.photo-stub input{display:none;}
+.photo-prev{display:none;padding:.3rem 1.1rem;}
+.photo-prev img{max-width:100%;border-radius:6px;max-height:100px;object-fit:cover;}
+/* TOAST */
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--soil);color:white;padding:.55rem 1.1rem;border-radius:20px;font-size:.8rem;opacity:0;transition:all .22s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:480px){.main{padding:.65rem .55rem;}.sp-grid{grid-template-columns:1fr 1fr;}.param-strip{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div><div class="hdr-title">658 Lefthand Branch Rd</div><div class="hdr-sub">Farm Records</div></div>
+  <div class="hdr-date" id="hdr-date"></div>
+</div>
+<nav class="nav" id="nav"></nav>
+<div class="main" id="content"></div>
+<div class="toast" id="toast"></div>
+<script>
+// ── STORAGE ─────────────────────────────────────────────────────────────────
+const KEY='farmRecords_v3';
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||initDB();}catch(e){return initDB();}}
+function saveDB(db){localStorage.setItem(KEY,JSON.stringify(db));}
+function initDB(){return{geese:[],goats:[],eggs:[],breeding:[],health:[],pasture:[],water:[],compost:[],finance:[],bas:[],loans:[],infra:[],oliveTree:[],oliveHarvest:[],oliveSpray:[],oliveCuring:[],bsflBatch:[],bsflColony:[],bsflSubstrate:[],bsflSales:[],aquaWater:[],aquaFish:[],aquaProduce:[],macTree:[],macGraft:[],hempCrop:[],waterfowl:[],rhizome:[]};}
+function addRec(key,rec){const db=loadDB();if(!db[key])db[key]=[];db[key].unshift({...rec,_id:Date.now(),_saved:new Date().toISOString()});saveDB(db);}
+function delRec(key,id){const db=loadDB();db[key]=(db[key]||[]).filter(r=>r._id!==id);saveDB(db);}
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function today(){return new Date().toISOString().slice(0,10);}
+function fmtD(d){if(!d)return'';try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-AU',{day:'numeric',month:'short'});}catch(e){return d;}}
+function toast(msg,ms=2200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+function g(id){return document.getElementById(id);}
+function v(id){return g(id)?.value||'';}
+
+// ── COUNTERS ─────────────────────────────────────────────────────────────────
+const C={};
+function adj(id,delta){C[id]=Math.max(0,(C[id]||0)+delta);const el=g('cv-'+id);if(el)el.textContent=C[id];}
+function spCell(id,name,icon,hint=''){
+  C[id]=C[id]||0;
+  return`<div class="sp-cell">
+    <div class="sp-name"><span>${icon}</span>${name}</div>
+    <div class="sp-ctr">
+      <button class="pm" onclick="adj('${id}',-1)">−</button>
+      <span class="sp-num" id="cv-${id}">${C[id]}</span>
+      <button class="pm" onclick="adj('${id}',+1)">+</button>
+    </div>
+    ${hint?`<div class="sp-hint">${hint}</div>`:''}
+  </div>`;}
+
+// ── SHARED HTML BUILDERS ─────────────────────────────────────────────────────
+function dateBar(id='entry-date'){return`<div class="date-bar"><span>Date</span><input type="date" id="${id}" value="${today()}"></div>`;}
+function notesRow(id='notes',ph='Notes (optional)'){return`<div class="notes-row"><textarea id="${id}" placeholder="${ph}" rows="2"></textarea></div>`;}
+function saveRow(fn,label='Save entry',photo=false){
+  return`<div class="save-row">
+    ${photo?`<label class="btn-photo" title="Photo (AI coming soon)"><input type="file" accept="image/*" capture="environment" id="photo-input" onchange="showPhoto(this)">📷</label>`:''}
+    <button class="btn-save" onclick="${fn}">${label}</button>
+  </div>`;}
+function selRow(id,label,options,placeholder=''){
+  const isArr=Array.isArray(options);
+  if(isArr){return`<div class="sel-row"><label>${label}</label><select id="${id}">${options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;}
+  return`<div class="sel-row"><label>${label}</label><input type="text" id="${id}" placeholder="${placeholder||label}"></div>`;}
+function numRow(id,label,ph='0'){return`<div class="num-row"><label>${label}</label><input type="number" id="${id}" placeholder="${ph}" inputmode="decimal" step="any"></div>`;}
+function recSection(key,renderFn,label='Recent entries'){
+  const db=loadDB();const recs=(db[key]||[]).slice(0,15);
+  return`<div class="rec-panel">
+    <div class="rec-hdr" onclick="toggleRecs(this)"><span>📋 ${label}</span><span>▼</span></div>
+    <div class="rec-body">
+      ${recs.length?recs.map(r=>{const line=renderFn(r);return line?`<div class="rec-row">
+        <span class="rec-date">${fmtD(r.date||r.startDate||r.loadDate||r._saved?.slice(0,10))}</span>
+        <span class="rec-txt">${line}</span>
+        <span class="rec-del" onclick="delRec('${key}',${r._id});renderTab(activeTab)">✕</span>
+      </div>`:''}).join(''):`<div class="empty">No entries yet</div>`}
+    </div>
+  </div>`;}
+function toggleRecs(hdr){const b=hdr.nextElementSibling;b.classList.toggle('open');hdr.children[1].textContent=b.classList.contains('open')?'▲':'▼';}
+function toggleBody(hdr){const b=hdr.nextElementSibling;const ch=hdr.querySelector('.chevron');b.classList.toggle('hidden');if(ch)ch.classList.toggle('open');}
+function showPhoto(inp){const prev=g('photo-prev');if(inp.files?.[0]&&prev){prev.style.display='block';prev.querySelector('img').src=URL.createObjectURL(inp.files[0]);}}
+
+// ── PARAM RANGES (aquaponics) ────────────────────────────────────────────────
+const PR={
+  ammonia:{name:'NH₃',unit:'ppm',ok:[0,.5],warn:[.5,1]},
+  nitrite:{name:'NO₂',unit:'ppm',ok:[0,.25],warn:[.25,.5]},
+  nitrate:{name:'NO₃',unit:'ppm',ok:[0,80],warn:[80,160]},
+  ph:{name:'pH',unit:'',ok:[6.8,7.4],warn:[6.5,7.8]},
+  dissolvedO2:{name:'DO',unit:'mg/L',ok:[6,20],warn:[5,6]},
+  temp:{name:'Temp',unit:'°C',ok:[24,30],warn:[20,24]},
+};
+function pClass(k,val){
+  if(!val&&val!==0)return'';
+  const v=parseFloat(val),r=PR[k];if(!r)return'';
+  const[o0,o1]=r.ok,[w0,w1]=r.warn||[];
+  if(v>=o0&&v<=o1)return'ok';
+  if(w0!==undefined&&((v>=w0&&v<o0)||(v>o1&&v<=w1)))return'warn';
+  return'bad';
+}
+function pStatus(k,val){const c=pClass(k,val);return c==='ok'?'✓ Good':c==='warn'?'⚠ Check':c==='bad'?'✕ Act':'';}
+function updateP(k,val){const cell=g('pc-'+k);const st=g('ps-'+k);if(!cell)return;cell.className='param-cell '+pClass(k,val);st.textContent=pStatus(k,val);}
+
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+const CORE_TABS=[
+  {id:'overview',icon:'🏡',label:'Overview'},
+  {id:'eggs',icon:'🥚',label:'Eggs'},
+  {id:'aqua',icon:'🐟',label:'Aquaponics'},
+  {id:'bsfl',icon:'🪲',label:'BSFL'},
+  {id:'olive',icon:'🫒',label:'Olives'},
+  {id:'mac',icon:'🌰',label:'Macadamia'},
+  {id:'bees',icon:'🐝',label:'Bees'},
+  {id:'hemp',icon:'🌿',label:'Hemp'},
+  {id:'livestock',icon:'🐔',label:'Livestock'},
+  {id:'finance',icon:'💰',label:'Finance'},
+  {id:'all',icon:'📋',label:'All records'},
+];
+let activeTab='overview';
+function allTabs(){
+  const custom=loadEnterprises();
+  return[
+    ...CORE_TABS,
+    ...custom.map(e=>({id:'ent_'+e.id,icon:e.icon,label:e.label})),
+    {id:'export',icon:'📥',label:'Export'},
+    {id:'enterprises',icon:'⚙',label:'Enterprises'},
+  ];
+}
+function buildNav(){g('nav').innerHTML=allTabs().map(t=>`<button class="nav-btn ${t.id===activeTab?'active':''}" onclick="goTab('${t.id}')"><span class="ni">${t.icon}</span>${t.label}</button>`).join('');}
+function goTab(id){activeTab=id;buildNav();renderTab(id);}
+function renderTab(id){
+  g('content').innerHTML='';
+  if(id.startsWith('ent_')){renderCustomEnt(id.replace('ent_',''));return;}
+  ({overview:renderOverview,eggs:renderEggs,aqua:renderAqua,bsfl:renderBsfl,olive:renderOlive,mac:renderMac,bees:renderBees,hemp:renderHemp,livestock:renderLivestock,finance:renderFinance,all:renderAll,export:renderExport,enterprises:renderEnterprises})[id]?.();
+}
+
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
+function lastStat(id,db){
+  const ago=d=>{if(!d)return'No data';const days=Math.floor((Date.now()-new Date(d+'T00:00:00'))/86400000);return days===0?'Today':days===1?'Yesterday':`${days}d ago`;};
+  switch(id){
+    case'eggs':     {const r=db.eggs?.[0];return r?`${r.total||0} eggs — ${ago(r.date)}`:'No rounds yet';}
+    case'aqua':     {const r=db.aquaWater?.[0];return r?`pH ${r.ph||'?'} · ${ago(r.date)}`:'No water logs';}
+    case'bsfl':     {return`${(db.bsflBatch||[]).length} batches logged`;}
+    case'olive':    {const r=db.oliveSpray?.[0];return r?`Spray ${ago(r.date)}`:'No entries';}
+    case'mac':      {return`${(db.macTree||[]).length} trees · ${(db.macGraft||[]).length} graft records`;}
+    case'bees':     {const r=(db.health||[]).find(h=>h.species?.includes('bee')||h.species?.includes('Bee')||h.species?.includes('hive'));return r?`Last check ${ago(r.date)}`:'No hive checks';}
+    case'hemp':     {const r=db.hempCrop?.[0];return r?`${r.entryType} ${ago(r.date)}`:'No entries';}
+    case'livestock':{const r=db.pasture?.[0];return r?`Last round ${ago(r.date)}`:'No rounds';}
+    case'finance':  {return`${(db.finance||[]).length} transactions`;}
+    default: {
+      if(id.startsWith('ent_')){
+        const eid=id.replace('ent_','');
+        const ent=loadEnterprises().find(e=>e.id===eid);
+        if(!ent)return'';
+        const count=(ent.dbKeys||[]).reduce((a,k)=>a+(db[k]||[]).length,0);
+        return`${count} record${count!==1?'s':''} logged`;
+      }
+      return'';
+    }
+  }
+}
+function renderOverview(){
+  const db=loadDB();
+  const inc=(db.finance||[]).filter(r=>r.type==='Income').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+  const exp=(db.finance||[]).filter(r=>r.type==='Expense').reduce((a,r)=>a+parseFloat(r.amount||0),0);
+  g('content').innerHTML=`
+    <div class="ov-grid">
+      ${allTabs().filter(t=>t.id!=='overview'&&t.id!=='all'&&t.id!=='export'&&t.id!=='enterprises').map(t=>`
+        <div class="ov-card" onclick="goTab('${t.id}')">
+          <div class="ov-ico">${t.icon}</div>
+          <div class="ov-name">${t.label}</div>
+          <div class="ov-stat">${lastStat(t.id,db)}</div>
+        </div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)">
+        <span class="card-icon">📊</span>
+        <div><div class="card-title">Finance snapshot</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        <div class="fin-strip">
+          <div class="fin-card"><div class="fin-lbl">Income</div><div class="fin-val pos">$${inc.toFixed(2)}</div></div>
+          <div class="fin-card"><div class="fin-lbl">Expenses</div><div class="fin-val neg">$${exp.toFixed(2)}</div></div>
+          <div class="fin-card"><div class="fin-lbl">Net</div><div class="fin-val ${inc-exp>=0?'pos':'neg'}">$${(inc-exp).toFixed(2)}</div></div>
+          <div class="fin-card"><div class="fin-lbl">Entries</div><div class="fin-val">${(db.finance||[]).length}</div></div>
+        </div>
+      </div>
+    </div>`;}
+
+// ── EGGS ─────────────────────────────────────────────────────────────────────
+let eggDisp='kept';
+function renderEggs(){
+  ['isa','gf','muscovy','goose'].forEach(k=>{C[k]=C[k]||0;});
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">🥚</span>
+        <div><div class="card-title">Daily egg round</div><div class="card-sub">Tap +/− per bird type, then save</div></div>
+      </div>
+      <div class="card-body">
+        ${dateBar('egg-date')}
+        <div class="sec-lbl">Eggs collected — tap to count</div>
+        <div class="sp-grid">
+          ${spCell('isa','Isa Browns','🐔','Laying hens')}
+          ${spCell('gf','Guinea Fowl','🦃','Seasonal')}
+          ${spCell('muscovy','Muscovy','🦆','')}
+          ${spCell('goose','Geese','🪿','Pilgrim/Toulouse')}
+        </div>
+        <div class="sec-lbl">What happened to the eggs?</div>
+        <div class="disp-row" id="egg-disp-row">
+          ${[['kept','🏠 Kept'],['sold','💰 Sold'],['hatching','🐣 Set'],['broken','❌ Broken']].map(([d,l])=>`
+            <button class="disp-btn${d===eggDisp?' sel':''}" onclick="setEggDisp('${d}')">${l}</button>`).join('')}
+        </div>
+        <div id="egg-price-row" style="display:${eggDisp==='sold'?'block':'none'}">
+          ${numRow('egg-price','Sale total ($)','0.00')}
+        </div>
+        <div class="sec-lbl">Optional photo</div>
+        <label class="photo-stub">
+          <input type="file" accept="image/*" capture="environment" id="photo-input" onchange="showPhoto(this)">
+          📷 Photo of clutch <span style="font-size:.68rem">(AI pre-fill coming soon)</span>
+        </label>
+        <div class="photo-prev" id="photo-prev"><img></div>
+        ${notesRow('egg-notes','Broody birds, predator sign, anything unusual...')}
+        ${saveRow('saveEggs()','💾 Save round')}
+      </div>
+      ${recSection('eggs',r=>`
+        <strong>${r.total||0} eggs</strong>
+        ${r.isa?` · ${r.isa} ISA`:''}${r.gf?` · ${r.gf} GF`:''}${r.muscovy?` · ${r.muscovy} Muscovy`:''}${r.goose?` · ${r.goose} Goose`:''}
+        · <em>${r.disposition||'kept'}</em>${r.revenue?` · $${r.revenue}`:''}
+        ${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`)}
+    </div>`;}
+function setEggDisp(d){eggDisp=d;document.querySelectorAll('#egg-disp-row .disp-btn').forEach(b=>b.classList.toggle('sel',b.textContent.toLowerCase().includes(d)));g('egg-price-row').style.display=d==='sold'?'block':'none';}
+function saveEggs(){
+  const total=(C.isa||0)+(C.gf||0)+(C.muscovy||0)+(C.goose||0);
+  if(!total&&!confirm('0 eggs — log anyway?'))return;
+  addRec('eggs',{date:v('egg-date'),isa:C.isa,gf:C.gf,muscovy:C.muscovy,goose:C.goose,total,disposition:eggDisp,revenue:v('egg-price')||null,notes:v('egg-notes')});
+  ['isa','gf','muscovy','goose'].forEach(k=>{C[k]=0;});eggDisp='kept';toast(`✓ ${total} eggs logged`);renderEggs();}
+
+// ── AQUAPONICS ────────────────────────────────────────────────────────────────
+function buildParams(){
+  const db=loadDB();const last=db.aquaWater?.[0]||{};
+  return Object.entries(PR).map(([k,r])=>`
+    <div class="param-cell" id="pc-${k}">
+      <div class="p-lbl">${r.name}</div>
+      <input class="p-input" type="number" id="aq-${k}" inputmode="decimal" placeholder="${last[k]||'—'}" step="any" oninput="updateP('${k}',this.value)">
+      <div class="p-unit">${r.unit}${last[k]?` last:${last[k]}`:''}
+      </div><div class="p-status" id="ps-${k}"></div>
+    </div>`).join('');}
+// ── AQUAPONICS — RAS/DWC SPLIT ───────────────────────────────────────────────
+// RAS: 8,000L fish tank · DWC: 72m² float beds across 6 beds
+// Sump: 2,000L shared reservoir
+const AQ_TABS=['ras','dwc','fish','harvest'];
+let aqTab='ras';
+
+// RAS water params with Jade Perch ranges
+const RAS_PARAMS={
+  ph:   {label:'pH',      unit:'',     ok:[6.8,7.4],warn:[6.5,7.8],  dec:2},
+  do_:  {label:'DO',      unit:'mg/L', ok:[6,20],   warn:[5,20],     dec:1},
+  temp: {label:'Temp',    unit:'°C',   ok:[22,30],  warn:[18,32],    dec:1},
+  tan:  {label:'NH₃',     unit:'mg/L', ok:[0,0.5],  warn:[0,1.5],   dec:2},
+  no2:  {label:'NO₂',     unit:'mg/L', ok:[0,0.5],  warn:[0,1.0],   dec:2},
+  no3:  {label:'NO₃',     unit:'mg/L', ok:[0,100],  warn:[0,150],   dec:0},
+};
+const DWC_PARAMS={
+  ph:   {label:'pH',      unit:'',     ok:[6.0,7.0],warn:[5.8,7.4], dec:2},
+  ec:   {label:'EC',      unit:'mS/cm',ok:[1.2,2.0],warn:[0.8,2.5], dec:2},
+  temp: {label:'Temp',    unit:'°C',   ok:[18,30],  warn:[15,35],   dec:1},
+};
+
+function pClassAq(p,val){
+  if(val===null||val===''||isNaN(val))return'';
+  const v2=parseFloat(val);
+  if(v2>=p.ok[0]&&v2<=p.ok[1])return'ok';
+  if(v2>=p.warn[0]&&v2<=p.warn[1])return'warn';
+  return'bad';
+}
+
+function renderAqua(){
+  const db=loadDB();
+  const lastRas=(db.aquaWater||[]).find(r=>r.loop==='RAS')||{};
+  const lastDwc=(db.aquaWater||[]).find(r=>r.loop==='DWC')||{};
+  const fishCount=(db.aquaFish||[]).filter(r=>r.entryType==='Stock').reduce((a,r)=>a+parseInt(r.count||0),0)
+                 -(db.aquaFish||[]).filter(r=>r.entryType==='Mortality'||r.entryType==='Harvest').reduce((a,r)=>a+parseInt(r.count||0),0);
+  const lastHarvest=(db.aquaProduce||[])[0];
+  const tabs=AQ_TABS.map(t=>{
+    const lbl={ras:'💧 RAS',dwc:'🌿 DWC',fish:'🐟 Fish',harvest:'🥬 Harvest'}[t];
+    return`<button onclick="aqTab='${t}';renderAqua()" style="padding:.4rem .75rem;border:none;border-bottom:2px solid ${aqTab===t?'var(--sage-dark)':'transparent'};background:transparent;font-size:.8rem;font-weight:${aqTab===t?600:400};color:${aqTab===t?'var(--sage-dark)':'var(--text-mid)'};cursor:pointer">${lbl}</button>`;
+  }).join('');
+
+  let body='';
+  if(aqTab==='ras') body=renderRasTab(db,lastRas);
+  else if(aqTab==='dwc') body=renderDwcTab(db,lastDwc);
+  else if(aqTab==='fish') body=renderFishTab(db,fishCount);
+  else body=renderHarvestTab(db,lastHarvest);
+
+  g('content').innerHTML=`
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem .3rem;border-bottom:1px solid var(--border)">
+        <div style="display:flex;gap:0">${tabs}</div>
+        <span style="font-size:.68rem;color:var(--text-light)">🐟 ${fishCount} fish est.</span>
+      </div>
+      ${body}
+    </div>`;
+}
+
+function paramStrip(params, last, prefix, saveF){
+  const keys=Object.keys(params);
+  const strip=`<div style="display:grid;grid-template-columns:repeat(${Math.min(keys.length,3)},1fr);gap:6px;margin-bottom:.8rem">
+    ${keys.map(k=>{
+      const p=params[k];const lv=last[k];const cls=lv!==undefined?pClassAq(p,lv):'';
+      const bg=cls==='ok'?'var(--green-lt)':cls==='warn'?'#FFF8EC':cls==='bad'?'var(--rust-lt,#FEF0EE)':'white';
+      const col=cls==='ok'?'var(--green)':cls==='warn'?'#B87800':cls==='bad'?'var(--rust)':'var(--text-mid)';
+      return`<div style="background:${bg};border:1px solid var(--border);border-radius:6px;padding:.5rem .6rem">
+        <div style="font-size:.6rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem">${p.label}</div>
+        <input type="number" id="${prefix}${k}" placeholder="${lv!==undefined?lv:'—'}"
+          style="width:100%;border:none;background:transparent;font-size:.95rem;font-weight:600;color:${col};font-family:inherit;padding:0"
+          step="${Math.pow(10,-p.dec)}" oninput="updateAqParam('${prefix}','${k}',this.value,'${saveF}')">
+        <div style="font-size:.58rem;color:var(--text-light)">${p.unit} · ${p.ok[0]}–${p.ok[1]}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+  return strip;
+}
+
+function updateAqParam(prefix,k,val,saveF){
+  // live colour update
+  const el=g(prefix+k);if(!el)return;
+  const params=prefix==='ras-'?RAS_PARAMS:DWC_PARAMS;
+  const p=params[k];if(!p)return;
+  const cls=pClassAq(p,val);
+  const bg=cls==='ok'?'var(--green-lt)':cls==='warn'?'#FFF8EC':cls==='bad'?'#FEF0EE':'white';
+  const col=cls==='ok'?'var(--green)':cls==='warn'?'#B87800':cls==='bad'?'var(--rust)':'var(--text-mid)';
+  el.parentElement.style.background=bg;el.style.color=col;
+}
+
+function renderRasTab(db,last){
+  const recs=(db.aquaWater||[]).filter(r=>r.loop==='RAS').slice(0,8);
+  return`<div class="card-body">
+    <div class="sec-lbl" style="margin-bottom:.4rem">RAS water quality · 8,000L fish tank</div>
+    ${paramStrip(RAS_PARAMS,last,'ras-','saveRas')}
+    ${dateBar('ras-date')}
+    ${notesRow('ras-notes')}
+    ${saveRow('saveRas()','💧 Log RAS parameters')}
+  </div>
+  ${recSection('aquaWater',r=>{
+    if(r.loop!=='RAS')return null;
+    const parts=[];
+    if(r.ph)parts.push(`pH ${r.ph}`);
+    if(r.do_)parts.push(`DO ${r.do_}mg/L`);
+    if(r.temp)parts.push(`${r.temp}°C`);
+    if(r.tan)parts.push(`NH₃ ${r.tan}`);
+    if(r.no2)parts.push(`NO₂ ${r.no2}`);
+    if(r.notes)parts.push(`<span class="dim">${r.notes}</span>`);
+    return parts.join(' · ')||'RAS log';
+  },'Recent RAS logs')}`;
+}
+
+function renderDwcTab(db,last){
+  const beds=['Bed 1 — Butter lettuce','Bed 2 — Thai basil','Bed 3 — Watercress','Bed 4 — Asian greens','Bed 5 — Edible flowers','Bed 6 — Mixed herbs'];
+  return`<div class="card-body">
+    <div class="sec-lbl" style="margin-bottom:.4rem">DWC sump parameters · shared 2,000L reservoir</div>
+    ${paramStrip(DWC_PARAMS,last,'dwc-','saveDwc')}
+    ${dateBar('dwc-date')}
+    ${selRow('dwc-bed','Bed checked',beds)}
+    ${selRow('dwc-cond','Plant condition',['Excellent — lush, fast growth','Good — normal growth','Fair — some yellowing','Poor — stunted or pale','Pest/disease — describe in notes'])}
+    ${notesRow('dwc-notes','Observations, issues, actions taken')}
+    ${saveRow('saveDwc()','🌿 Log DWC check')}
+  </div>
+  ${recSection('aquaWater',r=>{
+    if(r.loop!=='DWC')return null;
+    const parts=[];
+    if(r.ph)parts.push(`pH ${r.ph}`);
+    if(r.ec)parts.push(`EC ${r.ec}`);
+    if(r.dwc_bed)parts.push(`<strong>${r.dwc_bed.split('—')[0].trim()}</strong>`);
+    if(r.dwc_cond)parts.push(r.dwc_cond.split('—')[0].trim());
+    if(r.notes)parts.push(`<span class="dim">${r.notes}</span>`);
+    return parts.join(' · ')||'DWC log';
+  },'Recent DWC logs')}`;
+}
+
+function renderFishTab(db,fishCount){
+  return`<div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.8rem">
+      <div style="background:var(--sage-light);border-radius:6px;padding:.6rem .8rem;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;color:var(--sage-dark)">${fishCount}</div>
+        <div style="font-size:.65rem;color:var(--text-mid)">Est. fish in tank</div>
+      </div>
+      <div style="background:var(--sage-light);border-radius:6px;padding:.6rem .8rem;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;color:var(--sage-dark)">${((db.aquaFish||[]).filter(r=>r.entryType==='Stock').reduce((a,r)=>a+parseInt(r.count||0),0)*1.5/1000).toFixed(1)}kg</div>
+        <div style="font-size:.65rem;color:var(--text-mid)">Est. biomass (avg 1.5kg)</div>
+      </div>
+    </div>
+    ${dateBar('fish-date')}
+    ${selRow('fish-type','Entry type',['Stock','Mortality','Harvest','Weight sample','Feed rate change','Treatment'])}
+    ${numRow('fish-count','Count','0')}
+    ${numRow('fish-wt','Avg weight (g)','0')}
+    ${selRow('fish-cohort','Cohort',['Cohort 1','Cohort 2','Mixed / unknown'])}
+    ${selRow('fish-feed','Feed type','fish-feed-txt','e.g. Jade Perch pellet 3mm')}
+    ${numRow('fish-feedrate','Feed rate (% body weight)','3')}
+    ${notesRow('fish-notes')}
+    ${saveRow('saveAqFish()','🐟 Log fish entry')}
+  </div>
+  ${recSection('aquaFish',r=>{
+    const parts=[`<strong>${r.entryType||'Entry'}</strong>`];
+    if(r.count&&r.count!='0')parts.push(`×${r.count}`);
+    if(r.avgWeightG&&r.avgWeightG!='0')parts.push(`${r.avgWeightG}g avg`);
+    if(r.cohort)parts.push(r.cohort);
+    if(r.notes)parts.push(`<span class="dim">${r.notes}</span>`);
+    return parts.join(' · ');
+  },'Fish log')}`;
+}
+
+function renderHarvestTab(db,lastHarvest){
+  const beds=['Bed 1 — Butter lettuce','Bed 2 — Thai basil','Bed 3 — Watercress','Bed 4 — Asian greens','Bed 5 — Edible flowers','Bed 6 — Mixed herbs','Fish — Jade Perch (RAS)'];
+  const totalRev=(db.aquaProduce||[]).reduce((a,r)=>a+parseFloat(r.revenue||0),0);
+  const totalKg=(db.aquaProduce||[]).reduce((a,r)=>a+parseFloat(r.weightG||0)/1000,0);
+  return`<div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.8rem">
+      <div style="background:var(--sage-light);border-radius:6px;padding:.6rem .8rem;text-align:center">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark)">$${Math.round(totalRev).toLocaleString('en-AU')}</div>
+        <div style="font-size:.65rem;color:var(--text-mid)">Total harvest revenue</div>
+      </div>
+      <div style="background:var(--sage-light);border-radius:6px;padding:.6rem .8rem;text-align:center">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--sage-dark)">${totalKg.toFixed(1)}kg</div>
+        <div style="font-size:.65rem;color:var(--text-mid)">Total harvested</div>
+      </div>
+    </div>
+    ${dateBar('gb-date')}
+    ${selRow('gb-bed','Source',beds)}
+    ${selRow('gb-crop','Crop / product','gb-crop-txt','e.g. Butter lettuce heads, Jade Perch fillets')}
+    ${numRow('gb-g','Weight harvested (g)','0')}
+    ${numRow('gb-rev','Revenue ($)','0')}
+    ${selRow('gb-dest','Destination',['Restaurant — direct','Wholesale / grocer','Farm stall / market','Own use','Replant / discard'])}
+    ${notesRow('gb-notes')}
+    ${saveRow('saveAqGB()','🥬 Log harvest')}
+  </div>
+  ${recSection('aquaProduce',r=>{
+    const parts=[`<strong>${r.bed||'Harvest'}</strong>`];
+    if(r.weightG&&r.weightG!='0')parts.push(`${(parseFloat(r.weightG)/1000).toFixed(2)}kg`);
+    if(r.revenue&&r.revenue!='0')parts.push(`<span style="color:var(--green)">$${r.revenue}</span>`);
+    if(r.destination)parts.push(r.destination);
+    if(r.notes)parts.push(`<span class="dim">${r.notes}</span>`);
+    return parts.join(' · ');
+  },'Harvest log')}`;
+}
+
+function saveRas(){
+  const rec={loop:'RAS',date:v('ras-date'),notes:v('ras-notes')};
+  Object.keys(RAS_PARAMS).forEach(k=>{const val=v('ras-'+k);if(val)rec[k]=parseFloat(val);});
+  addRec('aquaWater',rec);toast('✓ RAS logged');renderAqua();
+}
+function saveDwc(){
+  const rec={loop:'DWC',date:v('dwc-date'),dwc_bed:v('dwc-bed'),dwc_cond:v('dwc-cond'),notes:v('dwc-notes')};
+  Object.keys(DWC_PARAMS).forEach(k=>{const val=v('dwc-'+k);if(val)rec[k]=parseFloat(val);});
+  addRec('aquaWater',rec);toast('✓ DWC logged');renderAqua();
+}
+function saveAqFish(){addRec('aquaFish',{date:v('fish-date'),entryType:v('fish-type'),count:v('fish-count'),avgWeightG:v('fish-wt'),cohort:v('fish-cohort'),feedType:v('fish-feed-txt'),feedRate:v('fish-feedrate'),notes:v('fish-notes')});toast('✓ Fish entry logged');renderAqua();}
+function saveAqGB(){addRec('aquaProduce',{date:v('gb-date'),bed:v('gb-bed'),crop:v('gb-crop-txt'),weightG:v('gb-g'),revenue:v('gb-rev'),destination:v('gb-dest'),notes:v('gb-notes')});toast('✓ Harvest logged');renderAqua();}
+
+
+// ── BSFL ──────────────────────────────────────────────────────────────────────
+let bIbc='IBC 1';
+function renderBsfl(){
+  const db=loadDB();
+  const batches=db.bsflBatch||[];
+  const tL=batches.reduce((a,b)=>a+parseFloat(b.larvaeKg||0),0);
+  const tF=batches.reduce((a,b)=>a+parseFloat(b.frassKg||0),0);
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">📦</span>
+        <div><div class="card-title">Batch log</div><div class="card-sub">${batches.length} batches · ${tL.toFixed(1)}kg larvae · ${tF.toFixed(1)}kg frass</div></div>
+      </div>
+      <div class="card-body">
+        <div class="sec-lbl">IBC unit</div>
+        <div class="chips" id="ibc-chips">
+          ${['IBC 1','IBC 2','IBC 3','IBC 4','Research'].map(i=>`<div class="chip${i===bIbc?' sel':''}" onclick="setBIbc('${i}')">${i}</div>`).join('')}
+        </div>
+        ${dateBar('bsfl-date')}
+        ${selRow('bsfl-etype','Entry type',['Load batch','Migration started','Larvae harvest','Frass harvest','Batch complete'])}
+        ${selRow('bsfl-bid','Batch ID','bsfl-bid-txt','e.g. IBC1-B042')}
+        ${selRow('bsfl-sub','Substrate','bsfl-sub-txt','e.g. Veg waste + 15% bran')}
+        ${numRow('bsfl-subkg','Substrate (kg)','0')}
+        ${numRow('bsfl-eggs','Egg masses loaded','0')}
+        ${numRow('bsfl-lkg','Larvae harvested (kg)','0')}
+        ${selRow('bsfl-lpath','Larvae pathway',['On-farm (poultry/fish)','Live - pet trade','Dried - animal feed','Dried - aquaculture','Research stream'])}
+        ${numRow('bsfl-fkg','Frass harvested (kg)','0')}
+        ${selRow('bsfl-fgrade','Frass grade',['Fine <2mm (premium)','Coarse >2mm (bulk)','Mixed (unsieved)'])}
+        ${numRow('bsfl-conv','Conversion ratio','0.00')}
+        ${notesRow('bsfl-notes','Anomalies, temperature, substrate issues...')}
+        ${saveRow('saveBsflBatch()','💾 Log batch entry')}
+      </div>
+      ${recSection('bsflBatch',r=>`<strong>${r.batchId||r.ibc||'batch'}</strong> · ${r.entryType||''}${r.larvaeKg&&r.larvaeKg>0?` · <strong>${r.larvaeKg}kg larvae</strong>`:''}${r.frassKg&&r.frassKg>0?` · ${r.frassKg}kg frass`:''}${r.conversionRatio?` · ${r.conversionRatio} conv`:''}${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`,'Batch records')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">🦟</span>
+        <div><div class="card-title">Colony check</div><div class="card-sub">Quick daily — 3 fields</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${dateBar('col-date')}
+        ${numRow('col-eggs','Egg masses today','0')}
+        ${selRow('col-pop','Adult population',['High (>500)','Medium (200-500)','Low (50-200)','Critical (<50) — intervene'])}
+        ${numRow('col-temp','Enclosure temp (°C)','0')}
+        ${selRow('col-trap','Wild trap',['Checked — larvae collected','Checked — empty','Not checked'])}
+        ${selRow('col-house','House colony',['Healthy — reserve only','Active — supplementing','Depleted — top-up needed'])}
+        ${notesRow('col-notes')}
+        ${saveRow('saveColony()','💾 Log colony check')}
+      </div>
+      ${recSection('bsflColony',r=>`${r.adultEstimate||''} · ${r.eggMassCount||0} egg masses · ${r.enclosureTemp||'?'}°C${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`,'Colony logs')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">💰</span>
+        <div><div class="card-title">Sales</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${dateBar('bs-date')}
+        ${selRow('bs-prod','Product',['Live larvae - pet trade','Live larvae - aquaculture','Dried larvae - animal feed','Frass - fine powder','Frass - coarse bulk','Protocol licence fee'])}
+        ${selRow('bs-cust','Customer','bs-cust-txt','')}
+        ${numRow('bs-kg','Weight (kg)','0')}
+        ${numRow('bs-pperkg','Price/kg ($)','0')}
+        ${numRow('bs-total','Total ($)','0')}
+        ${selRow('bs-paid','Paid?',['Yes - bank transfer','Yes - cash','Invoice sent - pending','Overdue'])}
+        ${notesRow('bs-notes')}
+        ${saveRow('saveBsflSale()','💾 Log sale')}
+      </div>
+      ${recSection('bsflSales',r=>`<strong>${r.product}</strong> · ${r.weightKg||0}kg · $${r.totalRevenue||0} · ${r.paid||''}`,'Sales records')}
+    </div>`;}
+function setBIbc(i){bIbc=i;document.querySelectorAll('#ibc-chips .chip').forEach(c=>c.classList.toggle('sel',c.textContent===i));}
+function saveBsflBatch(){addRec('bsflBatch',{date:v('bsfl-date'),ibc:bIbc,entryType:v('bsfl-etype'),batchId:v('bsfl-bid-txt'),substrateType:v('bsfl-sub-txt'),substrateKg:v('bsfl-subkg'),eggMasses:v('bsfl-eggs'),larvaeKg:v('bsfl-lkg'),larvaePathway:v('bsfl-lpath'),frassKg:v('bsfl-fkg'),frassGrade:v('bsfl-fgrade'),conversionRatio:v('bsfl-conv'),notes:v('bsfl-notes')});toast('✓ Batch logged');renderBsfl();}
+function saveColony(){addRec('bsflColony',{date:v('col-date'),eggMassCount:v('col-eggs'),adultEstimate:v('col-pop'),enclosureTemp:v('col-temp'),wildTrap:v('col-trap'),houseColony:v('col-house'),notes:v('col-notes')});toast('✓ Colony checked');renderBsfl();}
+function saveBsflSale(){addRec('bsflSales',{date:v('bs-date'),product:v('bs-prod'),customer:v('bs-cust-txt'),weightKg:v('bs-kg'),pricePerKg:v('bs-pperkg'),totalRevenue:v('bs-total'),paid:v('bs-paid'),notes:v('bs-notes')});toast('✓ Sale logged');renderBsfl();}
+
+// ── OLIVE ─────────────────────────────────────────────────────────────────────
+function renderOlive(){
+  const db=loadDB();const lastSpray=db.oliveSpray?.[0];
+  const dSince=lastSpray?.date?Math.floor((Date.now()-new Date(lastSpray.date+'T00:00:00'))/86400000):null;
+  const active=(db.oliveCuring||[]).filter(c=>c.stage&&!c.stage.includes('Packed'));
+  const stageSteps=['Week 1-2 debittering','Week 3-6 colour development','Conditioning','Ready to pack','Packed and labelled'];
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">💊</span>
+        <div><div class="card-title">Spray diary</div>
+          <div class="card-sub">${dSince!==null?`Last spray ${dSince}d ago — ${lastSpray.product||''}`:'NASAA/ACO mandatory record'}</div></div>
+      </div>
+      <div class="card-body">
+        ${dateBar('sp-date')}
+        ${selRow('sp-prod','Product','sp-prod-txt','e.g. Kocide 2000')}
+        ${selRow('sp-ai','Active ingredient','sp-ai-txt','e.g. copper hydroxide 350g/kg')}
+        ${selRow('sp-nasaa','NASAA/ACO status',['Yes - permitted input','Pending verification','No - prohibited (do not apply)'])}
+        ${selRow('sp-rate','Rate','sp-rate-txt','e.g. 200g per 100L')}
+        ${selRow('sp-area','Area','sp-area-txt','e.g. All 300 trees')}
+        ${selRow('sp-wx','Weather','sp-wx-txt','e.g. 22°C, NE 5km/h, dry 48hr')}
+        ${selRow('sp-rei','Re-entry interval','sp-rei-txt','e.g. 4 hours')}
+        ${selRow('sp-op','Operator','sp-op-txt','')}
+        ${notesRow('sp-notes')}
+        ${saveRow('saveSpray()','💾 Log spray event')}
+      </div>
+      <div class="rec-panel">
+        <div class="rec-hdr" onclick="toggleRecs(this)"><span>📋 Spray diary table</span><span>▼</span></div>
+        <div class="rec-body">
+          <table class="sp-table">
+            <thead><tr><th>Date</th><th>Product</th><th>Rate</th><th>Area</th><th>NASAA</th><th>Op.</th><th></th></tr></thead>
+            <tbody>
+              ${(db.oliveSpray||[]).slice(0,20).map(r=>`<tr>
+                <td>${fmtD(r.date)}</td>
+                <td><strong>${r.product||''}</strong></td>
+                <td>${r.rate||''}</td>
+                <td>${r.area||''}</td>
+                <td style="color:${r.nasaaStatus?.includes('Yes')?'var(--green)':'var(--amber)'}">${r.nasaaStatus?.includes('Yes')?'✓':'⚠'}</td>
+                <td>${r.operator||''}</td>
+                <td><span class="rec-del" onclick="delRec('oliveSpray',${r._id});renderOlive()">✕</span></td>
+              </tr>`).join('')}
+              ${!db.oliveSpray?.length?'<tr><td colspan="7" style="text-align:center;padding:.8rem;color:var(--text-light);font-style:italic">No spray records yet</td></tr>':''}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">🫒</span>
+        <div><div class="card-title">Harvest log</div><div class="card-sub">Table olive production records</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${dateBar('hv-date')}
+        ${selRow('hv-var','Variety',['Manzanillo','Kalamata','Arbequina','Mixed'])}
+        ${numRow('hv-kg','Weight harvested (kg)','0')}
+        ${selRow('hv-grade','Grade',['Premium whole table','Standard whole table','Processing grade','Oil grade'])}
+        ${selRow('hv-colour','Colour index',['0 - deep green','1 - yellow-green','2 - straw green','3 - light brown','4 - deep brown','5 - black with red flesh','6 - fully black'])}
+        ${selRow('hv-dest','Destination',['On-site curing','Contract presser','Sold - direct','Sold - wholesale','Reject / compost'])}
+        ${notesRow('hv-notes')}
+        ${saveRow('saveHarvest()','💾 Log harvest')}
+      </div>
+      ${recSection('oliveHarvest',r=>`<strong>${r.variety}</strong> · ${r.weightKg||0}kg · ${r.grade} · ${r.destination}`,'Harvest records')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">🧂</span>
+        <div><div class="card-title">Curing batches</div><div class="card-sub">${active.length} active</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${active.length?active.map(c=>{const si=stageSteps.indexOf(c.stage);const pct=Math.round(((si+1)/stageSteps.length)*100);
+          return`<div class="cure-item">
+            <div class="cure-hdr"><span class="cure-id">${c.batchId||'Batch'}</span><span class="cure-stage">${c.stage}</span></div>
+            <div class="cure-meta"><span>${c.variety||''}</span><span>${c.weightIn||0}kg in</span><span>Started ${fmtD(c.startDate)}</span>${c.saltChangeDate?`<span>Salt ${fmtD(c.saltChangeDate)}</span>`:''}</div>
+            <div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>
+          </div>`;}).join(''):`<div class="empty">No active batches</div>`}
+        <div class="sec-lbl">New batch / update</div>
+        ${dateBar('cu-date')}
+        ${selRow('cu-id','Batch ID','cu-id-txt','e.g. CURE-2027-001')}
+        ${selRow('cu-var','Variety',['Manzanillo','Kalamata','Arbequina','Mixed'])}
+        ${numRow('cu-wt-in','Weight fruit in (kg)','0')}
+        ${selRow('cu-method','Cure method',['Natural brine - black','Spanish lye - green','Water cure','Split/slash brine'])}
+        ${selRow('cu-stage','Stage',stageSteps)}
+        <div class="sel-row"><label>Salt change due</label><input type="date" id="cu-salt"></div>
+        ${numRow('cu-wt-out','Final drained weight (kg)','0')}
+        ${notesRow('cu-notes')}
+        ${saveRow('saveCuring()','💾 Log / update batch')}
+      </div>
+    </div>`;}
+function saveSpray(){addRec('oliveSpray',{date:v('sp-date'),product:v('sp-prod-txt'),activeIngredient:v('sp-ai-txt'),nasaaStatus:v('sp-nasaa'),rate:v('sp-rate-txt'),area:v('sp-area-txt'),weather:v('sp-wx-txt'),reentryInterval:v('sp-rei-txt'),operator:v('sp-op-txt'),notes:v('sp-notes')});toast('✓ Spray logged');renderOlive();}
+function saveHarvest(){addRec('oliveHarvest',{date:v('hv-date'),variety:v('hv-var'),weightKg:v('hv-kg'),grade:v('hv-grade'),colourIndex:v('hv-colour'),destination:v('hv-dest'),notes:v('hv-notes')});toast('✓ Harvest logged');renderOlive();}
+function saveCuring(){addRec('oliveCuring',{startDate:v('cu-date'),batchId:v('cu-id-txt'),variety:v('cu-var'),weightIn:v('cu-wt-in'),cureMethod:v('cu-method'),stage:v('cu-stage'),saltChangeDate:v('cu-salt'),weightOut:v('cu-wt-out'),notes:v('cu-notes')});toast('✓ Curing batch logged');renderOlive();}
+
+// ── MACADAMIA ─────────────────────────────────────────────────────────────────
+function renderMac(){
+  const db=loadDB();
+  const treeCount=(db.macTree||[]).length;
+  const sold=(db.macGraft||[]).filter(r=>r.activity==='Sold').reduce((a,r)=>a+parseFloat(r.revenue||0),0);
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">🌰</span>
+        <div><div class="card-title">Macadamia</div>
+          <div class="card-sub">${treeCount} trees registered · $${sold.toFixed(0)} propagation sales</div></div>
+      </div>
+      <div class="card-body">
+        <div class="sec-lbl">Register tree</div>
+        ${selRow('mt-id','Tree ID','mt-id-txt','e.g. MAC-E-03')}
+        ${selRow('mt-row','Row',['East boundary row','West boundary row','Existing mature tree (scion source)'])}
+        ${dateBar('mt-date')}
+        ${selRow('mt-graft','Grafted?',['Yes - own scion','Yes - purchased grafted','No - own-root seedling'])}
+        ${selRow('mt-root','Rootstock','mt-root-txt','e.g. M. integrifolia from own nuts')}
+        ${selRow('mt-cond','Condition',['Establishing','Good','Excellent','Stressed','Graft failed'])}
+        ${notesRow('mt-notes')}
+        ${saveRow('saveMacTree()','💾 Register tree')}
+        <div class="sec-lbl">Propagation log</div>
+        ${selRow('mg-act','Activity',['Rootstock seed sown','Rootstock potted up','Chip bud graft','Cleft graft','Cutting (other species)','Potted up - saleable','Sold'])}
+        ${selRow('mg-sp','Species','mg-sp-txt','e.g. M. integrifolia - own scion')}
+        ${numRow('mg-qty','Quantity','0')}
+        ${numRow('mg-suc','Successful takes','0')}
+        ${numRow('mg-price','Sale price/unit ($)','0')}
+        ${numRow('mg-rev','Total revenue ($)','0')}
+        ${notesRow('mg-notes')}
+        ${saveRow('saveMacGraft()','💾 Log propagation')}
+      </div>
+      ${recSection('macGraft',r=>`<strong>${r.activity}</strong> · ${r.species||''} · qty ${r.quantity||0}${r.successCount?` · ${r.successCount} took`:''}${r.revenue&&r.revenue>0?` · $${r.revenue}`:''}${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`,'Propagation records')}
+    </div>`;}
+function saveMacTree(){addRec('macTree',{planted:v('mt-date'),treeId:v('mt-id-txt'),row:v('mt-row'),grafted:v('mt-graft'),rootstock:v('mt-root-txt'),condition:v('mt-cond'),notes:v('mt-notes')});toast('✓ Tree registered');renderMac();}
+function saveMacGraft(){addRec('macGraft',{date:v('mt-date')||today(),activity:v('mg-act'),species:v('mg-sp-txt'),quantity:v('mg-qty'),successCount:v('mg-suc'),salePrice:v('mg-price'),revenue:v('mg-rev'),notes:v('mg-notes')});toast('✓ Propagation logged');renderMac();}
+
+// ── BEES ─────────────────────────────────────────────────────────────────────
+function renderBees(){
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">🐝</span>
+        <div><div class="card-title">Hive inspection</div></div>
+      </div>
+      <div class="card-body">
+        ${dateBar('bee-date')}
+        ${selRow('bee-hive','Hive ID','bee-hive-txt','e.g. Hive 1, NB-3')}
+        ${selRow('bee-type','Hive type',['Langstroth','Native stingless (T. carbonaria)','Nucleus'])}
+        ${selRow('bee-activity','Activity level',['High — strong foraging','Medium — normal','Low — investigate','No activity — urgent'])}
+        ${selRow('bee-brood','Eggs / brood',['Yes — healthy pattern','Yes — patchy / concern','No eggs seen','Not inspected'])}
+        ${selRow('bee-queen','Queen',['Not checked','Queen seen','Queen cells present','Queenless suspected'])}
+        ${selRow('bee-varroa','Varroa',['Not checked','Below threshold','Treatment needed','Treatment applied'])}
+        ${selRow('bee-supers','Supers',['No super','On — not full','On — ready to extract','Removed — extracted'])}
+        ${numRow('bee-honey','Honey extracted (kg)','0')}
+        ${notesRow('bee-notes','Temperament, swarming, disease signs...')}
+        ${saveRow('saveBees()','💾 Log inspection')}
+      </div>
+      ${recSection('health',r=>r.species?.includes('bee')||r.species?.includes('Bee')||r.species?.includes('stingless')||r.species?.includes('Langstroth')||r.species?.includes('Nucleus')?`<strong>${r.animal||'Hive'}</strong> · ${r.details||''}${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`:null,'Hive records')}
+    </div>`;}
+function saveBees(){addRec('health',{date:v('bee-date'),animal:v('bee-hive-txt'),species:v('bee-type'),type:'Hive inspection',details:[v('bee-activity'),v('bee-brood'),v('bee-queen'),v('bee-varroa'),v('bee-supers')].filter(Boolean).join(' · '),honeyKg:v('bee-honey'),notes:v('bee-notes')});toast('✓ Hive inspection logged');renderBees();}
+
+// ── HEMP ─────────────────────────────────────────────────────────────────────
+function renderHemp(){
+  const db=loadDB();
+  const yld=(db.hempCrop||[]).filter(r=>r.entryType==='Harvest').reduce((a,r)=>a+parseFloat(r.yieldKg||0),0);
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">🌿</span>
+        <div><div class="card-title">Hemp crop</div>
+          <div class="card-sub">DAF QLD licence log${yld>0?` · ${yld}kg harvested`:''}</div></div>
+      </div>
+      <div class="card-body">
+        ${dateBar('hp-date')}
+        ${selRow('hp-etype','Entry type',['Planting','Irrigation','Fertiliser application','Pest/disease observation','Harvest','Sale','Compliance inspection'])}
+        ${selRow('hp-lic','Licence number','hp-lic-txt','DAF QLD licence number')}
+        ${selRow('hp-cult','Cultivar','hp-cult-txt','e.g. Finola, Felina 32')}
+        ${numRow('hp-area','Area (ha)','0')}
+        ${numRow('hp-yield','Yield (kg) — harvest only','0')}
+        ${selRow('hp-prod','Product',['N/A','Seed - food grade','Seed - grain','Fibre - raw','Biomass','Combination'])}
+        ${selRow('hp-buyer','Buyer / processor','hp-buyer-txt','')}
+        ${numRow('hp-rev','Revenue ($)','0')}
+        ${notesRow('hp-notes','Compliance notes, inspection outcome...')}
+        ${saveRow('saveHemp()','💾 Log hemp entry')}
+      </div>
+      ${recSection('hempCrop',r=>`<strong>${r.entryType}</strong> · ${r.cultivar||''} ${r.areaHa?` · ${r.areaHa}ha`:''}${r.yieldKg&&r.yieldKg>0?` · <strong>${r.yieldKg}kg</strong>`:''}${r.revenue&&r.revenue>0?` · $${r.revenue}`:''}${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`)}
+    </div>`;}
+function saveHemp(){addRec('hempCrop',{date:v('hp-date'),entryType:v('hp-etype'),licenceNo:v('hp-lic-txt'),cultivar:v('hp-cult-txt'),areaHa:v('hp-area'),yieldKg:v('hp-yield'),product:v('hp-prod'),buyer:v('hp-buyer-txt'),revenue:v('hp-rev'),notes:v('hp-notes')});toast('✓ Hemp logged');renderHemp();}
+
+// ── LIVESTOCK ─────────────────────────────────────────────────────────────────
+function renderLivestock(){
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">🐔</span>
+        <div><div class="card-title">Poultry round</div><div class="card-sub">Daily flock check — use Eggs tab to log egg counts</div></div>
+      </div>
+      <div class="card-body">
+        ${dateBar('lv-date')}
+        ${selRow('lv-paddock','Active paddock',['Paddock A','Paddock B','Paddock C','Grove access'])}
+        ${selRow('lv-cond','Flock condition',['Excellent','Good','Fair — note below','Poor — action needed'])}
+        ${numRow('lv-count','Visible bird count','0')}
+        ${selRow('lv-feed','Feed',['Layers pellets — full ration','Pellets + BSFL supplement','Free-range only','Reduced ration'])}
+        ${selRow('lv-water','Water',['Full and clean','Topped up','Cleaned and refilled','Low — topped up urgently'])}
+        ${selRow('lv-fence','Fence integrity',['Intact — checked','Minor repair needed','Breach found — repaired','Breach found — needs attention'])}
+        ${notesRow('lv-notes','Predator sign, sick birds, behaviour...')}
+        ${saveRow('saveLivestock()','💾 Log round')}
+      </div>
+      ${recSection('pasture',r=>`<strong>${r.type||'round'}</strong> · ${r.section||''}${r.animals?` · ${r.animals}`:''}${r.notes?`<br><span class="dim">${r.notes}</span>`:''}`,'Round records')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">🦆</span>
+        <div><div class="card-title">Waterfowl</div><div class="card-sub">Guinea fowl, Muscovy, Geese</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${dateBar('wf-date')}
+        ${selRow('wf-sp','Species',['Guinea fowl','Muscovy duck','Pilgrim goose','Toulouse goose','All waterfowl'])}
+        ${selRow('wf-type','Entry type',['Daily check','Egg count','Health check','Treatment','Mortality','New bird'])}
+        ${numRow('wf-count','Count','0')}
+        ${numRow('wf-eggs','Eggs collected','0')}
+        ${numRow('wf-egrev','Egg revenue ($)','0')}
+        ${selRow('wf-loc','Location',['Paddock A','Paddock B','Paddock C','Grove access','Tent Hill Creek corridor'])}
+        ${notesRow('wf-notes')}
+        ${saveRow('saveWF()','💾 Log waterfowl')}
+      </div>
+      ${recSection('waterfowl',r=>`<strong>${r.species}</strong> · ${r.entryType}${r.count?` · ${r.count}`:''}${r.eggs&&r.eggs>0?` · ${r.eggs} eggs`:''}`,'Waterfowl records')}
+    </div>
+    <div class="card">
+      <div class="card-hdr" onclick="toggleBody(this)"><span class="card-icon">💊</span>
+        <div><div class="card-title">Health &amp; treatment</div></div>
+        <div class="card-hdr-right"><span class="chevron">▼</span></div>
+      </div>
+      <div class="card-body hidden">
+        ${dateBar('hl-date')}
+        ${selRow('hl-animal','Animal','hl-animal-txt','e.g. Hive 1, All Isa Browns')}
+        ${selRow('hl-sp','Species',['Isa Brown','Guinea fowl','Muscovy duck','Goose','Bee hive','All poultry'])}
+        ${selRow('hl-type','Record type',['Illness observed','Treatment / drench','Vaccination','Death','Weight check','Vet visit'])}
+        <div class="notes-row"><textarea id="hl-details" placeholder="Symptoms, diagnosis, product, dose, withholding period..." rows="3"></textarea></div>
+        ${numRow('hl-cost','Cost ($)','0')}
+        <div class="sel-row"><label>Next due</label><input type="date" id="hl-next"></div>
+        ${saveRow('saveHealth()','💾 Log health record')}
+      </div>
+      ${recSection('health',r=>r.type==='Hive inspection'?null:`<strong>${r.type}</strong> · ${r.animal||''} (${r.species||''})${r.details?`<br><span class="dim">${r.details}</span>`:''}`,'Health records')}
+    </div>`;}
+function saveLivestock(){addRec('pasture',{date:v('lv-date'),type:'Poultry round',section:v('lv-paddock'),animals:`~${v('lv-count')} birds`,grassCover:v('lv-cond'),notes:['Feed:'+v('lv-feed'),'Water:'+v('lv-water'),'Fence:'+v('lv-fence'),v('lv-notes')].filter(s=>s&&s.length>6).join(' · ')});toast('✓ Round logged');renderLivestock();}
+function saveWF(){addRec('waterfowl',{date:v('wf-date'),species:v('wf-sp'),entryType:v('wf-type'),count:v('wf-count'),eggs:v('wf-eggs'),eggRevenue:v('wf-egrev'),location:v('wf-loc'),notes:v('wf-notes')});toast('✓ Waterfowl logged');renderLivestock();}
+function saveHealth(){addRec('health',{date:v('hl-date'),animal:v('hl-animal-txt'),species:v('hl-sp'),type:v('hl-type'),details:v('hl-details'),cost:v('hl-cost'),nextDue:v('hl-next')});toast('✓ Health record logged');renderLivestock();}
+
+// ── FINANCE ───────────────────────────────────────────────────────────────────
+let finType='Expense';
+// ── FINANCE — P&L WITH ANNUAL TARGETS ───────────────────────────────────────
+const FIN_TARGET_KEY='farmFinTargets_v1';
+function loadTargets(){try{return JSON.parse(localStorage.getItem(FIN_TARGET_KEY))||{};}catch(e){return{};}}
+function saveTargets(t){localStorage.setItem(FIN_TARGET_KEY,JSON.stringify(t));}
+
+const ENT_LIST=[
+  'Olive grove — table olives','BSFL — larvae','BSFL — frass','BSFL — gate fees',
+  'Honey — Langstroth','Honey — native stingless','Commercial pollination',
+  'Jade Perch — aquaponics','Aquaponics — produce','Free-range eggs',
+  'Hemp seed / fibre','Finger lime','Nasturtium','Vanilla','Wasabi',
+  'Macadamia — nuts','Macadamia — grafted plants','Waterfowl','Farm-wide / general'
+];
+const DEFAULT_TARGETS={
+  'Olive grove — table olives':70000,'BSFL — larvae':18000,'BSFL — frass':8000,
+  'BSFL — gate fees':12000,'Honey — Langstroth':15000,'Honey — native stingless':8000,
+  'Commercial pollination':12000,'Jade Perch — aquaponics':20000,'Aquaponics — produce':8000,
+  'Free-range eggs':9500,'Hemp seed / fibre':7500,'Finger lime':8000,'Nasturtium':2000,
+  'Vanilla':4000,'Wasabi':3000,'Macadamia — nuts':3000,'Macadamia — grafted plants':4000,
+  'Waterfowl':3000,'Farm-wide / general':0
+};
+
+let finTab='pl';
+let finType='Expense';
+function fmt(n){return n>=1000?Math.round(n).toLocaleString('en-AU'):Math.round(n).toString();}
+function getCurrentFY(){const now=new Date();const yr=now.getMonth()>=6?now.getFullYear():now.getFullYear()-1;return{start:new Date(yr,6,1),end:new Date(yr+1,5,30),label:`${yr}-${String(yr+1).slice(2)}`};}
+
+function renderFinance(){
+  const db=loadDB(),recs=db.finance||[];
+  const tabHtml=['pl','add','targets'].map(t=>`<button onclick="finTab='${t}';renderFinance()"
+    style="padding:.4rem .9rem;border:none;border-bottom:2px solid ${t==='pl'?'PLCHECK':t==='add'?'ADDCHECK':'TGTCHECK'};background:transparent;font-size:.82rem;cursor:pointer">LBLCHECK</button>`).join('');
+  // build tabs manually to avoid template issues
+  const tabs=[{id:'pl',label:'P&L'},{id:'add',label:'+ Add'},{id:'targets',label:'Targets'}];
+  const tb=tabs.map(t=>{
+    const active=finTab===t.id;
+    return`<button onclick="finTab='${t.id}';renderFinance()" style="padding:.4rem .9rem;border:none;border-bottom:2px solid ${active?'var(--sage-dark)':'transparent'};background:transparent;font-size:.82rem;font-weight:${active?600:400};color:${active?'var(--sage-dark)':'var(--text-mid)'};cursor:pointer">${t.label}</button>`;
+  }).join('');
+  let body='';
+  if(finTab==='pl') body=renderPL(recs);
+  else if(finTab==='add') body=renderAddTx();
+  else body=renderTargetsEditor();
+  g('content').innerHTML=`<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem .3rem;border-bottom:1px solid var(--border)"><div style="display:flex;gap:0">${tb}</div><span style="font-size:.7rem;color:var(--text-light)">${recs.length} transactions</span></div>${body}</div>`;
+}
+
+function renderPL(recs){
+  const targets=loadTargets();const fy=getCurrentFY();
+  const fyRecs=recs.filter(r=>{if(!r.date)return false;const d=new Date(r.date);return d>=fy.start&&d<=fy.end;});
+  const byEnt={};ENT_LIST.forEach(e=>{byEnt[e]={inc:0,exp:0};});
+  fyRecs.forEach(r=>{const e=r.enterprise||'Farm-wide / general';if(!byEnt[e])byEnt[e]={inc:0,exp:0};if(r.type==='Income')byEnt[e].inc+=parseFloat(r.amount||0);else byEnt[e].exp+=parseFloat(r.amount||0);});
+  const totalInc=Object.values(byEnt).reduce((a,v)=>a+v.inc,0);
+  const totalExp=Object.values(byEnt).reduce((a,v)=>a+v.exp,0);
+  const totalNet=totalInc-totalExp;
+  const totalTarget=ENT_LIST.reduce((a,e)=>a+(targets[e]??DEFAULT_TARGETS[e]??0),0);
+  const pct=totalTarget>0?Math.min(100,totalNet/totalTarget*100):0;
+  const barColor=pct>=80?'var(--green)':pct>=40?'#C8A018':'var(--rust)';
+  let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)">
+    <div style="background:var(--cream);padding:.65rem;text-align:center"><div style="font-size:.62rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em">Income</div><div style="font-size:1.05rem;font-weight:700;color:var(--green)">$${fmt(totalInc)}</div></div>
+    <div style="background:var(--cream);padding:.65rem;text-align:center"><div style="font-size:.62rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em">Expenses</div><div style="font-size:1.05rem;font-weight:700;color:var(--rust)">$${fmt(totalExp)}</div></div>
+    <div style="background:var(--cream);padding:.65rem;text-align:center"><div style="font-size:.62rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em">Net profit</div><div style="font-size:1.05rem;font-weight:700;color:${totalNet>=0?'var(--green)':'var(--rust)'}">$${fmt(totalNet)}</div></div>
+  </div>
+  <div style="padding:.7rem 1rem .5rem;border-bottom:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.35rem"><span style="color:var(--text-mid);font-weight:600">Annual target — FY${fy.label}</span><span style="font-weight:700;color:${barColor}">${pct.toFixed(0)}% of $${fmt(totalTarget)}</span></div>
+    <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px"></div></div>
+  </div>
+  <div style="padding:.4rem 1rem .2rem;font-size:.62rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em;font-weight:600">Enterprise breakdown</div>`;
+  ENT_LIST.filter(e=>{const t=targets[e]??DEFAULT_TARGETS[e]??0;const d=byEnt[e]||{inc:0,exp:0};return t>0||d.inc>0||d.exp>0;}).forEach(e=>{
+    const d=byEnt[e]||{inc:0,exp:0};const net=d.inc-d.exp;const tgt=targets[e]??DEFAULT_TARGETS[e]??0;
+    const ep=tgt>0?Math.min(100,net/tgt*100):null;const ec=ep===null?'var(--text-light)':ep>=80?'var(--green)':ep>=40?'#C8A018':'var(--rust)';
+    html+=`<div style="padding:.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.79rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e}</div>
+        <div style="font-size:.67rem;color:var(--text-mid);margin-top:.1rem"><span style="color:var(--green)">+$${fmt(d.inc)}</span> · <span style="color:var(--rust)">-$${fmt(d.exp)}</span>${tgt>0?` · target $${fmt(tgt)}`:''}</div>
+        ${tgt>0?`<div style="height:4px;background:var(--border);border-radius:2px;margin-top:.3rem;overflow:hidden"><div style="height:100%;width:${ep}%;background:${ec};border-radius:2px"></div></div>`:''}
+      </div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:.9rem;font-weight:700;color:${net>=0?'var(--green)':'var(--rust)'}">$${fmt(net)}</div>${ep!==null?`<div style="font-size:.65rem;color:${ec};font-weight:600">${ep.toFixed(0)}%</div>`:''}</div>
+    </div>`;
+  });
+  const recent=(recs||[]).slice(0,12);
+  html+=`<div style="padding:.4rem 1rem .2rem;margin-top:.2rem;font-size:.62rem;color:var(--text-light);text-transform:uppercase;letter-spacing:.08em;font-weight:600">Recent transactions</div>`;
+  html+=recent.length?recent.map(r=>`<div class="rec-row"><span class="rec-date">${fmtD(r.date)}</span><span class="rec-txt"><span style="color:${r.type==='Income'?'var(--green)':'var(--rust)'};font-weight:600">${r.type==='Income'?'+':'-'}$${parseFloat(r.amount||0).toFixed(2)}</span> · <strong>${r.enterprise||''}</strong> · ${r.description||''}<br><span class="dim">${r.taxCategory||''}</span></span><span class="rec-del" onclick="delRec('finance',${r._id});renderFinance()">✕</span></div>`).join(''):`<div class="empty">No transactions yet — use the Add tab</div>`;
+  return html;
+}
+
+function renderAddTx(){
+  return`<div class="card-body">${dateBar('fn-date')}<div class="disp-row" id="fn-type-row"><button class="disp-btn${finType==='Expense'?' sel':''}" onclick="setFT('Expense')">💸 Expense</button><button class="disp-btn${finType==='Income'?' sel':''}" onclick="setFT('Income')">💵 Income</button></div><div class="sel-row"><label>ATO category</label><select id="fn-cat"><optgroup label="Expenses">${['D1 – Repairs & maintenance','D2 – Capital improvement (depreciate)','D3 – Motor vehicle','D4 – Animal purchases','D5 – Feed and fodder','D6 – Vet and chemicals','D7 – Seeds and plants','D8 – Fencing and water','D9 – Fuel and oil','D10 – Wages and labour','D13 – Loan interest','D17 – Other deductible','D18 – Non-deductible'].map(o=>`<option>${o}</option>`).join('')}</optgroup><optgroup label="Income">${['I1 – Primary production sales','I2 – Livestock sales','I3 – Crop and produce sales','I4 – Honey and bee products','I5 – Other farm income','I6 – Govt grants / rebates'].map(o=>`<option>${o}</option>`).join('')}</optgroup></select></div><div class="sel-row"><label>Enterprise</label><select id="fn-ent">${ENT_LIST.map(o=>`<option>${o}</option>`).join('')}</select></div>${selRow('fn-desc','Description','fn-desc-txt','Brief description')}${selRow('fn-sup','Supplier / buyer','fn-sup-txt','Business name')}${numRow('fn-amt','Amount ($)','0.00')}${selRow('fn-gst','GST status',['GST inclusive (10%)','GST free','No GST — not registered'])}${selRow('fn-bas','BAS quarter',['Q1 — Jul to Sep','Q2 — Oct to Dec','Q3 — Jan to Mar','Q4 — Apr to Jun'])}${selRow('fn-pay','Payment',['Bank transfer','Card — business','Card — personal (claim back)','Cash'])}${notesRow('fn-notes','Details for accountant')}${saveRow('saveFinance()','💾 Save transaction')}</div>`;
+}
+
+function renderTargetsEditor(){
+  const targets=loadTargets();
+  const total=ENT_LIST.reduce((a,e)=>a+(targets[e]??DEFAULT_TARGETS[e]??0),0);
+  const ok=total>=200000;
+  let html=`<div style="padding:.6rem 1rem .4rem;font-size:.78rem;color:var(--text-mid);line-height:1.5;border-bottom:1px solid var(--border)">Set annual profit target per enterprise.<br><strong id="tgt-total" style="color:${ok?'var(--green)':'var(--rust)'}">Combined: $${fmt(total)}/yr ${ok?'✓ ≥$200K':'— below $200K goal'}</strong></div>`;
+  ENT_LIST.filter(e=>(DEFAULT_TARGETS[e]??0)>0).forEach(e=>{
+    const val=targets[e]??DEFAULT_TARGETS[e]??0;
+    html+=`<div style="padding:.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.7rem"><div style="flex:1;font-size:.79rem;font-weight:600">${e}</div><div style="display:flex;align-items:center;gap:.3rem"><span style="font-size:.72rem;color:var(--text-light)">$</span><input type="number" value="${val}" min="0" step="500" style="width:82px;padding:.3rem .4rem;border:1px solid var(--border-strong);border-radius:5px;font-size:.82rem;text-align:right;font-family:inherit" onchange="updateTarget('${e}',this.value)"></div></div>`;
+  });
+  html+=`<div style="padding:.6rem 1rem"><button onclick="resetTargets()" style="font-size:.75rem;padding:.3rem .8rem;border:1px solid var(--border-strong);border-radius:6px;background:white;cursor:pointer;color:var(--text-mid)">Reset to defaults</button></div>`;
+  return html;
+}
+
+function updateTarget(ent,val){
+  const t=loadTargets();t[ent]=parseFloat(val)||0;saveTargets(t);
+  const total=ENT_LIST.reduce((a,e)=>a+(t[e]??DEFAULT_TARGETS[e]??0),0);
+  const el=g('tgt-total');
+  if(el){el.textContent=`Combined: $${fmt(total)}/yr ${total>=200000?'✓ ≥$200K':'— below $200K goal'}`;el.style.color=total>=200000?'var(--green)':'var(--rust)';}
+}
+function resetTargets(){saveTargets({});renderFinance();}
+function setFT(t){finType=t;document.querySelectorAll('#fn-type-row .disp-btn').forEach(b=>b.classList.toggle('sel',(t==='Expense'&&b.textContent.includes('Expense'))||(t==='Income'&&b.textContent.includes('Income'))));}
+function saveFinance(){const amt=parseFloat(v('fn-amt'))||0;if(!amt){toast('Enter an amount');return;}addRec('finance',{date:v('fn-date'),type:finType,taxCategory:v('fn-cat'),enterprise:v('fn-ent'),description:v('fn-desc-txt'),supplier:v('fn-sup-txt'),amount:amt,gstStatus:v('fn-gst'),basQuarter:v('fn-bas'),paymentMethod:v('fn-pay'),notes:v('fn-notes')});toast(`✓ ${finType} $${amt.toFixed(2)} logged`);finTab='pl';renderFinance();}
+
+// ── ALL RECORDS ───────────────────────────────────────────────────────────────
+function renderAll(){
+  const db=loadDB();const all=[];
+  const km={eggs:'Eggs',aquaWater:'Water quality',aquaFish:'Fish',aquaProduce:'Grow bed',bsflBatch:'BSFL batch',bsflColony:'BSFL colony',bsflSales:'BSFL sales',oliveSpray:'Olive spray',oliveHarvest:'Olive harvest',oliveCuring:'Olive curing',macTree:'Mac tree',macGraft:'Mac graft',hempCrop:'Hemp',waterfowl:'Waterfowl',health:'Health',pasture:'Pasture',finance:'Finance',water:'Water',compost:'Compost',geese:'Geese',goats:'Goats'};
+  Object.entries(km).forEach(([k,lbl])=>(db[k]||[]).forEach(r=>all.push({...r,_type:lbl,_key:k})));
+  all.sort((a,b)=>new Date(b._saved||0)-new Date(a._saved||0));
+  g('content').innerHTML=`
+    <div style="margin-bottom:.6rem;font-size:.78rem;color:var(--text-mid)">${all.length} records across all enterprises</div>
+    <div class="card">
+      <div style="padding:.4rem 1.1rem;background:var(--cream-dark);font-size:.73rem;color:var(--text-mid)">Most recent first · tap ✕ to delete</div>
+      ${all.slice(0,80).map(r=>`<div class="rec-row">
+        <span class="rec-date"><span style="font-size:.65rem;color:var(--straw);display:block">${r._type}</span>${fmtD(r.date||r.startDate||r.loadDate||r._saved?.slice(0,10))}</span>
+        <span class="rec-txt">${Object.entries(r).filter(([k])=>!k.startsWith('_')&&k!=='date'&&k!=='startDate'&&k!=='loadDate').slice(0,5).map(([k,v])=>v&&String(v)!=='0'&&String(v)!=='null'?`<span class="dim">${k}:</span> ${v}`:null).filter(Boolean).join(' · ')}</span>
+        <span class="rec-del" onclick="delRec('${r._key}',${r._id});renderAll()">✕</span>
+      </div>`).join('')}
+      ${all.length>80?`<div class="empty">Showing 80 of ${all.length} records</div>`:''}
+    </div>`;}
+
+// ── ENTERPRISE CATALOGUE ─────────────────────────────────────────────────────
+const ENT_CATALOGUE=[
+  {cat:'Poultry',id:'tpl_layers',icon:'🐔',label:'Laying hens',purpose:['eggs','health'],
+   desc:'Track egg production by bird count, daily rounds, health events.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Isa Brown'},{id:'flock_size',label:'Flock size',type:'number',ph:'0'}],
+   dbKeys:['eggs','health']},
+  {cat:'Poultry',id:'tpl_meat_birds',icon:'🍗',label:'Meat birds',purpose:['meat','health'],
+   desc:'Batch records for broilers — growth, feed conversion, processing.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Cornish Cross'},{id:'batch_size',label:'Batch size',type:'number',ph:'0'}],
+   dbKeys:['meatBatch','health']},
+  {cat:'Poultry',id:'tpl_breeding_birds',icon:'🐣',label:'Breeding & hatching birds',purpose:['breeding','sales'],
+   desc:'Birds raised to sell as chicks, pullets or breeding stock — not eggs for eating.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Wyandotte, Silkie'},{id:'pairs',label:'Breeding pairs',type:'number',ph:'1'}],
+   dbKeys:['breedingBirds','hatchLog']},
+  {cat:'Poultry',id:'tpl_pet_birds',icon:'🦜',label:'Pet / ornamental birds',purpose:['sales','health'],
+   desc:'Captive birds for home sales — budgies, cockatiels, finches, doves. No egg or meat tracking.',
+   fields:[{id:'species',label:'Species',type:'text',ph:'e.g. Budgerigar'},{id:'licence',label:'QLD Wildlife licence',type:'text',ph:'If applicable'}],
+   dbKeys:['petBirds','health']},
+  {cat:'Poultry',id:'tpl_waterfowl_eggs',icon:'🦆',label:'Waterfowl — eggs & meat',purpose:['eggs','meat','health'],
+   desc:'Ducks, geese, guinea fowl — egg production and processing records.',
+   fields:[{id:'species',label:'Species',type:'select',opts:['Muscovy duck','Pekin duck','Toulouse goose','Pilgrim goose','Guinea fowl','Mixed']},{id:'flock_size',label:'Flock size',type:'number',ph:'0'}],
+   dbKeys:['waterfowl','health']},
+  {cat:'Livestock',id:'tpl_meat_goats',icon:'🐐',label:'Meat goats',purpose:['meat','health','breeding'],
+   desc:'Weight gain, health treatments, movement register for meat production.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Boer, Rangeland'},{id:'mob_size',label:'Mob size',type:'number',ph:'0'}],
+   dbKeys:['goats','health']},
+  {cat:'Livestock',id:'tpl_dairy_goats',icon:'🥛',label:'Dairy goats',purpose:['dairy','health','breeding'],
+   desc:'Daily milk yield, lactation records, kidding events.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Nubian, Saanen'},{id:'does',label:'Milking does',type:'number',ph:'0'}],
+   dbKeys:['dairyLog','health','breeding']},
+  {cat:'Livestock',id:'tpl_pigs',icon:'🐷',label:'Pigs',purpose:['meat','breeding','health'],
+   desc:'Batch tracking, weight gain, farrowing records.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Berkshire'},{id:'mob_size',label:'Pig count',type:'number',ph:'0'}],
+   dbKeys:['pigs','health']},
+  {cat:'Livestock',id:'tpl_cattle',icon:'🐄',label:'Cattle',purpose:['meat','breeding','health'],
+   desc:'Individual animal records, NLIS movement register, weight checks.',
+   fields:[{id:'breed',label:'Breed',type:'text',ph:'e.g. Angus, Brahman'},{id:'head',label:'Head count',type:'number',ph:'0'}],
+   dbKeys:['cattle','health']},
+  {cat:'Aquaculture',id:'tpl_aquarium_fish',icon:'🐠',label:'Native aquarium fish',purpose:['sales','breeding'],
+   desc:'Breeding tanks for native fish sold to the aquarium trade. No food-fish tracking.',
+   fields:[{id:'species',label:'Species',type:'text',ph:'e.g. Melanotaenia splendida'},{id:'tanks',label:'Breeding tanks',type:'number',ph:'0'}],
+   dbKeys:['aquariumFish']},
+  {cat:'Aquaculture',id:'tpl_yabby',icon:'🦞',label:'Yabby / freshwater crayfish',purpose:['meat','sales'],
+   desc:'Dam or tank culture — stocking, harvests, water quality.',
+   fields:[{id:'species',label:'Species',type:'select',opts:['Cherax destructor (yabby)','Cherax quadricarinatus (redclaw)','Other']},{id:'culture_type',label:'Culture method',type:'select',opts:['Earthen dam','Tank recirculating','Pond']}],
+   dbKeys:['yabby','aquaWater']},
+  {cat:'Insects',id:'tpl_mealworms',icon:'🐛',label:'Mealworms',purpose:['sales','feed'],
+   desc:'Tub rotation, harvest cycles, sales to reptile keepers and fishers.',
+   fields:[{id:'species',label:'Species',type:'select',opts:['Tenebrio molitor (mealworm)','Zophobas morio (superworm)','Both']},{id:'tubs',label:'Active tubs',type:'number',ph:'0'}],
+   dbKeys:['mealworms']},
+  {cat:'Insects',id:'tpl_crickets',icon:'🦗',label:'Crickets',purpose:['sales','feed'],
+   desc:'Batch records for feeder crickets sold live to reptile keepers.',
+   fields:[{id:'species',label:'Species',type:'text',ph:'e.g. Acheta domesticus'},{id:'enclosures',label:'Enclosures',type:'number',ph:'0'}],
+   dbKeys:['crickets']},
+  {cat:'Insects',id:'tpl_silkworms',icon:'🐛',label:'Silkworms',purpose:['sales','fibre'],
+   desc:'Cycle log — cocoons sold to textile producers or educators.',
+   fields:[{id:'mulberry_trees',label:'Mulberry trees',type:'number',ph:'0'}],
+   dbKeys:['silkworms']},
+  {cat:'Horticulture',id:'tpl_cut_flowers',icon:'🌻',label:'Cut flowers',purpose:['sales','produce'],
+   desc:'Planting, harvest and sale records for cut flower beds.',
+   fields:[{id:'varieties',label:'Main varieties',type:'text',ph:'e.g. Sunflower, Zinnia'},{id:'beds',label:'Number of beds',type:'number',ph:'0'},{id:'channel',label:'Sales channel',type:'select',opts:['Florists','Farmers market','Online','Mixed']}],
+   dbKeys:['cutFlowers']},
+  {cat:'Horticulture',id:'tpl_mushrooms',icon:'🍄',label:'Gourmet mushrooms',purpose:['produce','sales'],
+   desc:'Flush records, substrate batches, yields per variety.',
+   fields:[{id:'varieties',label:'Varieties',type:'text',ph:'e.g. Oyster, Shiitake'},{id:'grow_room',label:'Grow setup',type:'text',ph:'e.g. Insulated shed room'}],
+   dbKeys:['mushrooms']},
+  {cat:'Horticulture',id:'tpl_market_garden',icon:'🥦',label:'Market garden',purpose:['produce','sales'],
+   desc:'Bed-by-bed planting, harvest and sales tracking for mixed vegetables.',
+   fields:[{id:'beds',label:'Number of beds',type:'number',ph:'0'},{id:'channel',label:'Sales channel',type:'select',opts:['Restaurants','Farmers market','Farmgate','CSA box','Mixed']}],
+   dbKeys:['marketGarden']},
+  {cat:'Horticulture',id:'tpl_propagation',icon:'🌱',label:'Plant propagation / nursery',purpose:['sales','breeding'],
+   desc:'Seed, cutting and graft records — plants grown for sale.',
+   fields:[{id:'focus',label:'Main plant types',type:'text',ph:'e.g. Native trees, Macadamia grafts'},{id:'channel',label:'Sales channel',type:'select',opts:['Farmgate','Markets','Online','Wholesale nursery']}],
+   dbKeys:['propagation']},
+  {cat:'Specialty',id:'tpl_escargot',icon:'🐌',label:'Escargot (edible snails)',purpose:['produce','sales'],
+   desc:'Contained snail farming for restaurant supply.',
+   fields:[{id:'species',label:'Species',type:'text',ph:'Helix aspersa'},{id:'enclosures',label:'Enclosures',type:'number',ph:'0'}],
+   dbKeys:['escargot']},
+  {cat:'Specialty',id:'tpl_emu',icon:'🦤',label:'Emus',purpose:['oil','meat','fibre'],
+   desc:'Oil production, egg records, processing log.',
+   fields:[{id:'mob_size',label:'Number of birds',type:'number',ph:'0'}],
+   dbKeys:['emus','health']},
+  {cat:'Specialty',id:'tpl_peafowl',icon:'🦚',label:'Peafowl',purpose:['sales','eggs','feathers'],
+   desc:'Egg and feather harvest, bird sales, health records.',
+   fields:[{id:'flock_size',label:'Flock size',type:'number',ph:'0'}],
+   dbKeys:['peafowl','health']},
+  {cat:'Specialty',id:'tpl_reptiles',icon:'🦎',label:'Reptiles (captive breeding)',purpose:['sales','breeding'],
+   desc:'Clutch records, hatchlings, sales. QLD Wildlife licence required.',
+   fields:[{id:'species',label:'Species',type:'text',ph:'e.g. Blue-tongue skink'},{id:'licence',label:'QLD Wildlife licence',type:'text',ph:'Required for sale'}],
+   dbKeys:['reptiles']},
+];
+
+// ── CUSTOM ENTERPRISE STORAGE ─────────────────────────────────────────────────
+const ENT_KEY='farmCustomEnterprises_v1';
+function loadEnterprises(){try{return JSON.parse(localStorage.getItem(ENT_KEY))||[];}catch(e){return[];}}
+function saveEnterprises(list){localStorage.setItem(ENT_KEY,JSON.stringify(list));}
+
+// ── ENTERPRISES MANAGER ───────────────────────────────────────────────────────
+let entSearchQ='',entCat='All',entModalId=null;
+
+function renderEnterprises(){
+  const custom=loadEnterprises();
+  const cats=['All',...[...new Set(ENT_CATALOGUE.map(e=>e.cat))]];
+  const filtered=ENT_CATALOGUE.filter(e=>{
+    const mc=entCat==='All'||e.cat===entCat;
+    const mq=!entSearchQ||e.label.toLowerCase().includes(entSearchQ)||e.desc.toLowerCase().includes(entSearchQ)||e.cat.toLowerCase().includes(entSearchQ);
+    return mc&&mq;
+  });
+  const bycat={};
+  filtered.forEach(e=>{if(!bycat[e.cat])bycat[e.cat]=[];bycat[e.cat].push(e);});
+  const isAdded=id=>custom.some(c=>c.templateId===id);
+
+  g('content').innerHTML=`
+    <div class="card" style="margin-bottom:.6rem">
+      <div class="card-hdr"><span class="card-icon">⚙</span>
+        <div><div class="card-title">Manage enterprises</div>
+          <div class="card-sub">Add tracking tabs for your active enterprises</div></div>
+      </div>
+      <div style="padding:.5rem 1.1rem .6rem">
+        <input id="ent-search" type="text" placeholder="Search enterprises…"
+          style="width:100%;padding:.4rem .7rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.83rem;font-family:inherit;color:var(--text);background:white"
+          value="${entSearchQ}" oninput="entSearchQ=this.value.toLowerCase();renderEnterprises()">
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem">
+          ${cats.map(c=>`<button onclick="entCat='${c}';renderEnterprises()"
+            style="padding:.25rem .65rem;border-radius:20px;border:1px solid var(--border-strong);background:${entCat===c?'var(--sage-dark)':'white'};color:${entCat===c?'white':'var(--text-mid)'};font-size:.73rem;cursor:pointer">${c}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${Object.entries(bycat).map(([cat,items])=>`
+      <div style="font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.4rem 0 .3rem">${cat}</div>
+      ${items.map(e=>{
+        const added=isAdded(e.id);
+        return`<div class="card" style="margin-bottom:.45rem;${added?'opacity:.55':''}">
+          <div style="padding:.7rem 1.1rem;display:flex;align-items:flex-start;gap:.7rem">
+            <span style="font-size:1.5rem;flex-shrink:0">${e.icon}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:.88rem;font-weight:600">${e.label}</div>
+              <div style="font-size:.73rem;color:var(--text-mid);margin:.1rem 0 .45rem;line-height:1.4">${e.desc}</div>
+              <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+                ${e.purpose.map(p=>`<span style="font-size:.65rem;padding:.15rem .5rem;border-radius:4px;background:var(--sage-light);color:var(--sage-dark);font-weight:600">${p}</span>`).join('')}
+              </div>
+            </div>
+            <div style="flex-shrink:0">
+              ${added
+                ?`<button onclick="removeEnterprise('${e.id}')" style="padding:.3rem .75rem;border:1px solid var(--border-strong);border-radius:6px;background:white;font-size:.75rem;cursor:pointer;color:var(--text-mid)">Remove</button>`
+                :`<button onclick="openEntModal('${e.id}')" style="padding:.3rem .75rem;background:var(--sage-dark);color:white;border:none;border-radius:6px;font-size:.75rem;cursor:pointer">Add</button>`
+              }
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    `).join('')}
+    ${custom.length?`
+      <div style="font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.8rem 0 .3rem">Your active enterprises</div>
+      ${custom.map(e=>`
+        <div class="card" style="margin-bottom:.4rem">
+          <div style="padding:.65rem 1.1rem;display:flex;align-items:center;gap:.7rem">
+            <span style="font-size:1.3rem">${e.icon}</span>
+            <div style="flex:1">
+              <div style="font-size:.85rem;font-weight:600">${e.label}</div>
+              <div style="font-size:.7rem;color:var(--text-mid)">${(e.purpose||[]).join(' · ')}</div>
+            </div>
+            <button onclick="goTab('ent_${e.id}')" style="padding:.3rem .75rem;background:var(--bark);color:white;border:none;border-radius:6px;font-size:.75rem;cursor:pointer;margin-right:.35rem">Open</button>
+            <button onclick="removeEnterprise('${e.id}')" style="padding:.3rem .6rem;border:1px solid var(--border-strong);border-radius:6px;background:white;font-size:.75rem;cursor:pointer;color:var(--text-mid)">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    `:''}
+    <div id="ent-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center">
+      <div id="ent-modal-body" style="background:var(--cream);width:100%;max-width:600px;border-radius:14px 14px 0 0;padding:1.1rem;max-height:85vh;overflow-y:auto"></div>
+    </div>
+  `;
+}
+
+function openEntModal(tplId){
+  entModalId=tplId;
+  const tpl=ENT_CATALOGUE.find(e=>e.id===tplId);
+  if(!tpl)return;
+  const modal=g('ent-modal');
+  if(!modal){toast('Open Enterprises tab first');return;}
+  modal.style.display='flex';
+  g('ent-modal-body').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">
+      <div style="font-size:1rem;font-weight:600">${tpl.icon} Add ${tpl.label}</div>
+      <button onclick="closeEntModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-mid)">✕</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--text-mid);margin-bottom:.9rem;line-height:1.5">${tpl.desc}</div>
+    <div style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.4rem">What will you track?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem">
+      ${tpl.purpose.map(p=>`<label style="display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border:1px solid var(--border-strong);border-radius:20px;background:white;font-size:.78rem;cursor:pointer">
+        <input type="checkbox" id="pur-${p}" checked style="accent-color:var(--sage-dark)"> ${p}
+      </label>`).join('')}
+    </div>
+    <div style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-light);margin-bottom:.4rem">Enterprise details</div>
+    <div style="margin-bottom:.5rem">
+      <label style="font-size:.8rem;color:var(--text-mid)">Tab name</label>
+      <input id="ent-name" type="text" value="${tpl.label}"
+        style="width:100%;margin-top:.3rem;padding:.4rem .65rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.85rem;font-family:inherit;color:var(--text)">
+    </div>
+    ${tpl.fields.map(f=>`
+      <div style="margin-bottom:.45rem">
+        <label style="font-size:.8rem;color:var(--text-mid)">${f.label}</label>
+        ${f.type==='select'
+          ?`<select id="ef-${f.id}" style="width:100%;margin-top:.3rem;padding:.4rem .65rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.83rem;font-family:inherit;color:var(--text)">${f.opts.map(o=>`<option>${o}</option>`).join('')}</select>`
+          :`<input id="ef-${f.id}" type="${f.type}" placeholder="${f.ph||''}" style="width:100%;margin-top:.3rem;padding:.4rem .65rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.83rem;font-family:inherit;color:var(--text)">`
+        }
+      </div>
+    `).join('')}
+    <button onclick="confirmAddEnterprise()" style="width:100%;margin-top:.8rem;padding:.65rem;background:var(--sage-dark);color:white;border:none;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer">
+      ✓ Add ${tpl.label} tab
+    </button>
+  `;
+}
+
+function closeEntModal(){const m=g('ent-modal');if(m)m.style.display='none';}
+
+function confirmAddEnterprise(){
+  const tpl=ENT_CATALOGUE.find(e=>e.id===entModalId);
+  if(!tpl)return;
+  const name=(g('ent-name')?.value||'').trim()||tpl.label;
+  const activePurpose=tpl.purpose.filter(p=>g('pur-'+p)?.checked);
+  const extras={};
+  tpl.fields.forEach(f=>{extras[f.id]=g('ef-'+f.id)?.value||'';});
+  const custom=loadEnterprises();
+  const uid='e'+Date.now();
+  custom.push({id:uid,templateId:tpl.id,label:name,icon:tpl.icon,cat:tpl.cat,purpose:activePurpose,dbKeys:tpl.dbKeys,config:extras});
+  saveEnterprises(custom);
+  const db=loadDB();
+  tpl.dbKeys.forEach(k=>{if(!db[k])db[k]=[];});
+  saveDB(db);
+  closeEntModal();
+  toast('✓ '+name+' tab added');
+  buildNav();
+  goTab('ent_'+uid);
+}
+
+function removeEnterprise(idOrTplId){
+  const custom=loadEnterprises();
+  const ent=custom.find(e=>e.id===idOrTplId||e.templateId===idOrTplId);
+  if(!ent)return;
+  if(!confirm('Remove "'+ent.label+'" tab? Your logged records are kept.'))return;
+  saveEnterprises(custom.filter(e=>e.id!==ent.id));
+  toast(ent.label+' removed');
+  buildNav();
+  if(activeTab==='ent_'+ent.id)goTab('overview');
+  else renderEnterprises();
+}
+
+// ── CUSTOM ENTERPRISE TAB RENDERER ───────────────────────────────────────────
+function renderCustomEnt(entId){
+  const custom=loadEnterprises();
+  const ent=custom.find(e=>e.id===entId);
+  if(!ent){g('content').innerHTML='<div class="empty">Enterprise not found</div>';return;}
+  const p=ent.purpose||[];
+  const db=loadDB();
+  const dbKey=ent.dbKeys?.[0]||('custom_'+entId);
+
+  let formRows=dateBar('ce-date');
+
+  if(p.includes('eggs')){
+    formRows+=`<div class="sec-lbl">Eggs collected today</div><div class="sp-grid">${spCell('ce-eggs','Eggs','🥚')}</div>`;
+  }
+  if(p.includes('breeding')||p.includes('sales')){
+    const evts=[
+      ...(p.includes('breeding')?['Clutch set','Hatch','Pairing made','Offspring weaned','Offspring sold']:[]),
+      ...(p.includes('sales')?['Sale','Stock take','Enquiry']:[]),
+      'Health check','Death','New animal'
+    ];
+    formRows+=selRow('ce-event','Event',evts);
+    formRows+=numRow('ce-count','Count / quantity','0');
+    formRows+=numRow('ce-revenue','Revenue ($)','0');
+  }
+  if(p.includes('meat')){
+    formRows+=selRow('ce-meat-event','Event',['Weight check','Batch started','Processed','Sold — whole','Sold — cuts','Death','Health treatment']);
+    formRows+=numRow('ce-weight','Weight (kg)','0');
+    formRows+=numRow('ce-count2','Count','0');
+    formRows+=numRow('ce-revenue2','Revenue ($)','0');
+  }
+  if(p.includes('dairy')){
+    formRows+=numRow('ce-milk','Milk yield (L)','0');
+    formRows+=selRow('ce-dairy-event','Event',['Morning milk','Evening milk','Kidding','Dry off','Health check']);
+  }
+  if(p.includes('produce')||p.includes('fibre')||p.includes('oil')){
+    formRows+=numRow('ce-yield','Yield / harvest (kg)','0');
+    formRows+=numRow('ce-revenue3','Revenue ($)','0');
+  }
+  if(p.includes('feed')){
+    formRows+=selRow('ce-feed-event','Entry type',['Substrate added','Harvest','Colony check','Sale']);
+    formRows+=numRow('ce-yield2','Output (kg)','0');
+    formRows+=numRow('ce-revenue4','Revenue ($)','0');
+  }
+  if(p.includes('health')){
+    formRows+=selRow('ce-health','Condition',['Excellent','Good','Fair — note below','Needs attention','Treatment applied']);
+  }
+  formRows+=notesRow('ce-notes');
+  formRows+=saveRow("saveCustomEnt('"+entId+"')",'💾 Log entry');
+
+  const cfgLines=Object.entries(ent.config||{}).filter(([,v])=>v).map(([k,v])=>k.replace(/_/g,' ')+': <strong>'+v+'</strong>').join(' · ');
+
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-icon">${ent.icon}</span>
+        <div>
+          <div class="card-title">${ent.label}</div>
+          ${cfgLines?`<div class="card-sub" style="line-height:1.5">${cfgLines}</div>`:''}
+        </div>
+        <div class="card-hdr-right">
+          <span style="font-size:.65rem;padding:.2rem .5rem;border-radius:10px;background:var(--sage-light);color:var(--sage-dark)">${p.join(' · ')}</span>
+        </div>
+      </div>
+      <div class="card-body">${formRows}</div>
+      ${recSection(dbKey,r=>{
+        const parts=[];
+        const eggVal=r.eggs||C['ce-eggs'];
+        if(eggVal&&String(eggVal)!=='0')parts.push('🥚 '+eggVal);
+        if(r.event)parts.push('<strong>'+r.event+'</strong>');
+        if(r.meat_event)parts.push('<strong>'+r.meat_event+'</strong>');
+        if(r.feed_event)parts.push('<strong>'+r.feed_event+'</strong>');
+        if(r.dairy_event)parts.push('<strong>'+r.dairy_event+'</strong>');
+        if(r.count&&r.count!='0')parts.push('×'+r.count);
+        if(r.weight&&r.weight!='0')parts.push(r.weight+'kg');
+        if(r.milk&&r.milk!='0')parts.push(r.milk+'L milk');
+        if(r.yield&&r.yield!='0')parts.push(r.yield+'kg yield');
+        if(r.revenue&&r.revenue!='0')parts.push('$'+r.revenue);
+        if(r.revenue2&&r.revenue2!='0')parts.push('$'+r.revenue2);
+        if(r.revenue3&&r.revenue3!='0')parts.push('$'+r.revenue3);
+        if(r.revenue4&&r.revenue4!='0')parts.push('$'+r.revenue4);
+        if(r.health)parts.push(r.health);
+        if(r.notes)parts.push('<span class="dim">'+r.notes+'</span>');
+        return parts.join(' · ')||'Entry';
+      },'Recent entries')}
+    </div>`;
+}
+
+function saveCustomEnt(entId){
+  const ent=loadEnterprises().find(e=>e.id===entId);
+  if(!ent)return;
+  const dbKey=ent.dbKeys?.[0]||('custom_'+entId);
+  const p=ent.purpose||[];
+  const rec={date:v('ce-date'),notes:v('ce-notes')};
+  if(p.includes('eggs'))rec.eggs=C['ce-eggs']||0;
+  if(p.includes('breeding')||p.includes('sales')){rec.event=v('ce-event');rec.count=v('ce-count');rec.revenue=v('ce-revenue');}
+  if(p.includes('meat')){rec.meat_event=v('ce-meat-event');rec.weight=v('ce-weight');rec.count=v('ce-count2');rec.revenue2=v('ce-revenue2');}
+  if(p.includes('dairy')){rec.milk=v('ce-milk');rec.dairy_event=v('ce-dairy-event');}
+  if(p.includes('produce')||p.includes('fibre')||p.includes('oil')){rec.yield=v('ce-yield');rec.revenue3=v('ce-revenue3');}
+  if(p.includes('feed')){rec.feed_event=v('ce-feed-event');rec.yield2=v('ce-yield2');rec.revenue4=v('ce-revenue4');}
+  if(p.includes('health'))rec.health=v('ce-health');
+  addRec(dbKey,rec);
+  toast('✓ Entry logged');
+  renderCustomEnt(entId);
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────────────
+const DB_KEY_LABELS={
+  eggs:'Eggs',aquaWater:'Aqua — water quality',aquaFish:'Aqua — fish',aquaProduce:'Aqua — grow bed',
+  bsflBatch:'BSFL — batches',bsflColony:'BSFL — colony',bsflSubstrate:'BSFL — substrate',bsflSales:'BSFL — sales',
+  oliveSpray:'Olive — spray diary',oliveHarvest:'Olive — harvest',oliveCuring:'Olive — curing',oliveTree:'Olive — trees',
+  macTree:'Macadamia — trees',macGraft:'Macadamia — propagation',
+  health:'Health & treatments',pasture:'Pasture & rounds',waterfowl:'Waterfowl',
+  finance:'Finance',hempCrop:'Hemp',water:'Water log',compost:'Compost',
+  geese:'Geese',goats:'Goats',breeding:'Breeding',bas:'BAS',loans:'Loans',infra:'Infrastructure',
+};
+
+function smartExportKeys(){
+  const db=loadDB();
+  const custom=loadEnterprises();
+  const active=new Set();
+  Object.keys(DB_KEY_LABELS).forEach(k=>{if((db[k]||[]).length>0)active.add(k);});
+  custom.forEach(e=>(e.dbKeys||[]).forEach(k=>{if((db[k]||[]).length>0)active.add(k);}));
+  return active;
+}
+
+let exportSelections=null;
+
+function renderExport(){
+  const db=loadDB();
+  const custom=loadEnterprises();
+  if(!exportSelections)exportSelections=new Set(smartExportKeys());
+  const customKeyLabels={};
+  custom.forEach(e=>(e.dbKeys||[]).forEach(k=>{if(!DB_KEY_LABELS[k])customKeyLabels[k]=e.label+' — records';}));
+  const allKeys={...DB_KEY_LABELS,...customKeyLabels};
+  const totalRecs=Object.values(db).reduce((a,v)=>a+(Array.isArray(v)?v.length:0),0);
+
+  g('content').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-icon">📥</span>
+        <div><div class="card-title">Export to CSV</div>
+          <div class="card-sub">${totalRecs} total records · select sections below</div></div>
+      </div>
+      <div style="padding:.65rem 1.1rem .4rem;font-size:.78rem;color:var(--text-mid);line-height:1.5">
+        Sections with data are pre-selected. Each section downloads as a separate CSV file.
+      </div>
+      <div style="padding:.3rem 1.1rem .55rem;display:flex;gap:.45rem">
+        <button onclick="selectAllExport(true)" style="padding:.3rem .75rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.75rem;cursor:pointer;background:white;color:var(--text-mid)">Select all</button>
+        <button onclick="selectAllExport(false)" style="padding:.3rem .75rem;border:1px solid var(--border-strong);border-radius:6px;font-size:.75rem;cursor:pointer;background:white;color:var(--text-mid)">Clear all</button>
+      </div>
+      <div style="border-top:1px solid var(--border)">
+        ${Object.entries(allKeys).map(([k,lbl])=>{
+          const count=(db[k]||[]).length;
+          const sel=exportSelections.has(k);
+          const isCustom=!!customKeyLabels[k];
+          return`<label style="display:flex;align-items:center;gap:.75rem;padding:.55rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;background:${sel?'#f5faf5':'white'}">
+            <input type="checkbox" id="ex-${k}" ${sel?'checked':''} onchange="toggleExportKey('${k}',this.checked)" style="accent-color:var(--sage-dark);width:16px;height:16px;flex-shrink:0">
+            <span style="flex:1;font-size:.82rem;font-weight:${sel?'600':'400'}">${lbl}</span>
+            <span style="font-size:.72rem;padding:.15rem .5rem;border-radius:10px;background:${count>0?'var(--sage-light)':'var(--border)'};color:${count>0?'var(--sage-dark)':'var(--text-light)'}">${count} row${count!==1?'s':''}</span>
+            ${isCustom?`<span style="font-size:.62rem;padding:.1rem .4rem;border-radius:4px;background:var(--cream-dark);color:var(--text-light)">custom</span>`:''}
+          </label>`;
+        }).join('')}
+      </div>
+      <div style="padding:.75rem 1.1rem;display:flex;gap:.5rem">
+        <button onclick="runExport()" style="flex:1;padding:.65rem;background:var(--sage-dark);color:white;border:none;border-radius:8px;font-size:.86rem;font-weight:600;cursor:pointer">
+          📥 Download ${exportSelections.size} CSV file${exportSelections.size!==1?'s':''}
+        </button>
+      </div>
+      <div style="padding:0 1.1rem .75rem;font-size:.71rem;color:var(--text-light);line-height:1.5">
+        Named by section + today's date. Open in Excel, Google Sheets, or forward to your accountant.
+      </div>
+    </div>
+  `;
+}
+
+function toggleExportKey(k,checked){
+  if(checked)exportSelections.add(k);else exportSelections.delete(k);
+  renderExport();
+}
+function selectAllExport(sel){
+  const db=loadDB();
+  const custom=loadEnterprises();
+  const customKeyLabels={};
+  custom.forEach(e=>(e.dbKeys||[]).forEach(k=>{if(!DB_KEY_LABELS[k])customKeyLabels[k]=true;}));
+  const all={...DB_KEY_LABELS,...customKeyLabels};
+  exportSelections=sel?new Set(Object.keys(all)):new Set();
+  renderExport();
+}
+
+function runExport(){
+  if(!exportSelections||!exportSelections.size){toast('Select at least one section');return;}
+  const db=loadDB();
+  const dateStr=new Date().toISOString().slice(0,10);
+  let downloaded=0;
+  exportSelections.forEach(k=>{
+    const rows=db[k]||[];
+    if(!rows.length)return;
+    const allCols=new Set();
+    rows.forEach(r=>Object.keys(r).filter(c=>!c.startsWith('_')).forEach(c=>allCols.add(c)));
+    const cols=[...allCols];
+    const lines=[cols.map(c=>JSON.stringify(c)).join(',')];
+    rows.forEach(r=>lines.push(cols.map(c=>JSON.stringify(String(r[c]??''))).join(',')));
+    const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+    const a=document.createElement('a');
+    const lbl=(DB_KEY_LABELS[k]||k).replace(/[^a-zA-Z0-9 ]/g,'').replace(/\s+/g,'_');
+    a.href=URL.createObjectURL(blob);
+    a.download=lbl+'_'+dateStr+'.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    downloaded++;
+  });
+  if(!downloaded)toast('No data in selected sections');
+  else toast('✓ '+downloaded+' CSV file'+(downloaded!==1?'s':'')+' downloaded');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+g('hdr-date').innerHTML=new Date().toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});
+buildNav();renderTab('overview');
+</script>
+</body>
+</html>

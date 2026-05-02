@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>$200K Farm Plan — 658 Lefthand Branch Road</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1A1208;--parch:#F8F3E8;--parch2:#EDE5CE;--rule:#C8A86A;
+  --gold:#A07820;--gold2:#C89830;--gold-lt:#FDF6E3;
+  --green:#1D4D2A;--green2:#2E7040;--green-lt:#EBF5EE;
+  --red:#7A1C1C;--red2:#A83030;--red-lt:#FAF0F0;
+  --amber:#7A4A08;--amber-lt:#FDF3E3;
+  --blue:#1A3060;--blue-lt:#EBF0FA;
+  --mid:#5A4830;--muted:#8A7858;--light:#B8A888;
+  --font-serif:'Libre Baskerville',Georgia,serif;
+  --font-body:'Outfit',sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--parch);color:var(--ink);line-height:1.65;}
+
+/* ── COVER ───────────────────────────────────────────────────────────────── */
+.cover{
+  background:var(--ink);
+  color:var(--parch);
+  padding:4rem 3rem 3rem;
+  position:relative;
+  overflow:hidden;
+}
+.cover::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 30%, rgba(160,120,32,.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 80% at 20% 80%, rgba(45,112,64,.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+.cover-eyebrow{
+  font-family:var(--font-mono);font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--gold2);margin-bottom:1.2rem;
+}
+.cover-title{
+  font-family:var(--font-serif);font-size:clamp(2.4rem,6vw,4rem);font-weight:700;
+  line-height:1.05;margin-bottom:.5rem;
+}
+.cover-title em{font-style:italic;color:var(--gold2);}
+.cover-sub{font-size:1rem;color:rgba(248,243,232,.65);max-width:540px;line-height:1.6;margin-bottom:2.5rem;}
+.cover-stats{display:flex;gap:2.5rem;flex-wrap:wrap;}
+.cs{display:flex;flex-direction:column;gap:.2rem;}
+.cs-lbl{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(248,243,232,.4);}
+.cs-val{font-family:var(--font-serif);font-size:1.6rem;font-weight:700;color:var(--gold2);}
+
+/* ── PAGE STRUCTURE ──────────────────────────────────────────────────────── */
+.page{max-width:900px;margin:0 auto;padding:2.5rem 2rem 5rem;}
+
+/* ── SECTION HEADERS ─────────────────────────────────────────────────────── */
+.section-block{margin-bottom:3rem;}
+.section-num{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:.4rem;}
+.section-title{font-family:var(--font-serif);font-size:1.7rem;font-weight:700;line-height:1.15;margin-bottom:.5rem;}
+.section-title em{font-style:italic;color:var(--green2);}
+.section-lead{font-size:.95rem;color:var(--mid);line-height:1.7;max-width:680px;margin-bottom:1.5rem;border-left:3px solid var(--rule);padding-left:1rem;}
+
+/* ── DIVIDER ─────────────────────────────────────────────────────────────── */
+.rule{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
+.rule-heavy{border:none;border-top:2px solid var(--rule);margin:3rem 0;}
+
+/* ── ENTERPRISE CARDS ────────────────────────────────────────────────────── */
+.ent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.ent-card{
+  background:white;border:1px solid var(--parch2);border-radius:8px;
+  padding:1.1rem 1.2rem;position:relative;overflow:hidden;
+}
+.ent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.ent-card.primary::before{background:linear-gradient(90deg,var(--green),var(--green2));}
+.ent-card.secondary::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.ent-card.tertiary::before{background:linear-gradient(90deg,var(--blue),#2A50A0);}
+.ent-icon{font-size:1.6rem;margin-bottom:.5rem;display:block;}
+.ent-name{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:.15rem;}
+.ent-target{font-family:var(--font-mono);font-size:.72rem;color:var(--green2);font-weight:500;margin-bottom:.5rem;}
+.ent-desc{font-size:.78rem;color:var(--muted);line-height:1.5;}
+.ent-badge{
+  display:inline-block;font-family:var(--font-mono);font-size:.6rem;
+  padding:.15rem .5rem;border-radius:3px;margin-top:.5rem;font-weight:500;
+}
+.badge-primary{background:var(--green-lt);color:var(--green2);}
+.badge-scale{background:var(--amber-lt);color:var(--amber);}
+.badge-new{background:var(--blue-lt);color:var(--blue);}
+.badge-existing{background:var(--parch2);color:var(--muted);}
+
+/* ── TIMELINE ────────────────────────────────────────────────────────────── */
+.timeline{position:relative;padding-left:2rem;margin-bottom:1.5rem;}
+.timeline::before{content:'';position:absolute;left:.5rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--green2),var(--gold),var(--gold2));}
+.tl-item{position:relative;margin-bottom:1.6rem;}
+.tl-dot{
+  position:absolute;left:-2rem;top:.25rem;
+  width:1rem;height:1rem;border-radius:50%;
+  background:white;border:2px solid var(--green2);
+  display:flex;align-items:center;justify-content:center;
+}
+.tl-dot.done{background:var(--green2);border-color:var(--green2);}
+.tl-dot.gold{background:var(--gold2);border-color:var(--gold2);}
+.tl-period{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.2rem;}
+.tl-heading{font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.3rem;}
+.tl-body{font-size:.82rem;color:var(--mid);line-height:1.6;}
+.tl-rev{font-family:var(--font-mono);font-size:.72rem;color:var(--green2);margin-top:.35rem;font-weight:500;}
+.tl-cost{font-family:var(--font-mono);font-size:.72rem;color:var(--red2);margin-top:.2rem;}
+
+/* ── TABLE ───────────────────────────────────────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:1.5rem;}
+.data-table th{
+  padding:.6rem .9rem;text-align:left;background:var(--ink);color:var(--parch);
+  font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:500;
+}
+.data-table td{padding:.6rem .9rem;border-bottom:1px solid var(--parch2);vertical-align:top;line-height:1.45;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:var(--gold-lt);}
+.data-table td.num{font-family:var(--font-mono);font-size:.78rem;text-align:right;}
+.data-table td.pos{color:var(--green2);font-weight:600;}
+.data-table td.neg{color:var(--red2);}
+.data-table td.gold{color:var(--gold);font-weight:600;}
+.data-table tfoot td{background:var(--parch2);font-weight:700;border-top:2px solid var(--rule);}
+.data-table tfoot .num{font-family:var(--font-mono);}
+
+/* ── CALLOUT BOXES ───────────────────────────────────────────────────────── */
+.callout{border-radius:6px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.85rem;line-height:1.65;}
+.callout strong{font-weight:600;}
+.callout-green{background:var(--green-lt);border-left:4px solid var(--green2);color:var(--green);}
+.callout-amber{background:var(--amber-lt);border-left:4px solid var(--gold);color:var(--amber);}
+.callout-red{background:var(--red-lt);border-left:4px solid var(--red2);color:var(--red);}
+.callout-blue{background:var(--blue-lt);border-left:4px solid var(--blue);color:var(--blue);}
+
+/* ── BIG NUMBER ──────────────────────────────────────────────────────────── */
+.big-num-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.big-num{
+  flex:1;min-width:140px;background:white;border:1px solid var(--parch2);
+  border-radius:8px;padding:1rem 1.2rem;
+}
+.bn-lbl{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+.bn-val{font-family:var(--font-serif);font-size:1.8rem;font-weight:700;line-height:1;}
+.bn-val.pos{color:var(--green2);}
+.bn-val.neg{color:var(--red2);}
+.bn-val.gold{color:var(--gold);}
+.bn-note{font-size:.72rem;color:var(--muted);margin-top:.3rem;}
+
+/* ── COMPARISON TABLE ────────────────────────────────────────────────────── */
+.compare-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem;}
+.compare-col{background:white;border:1px solid var(--parch2);border-radius:8px;overflow:hidden;}
+.compare-hdr{padding:.7rem 1rem;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.5rem;}
+.compare-hdr.current{background:var(--parch2);color:var(--mid);}
+.compare-hdr.target{background:var(--green);color:white;}
+.compare-row{padding:.5rem 1rem;border-bottom:1px solid var(--parch2);font-size:.8rem;display:flex;justify-content:space-between;align-items:center;}
+.compare-row:last-child{border-bottom:none;}
+.compare-row .lbl{color:var(--muted);}
+.compare-row .val{font-family:var(--font-mono);font-size:.76rem;font-weight:600;}
+
+/* ── RISK TABLE ──────────────────────────────────────────────────────────── */
+.risk-item{padding:.8rem 1rem;border-bottom:1px solid var(--parch2);display:grid;grid-template-columns:1fr auto;gap:.7rem;align-items:start;background:white;}
+.risk-item:first-child{border-radius:8px 8px 0 0;}
+.risk-item:last-child{border-bottom:none;border-radius:0 0 8px 8px;}
+.risk-name{font-size:.83rem;font-weight:600;margin-bottom:.2rem;}
+.risk-mit{font-size:.76rem;color:var(--mid);line-height:1.5;}
+.risk-badge{font-family:var(--font-mono);font-size:.6rem;padding:.2rem .55rem;border-radius:3px;font-weight:600;white-space:nowrap;}
+.rb-high{background:var(--red-lt);color:var(--red2);}
+.rb-med{background:var(--amber-lt);color:var(--amber);}
+.rb-low{background:var(--green-lt);color:var(--green2);}
+
+/* ── QUARTERLY GRID ──────────────────────────────────────────────────────── */
+.qtr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin-bottom:1.5rem;}
+.qtr-card{background:white;border:1px solid var(--parch2);border-radius:7px;padding:.9rem 1rem;}
+.qtr-label{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;}
+.qtr-heading{font-size:.84rem;font-weight:600;margin-bottom:.4rem;}
+.qtr-list{font-size:.76rem;color:var(--mid);line-height:1.7;padding-left:1rem;}
+.qtr-list li{list-style:disc;}
+.qtr-rev{font-family:var(--font-mono);font-size:.72rem;color:var(--green2);margin-top:.4rem;font-weight:500;}
+
+/* ── FOOTER ──────────────────────────────────────────────────────────────── */
+.doc-footer{
+  border-top:2px solid var(--rule);padding:1.2rem 2rem;
+  font-family:var(--font-mono);font-size:.62rem;color:var(--light);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
+  max-width:900px;margin:0 auto;
+}
+
+@media(max-width:620px){
+  .cover{padding:2.5rem 1.5rem 2rem;}
+  .page{padding:1.5rem 1.2rem 4rem;}
+  .compare-wrap{grid-template-columns:1fr;}
+  .section-title{font-size:1.3rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div style="max-width:900px;margin:0 auto;position:relative;z-index:1">
+    <div class="cover-eyebrow">658 Lefthand Branch Road · Lockyer Valley QLD 4343</div>
+    <h1 class="cover-title">The <em>$200,000</em><br>Farm Plan</h1>
+    <p class="cover-sub">A parallel high-income strategy for 658 Lefthand Branch Road — building on the existing QRIDA plan but sized, sequenced, and priced to reach $200K annual net profit by Year 5.</p>
+    <div class="cover-stats">
+      <div class="cs"><span class="cs-lbl">Net profit target</span><span class="cs-val">$200K / yr</span></div>
+      <div class="cs"><span class="cs-lbl">Timeline</span><span class="cs-val">5 years</span></div>
+      <div class="cs"><span class="cs-lbl">Additional capex vs. base plan</span><span class="cs-val">~$48K</span></div>
+      <div class="cs"><span class="cs-lbl">Additional revenue streams</span><span class="cs-val">4</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── SECTION 1: THE GAP ─────────────────────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 1</span>
+    <h2 class="section-title">Where the base plan falls <em>short</em></h2>
+    <p class="section-lead">The QRIDA business plan projects $82K net by Year 5. That's a solid farm business. It's not $200K. The gap is not a failure of the plan — it's a question of scale, pricing, and which revenue streams were treated as optional.</p>
+
+    <div class="compare-wrap">
+      <div class="compare-col">
+        <div class="compare-hdr current">📋 Base QRIDA plan — Year 5</div>
+        <div class="compare-row"><span class="lbl">Olive oil (EVOO)</span><span class="val gold">$52,000</span></div>
+        <div class="compare-row"><span class="lbl">Free-range eggs</span><span class="val gold">$9,500</span></div>
+        <div class="compare-row"><span class="lbl">Honey</span><span class="val gold">$18,000</span></div>
+        <div class="compare-row"><span class="lbl">Hemp</span><span class="val gold">$7,500</span></div>
+        <div class="compare-row"><span class="lbl">Aquaponics</span><span class="val gold">$16,000</span></div>
+        <div class="compare-row"><span class="lbl">Waterfowl / other</span><span class="val gold">$4,000</span></div>
+        <div class="compare-row" style="background:var(--parch2)"><span class="lbl" style="font-weight:600">Total revenue</span><span class="val">$107,000</span></div>
+        <div class="compare-row" style="background:var(--parch2)"><span class="lbl" style="font-weight:600">Operating costs</span><span class="val">-$22,000</span></div>
+        <div class="compare-row" style="background:var(--parch2)"><span class="lbl" style="font-weight:600">Loan interest</span><span class="val">-$3,200</span></div>
+        <div class="compare-row" style="background:var(--parch2);font-weight:700"><span class="lbl">Net profit</span><span class="val" style="color:var(--amber)">$81,800</span></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-hdr target">🎯 $200K plan — Year 5 target</div>
+        <div class="compare-row"><span class="lbl">Olive oil (table + EVOO)</span><span class="val pos">$80,000</span></div>
+        <div class="compare-row"><span class="lbl">BSFL (larvae + frass + gate fees)</span><span class="val pos">$48,000</span></div>
+        <div class="compare-row"><span class="lbl">Honey + commercial pollination</span><span class="val pos">$40,000</span></div>
+        <div class="compare-row"><span class="lbl">Aquaponics (scaled ×3)</span><span class="val pos">$30,000</span></div>
+        <div class="compare-row"><span class="lbl">Free-range eggs</span><span class="val pos">$9,500</span></div>
+        <div class="compare-row"><span class="lbl">Trial crops (finger lime, nasturtium)</span><span class="val pos">$20,000</span></div>
+        <div class="compare-row"><span class="lbl">Hemp + other</span><span class="val pos">$10,000</span></div>
+        <div class="compare-row" style="background:var(--green-lt)"><span class="lbl" style="font-weight:600">Total revenue</span><span class="val">$237,500</span></div>
+        <div class="compare-row" style="background:var(--green-lt)"><span class="lbl" style="font-weight:600">Operating costs</span><span class="val">-$32,000</span></div>
+        <div class="compare-row" style="background:var(--green-lt)"><span class="lbl" style="font-weight:600">Loan interest (total)</span><span class="val">-$5,500</span></div>
+        <div class="compare-row" style="background:var(--green-lt);font-weight:700"><span class="lbl">Net profit</span><span class="val pos">$200,000</span></div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>The four levers that close the gap:</strong> (1) Olives priced as direct retail table olives, not wholesale EVOO — value roughly doubles per kg. (2) BSFL gate fees repriced to market rate and scaled to Phase 2. (3) Aquaponics treated as a real enterprise, not a household food system — 3× the tank volume. (4) Commercial pollination added to the honey operation from Year 2, not as an afterthought.
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 2: ENTERPRISE TARGETS ─────────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 2</span>
+    <h2 class="section-title">Enterprise targets <em>&amp; what changes</em></h2>
+    <p class="section-lead">Each enterprise below is sized, priced, and sequenced against its specific $200K contribution. Red text marks the specific changes from the base plan. These are not aspirational — each is grounded in the pricing and yield data already in your farm documents.</p>
+
+    <div class="ent-grid">
+
+      <div class="ent-card primary">
+        <span class="ent-icon">🫒</span>
+        <div class="ent-name">Olive grove — table olives</div>
+        <div class="ent-target">Target: $80,000 net / yr by Year 4</div>
+        <div class="ent-desc">300 trees at full recovery. The change: <strong>sell table olives direct to retail and restaurants at $22–35/kg</strong>, not EVOO at $18/L wholesale. Manzanillo and Kalamata are premier table varieties. At 15,000kg recovered fruit, 60% premium-grade whole table olive = 9,000kg × $25/kg average = $225,000 gross. After curing costs, packaging, and operating: ~$80K net. Organic certification from 2030 adds a further 20–30% margin.</div>
+        <span class="ent-badge badge-primary">Primary enterprise</span>
+        <span class="ent-badge badge-existing">Existing grove</span>
+      </div>
+
+      <div class="ent-card primary">
+        <span class="ent-icon">🪲</span>
+        <div class="ent-name">BSFL — full commercial scale</div>
+        <div class="ent-target">Target: $48,000 net / yr by Year 3</div>
+        <div class="ent-desc">Three changes from the base plan: <strong>(1) Reprice gate fees to $60–80/tonne</strong> (not $20 — legitimate market rate). <strong>(2) Scale to Phase 2</strong> (450kg waste/week, 10–16 IBCs). <strong>(3) Add dried larvae channel</strong> at $22/kg for aquaculture buyers beyond the pet trade. Phase 2 gross: $2,145–4,050/month. At midpoint and $60/tonne gate fees: ~$55K gross, ~$48K net.</div>
+        <span class="ent-badge badge-primary">Primary enterprise</span>
+        <span class="ent-badge badge-scale">Scale existing</span>
+      </div>
+
+      <div class="ent-card secondary">
+        <span class="ent-icon">🐝</span>
+        <div class="ent-name">Honey + commercial pollination</div>
+        <div class="ent-target">Target: $40,000 net / yr by Year 3</div>
+        <div class="ent-desc">Two revenue streams, not one. <strong>Honey at 50 hives</strong>: 50 × 30kg × $20/kg average (Langstroth + native blend) = $30,000 gross. <strong>Commercial pollination</strong>: 50 hives × 3 seasonal placements × $100/hive = $15,000/season. Combined gross ~$45K, net ~$40K. The Lockyer Valley is avocado and macadamia country — you are already in the right location. The commercial pollination guide in your project files covers exactly this pathway.</div>
+        <span class="ent-badge badge-secondary" style="background:var(--amber-lt);color:var(--amber)">Scale to 50 hives</span>
+        <span class="ent-badge badge-new">Add pollination</span>
+      </div>
+
+      <div class="ent-card secondary">
+        <span class="ent-icon">🐟</span>
+        <div class="ent-name">Aquaponics — scaled to 15,000L</div>
+        <div class="ent-target">Target: $30,000 net / yr by Year 3</div>
+        <div class="ent-desc">The base plan has a 5,000L system producing ~$16K gross. <strong>Scale to three 5,000L tanks</strong> (15,000L total) housed in the shed's dedicated aquaponics bay. At 300 fish per tank × 500g plate weight × $22/kg = $9,900/cycle per tank. Three tanks at 1.5 cycles/year = $44,550 gross, ~$30K net after feed, fingerlings, and power. The BSFL operation already provides supplemental feed — this integration is already planned, just not sized for 3 tanks.</div>
+        <span class="ent-badge badge-scale">3× tank volume</span>
+        <span class="ent-badge badge-new">Shed redesign needed</span>
+      </div>
+
+      <div class="ent-card tertiary">
+        <span class="ent-icon">🟢</span>
+        <div class="ent-name">Finger lime</div>
+        <div class="ent-target">Target: $12,000 net / yr by Year 5</div>
+        <div class="ent-desc">10 grafted trees, eastern macadamia shade zone. First meaningful harvest Year 3 at 2–5kg/tree. Full production Year 4–5 at 5–15kg/tree × $80/kg restaurant direct = $4,000–12,000 from 10 trees. <strong>Propagation income</strong> from Year 3: grafted plants at $50 each from your own scion wood adds $2,000–5,000/yr. Native SE QLD species — your site is its natural habitat.</div>
+        <span class="ent-badge badge-new">Plant Apr–May 2026</span>
+      </div>
+
+      <div class="ent-card tertiary">
+        <span class="ent-icon">🌸</span>
+        <div class="ent-name">Nasturtium + edible flowers</div>
+        <div class="ent-target">Target: $8,000 net / yr by Year 2</div>
+        <div class="ent-desc">Fastest income on the farm — seed to revenue in 6–8 weeks, $15 setup. <strong>At 500 plants and 3 restaurant buyers</strong>: $600–1,200/month by Month 4. The trial crop plan already documents this. Scale to 500 plants in Year 2 for the $8K target. Add borage, calendula and viola for a diversified edible flower offer — all same management, all same buyers.</div>
+        <span class="ent-badge badge-new">Start this week</span>
+      </div>
+
+    </div>
+
+    <div class="callout callout-blue">
+      <strong>What stays the same from the base plan:</strong> Free-range eggs ($9,500/yr), hemp ($7,500/yr), waterfowl ($3,000/yr), macadamia propagation ($4,000/yr). These are not the growth engines — they are the cash flow stabilisers while the primary enterprises scale. Don't over-invest in them at the expense of the primary four.
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 3: 5-YEAR REVENUE MODEL ──────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 3</span>
+    <h2 class="section-title">Five-year <em>revenue model</em></h2>
+    <p class="section-lead">Conservative mid-case projections. Year 1 is almost identical to the base plan. The divergence begins in Year 2 when BSFL repricing, pollination contracts, and aquaponics scale-up kick in.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Enterprise</th>
+          <th style="text-align:right">Year 1</th>
+          <th style="text-align:right">Year 2</th>
+          <th style="text-align:right">Year 3</th>
+          <th style="text-align:right">Year 4</th>
+          <th style="text-align:right">Year 5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>🫒 Olive grove (table olives)</td><td class="num">—</td><td class="num">$8,000</td><td class="num">$35,000</td><td class="num">$65,000</td><td class="num pos">$80,000</td></tr>
+        <tr><td>🪲 BSFL (larvae + frass + gate fees)</td><td class="num">$10,000</td><td class="num">$22,000</td><td class="num">$38,000</td><td class="num">$45,000</td><td class="num pos">$55,000</td></tr>
+        <tr><td>🐝 Honey + commercial pollination</td><td class="num">$1,100</td><td class="num">$12,000</td><td class="num">$28,000</td><td class="num">$36,000</td><td class="num pos">$45,000</td></tr>
+        <tr><td>🐟 Aquaponics (3 tanks by Yr 2)</td><td class="num">$300</td><td class="num">$14,000</td><td class="num">$26,000</td><td class="num">$30,000</td><td class="num pos">$34,000</td></tr>
+        <tr><td>🥚 Free-range eggs</td><td class="num">$2,350</td><td class="num">$6,200</td><td class="num">$8,000</td><td class="num">$9,500</td><td class="num pos">$9,500</td></tr>
+        <tr><td>🟢 Finger lime</td><td class="num">—</td><td class="num">—</td><td class="num">$3,000</td><td class="num">$8,000</td><td class="num pos">$12,000</td></tr>
+        <tr><td>🌸 Nasturtium + edible flowers</td><td class="num">$900</td><td class="num">$5,000</td><td class="num">$8,000</td><td class="num">$8,000</td><td class="num pos">$8,000</td></tr>
+        <tr><td>🌿 Hemp + other crops</td><td class="num">$4,200</td><td class="num">$5,500</td><td class="num">$7,000</td><td class="num">$8,000</td><td class="num pos">$10,000</td></tr>
+        <tr><td>🌰 Macadamia propagation</td><td class="num">—</td><td class="num">$1,500</td><td class="num">$3,000</td><td class="num">$4,000</td><td class="num pos">$4,000</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td><strong>Total revenue</strong></td><td class="num gold">$18,850</td><td class="num gold">$74,200</td><td class="num gold">$156,000</td><td class="num gold">$213,500</td><td class="num gold">$257,500</td></tr>
+        <tr><td>Operating costs</td><td class="num neg">-$9,000</td><td class="num neg">-$18,000</td><td class="num neg">-$26,000</td><td class="num neg">-$30,000</td><td class="num neg">-$32,000</td></tr>
+        <tr><td>Loan interest (QRIDA + Y2 top-up)</td><td class="num neg">-$1,434</td><td class="num neg">-$5,500</td><td class="num neg">-$5,500</td><td class="num neg">-$5,200</td><td class="num neg">-$5,500</td></tr>
+        <tr><td style="font-weight:700">Net profit</td><td class="num" style="color:var(--amber);font-weight:700">$8,416</td><td class="num pos" style="font-weight:700">$50,700</td><td class="num pos" style="font-weight:700">$124,500</td><td class="num pos" style="font-weight:700">$178,300</td><td class="num pos" style="font-weight:700">$220,000</td></tr>
+      </tfoot>
+    </table>
+
+    <div class="big-num-row">
+      <div class="big-num"><div class="bn-lbl">Year 3 net profit</div><div class="bn-val pos">$124K</div><div class="bn-note">Olives first full harvest + BSFL Phase 2 + pollination season 2</div></div>
+      <div class="big-num"><div class="bn-lbl">Year 4 net profit</div><div class="bn-val pos">$178K</div><div class="bn-note">Approaching target — olives scaling, aquaponics full</div></div>
+      <div class="big-num"><div class="bn-lbl">Year 5 net profit</div><div class="bn-val pos">$220K</div><div class="bn-note">Above target — organic certification from 2030 adds further margin</div></div>
+      <div class="big-num"><div class="bn-lbl">Cumulative Y1–Y5</div><div class="bn-val gold">$581K</div><div class="bn-note">Total net over 5 years, conservative mid-case</div></div>
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 4: WHAT ACTUALLY CHANGES ─────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 4</span>
+    <h2 class="section-title">What <em>actually changes</em> from the base plan</h2>
+    <p class="section-lead">This is not a different farm. It's the same farm with four specific decisions made differently. Each decision has a cost and a deadline.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Decision</th><th>Base plan</th><th>$200K plan</th><th style="text-align:right">Additional cost</th><th>Deadline</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Shed size</strong></td>
+          <td>12×8m — olive processing focus</td>
+          <td>15×10m — dedicated aquaponics bay, 3-tank layout, BSFL-adjacent</td>
+          <td class="num neg">+$18,000</td>
+          <td>Before DA lodgement</td>
+        </tr>
+        <tr>
+          <td><strong>Aquaponics tanks</strong></td>
+          <td>1× 5,000L — household food system</td>
+          <td>3× 5,000L — commercial enterprise sized for $30K net</td>
+          <td class="num neg">+$19,000</td>
+          <td>Year 2 (Jan–Mar 2027)</td>
+        </tr>
+        <tr>
+          <td><strong>BSFL gate fees</strong></td>
+          <td>$20/tonne — charity pricing</td>
+          <td>$60–80/tonne — legitimate market rate; still cheaper than commercial waste disposal</td>
+          <td class="num pos">+$0 cost</td>
+          <td>Before first supplier agreement</td>
+        </tr>
+        <tr>
+          <td><strong>Olive pricing model</strong></td>
+          <td>EVOO at $18/L wholesale, contract press</td>
+          <td>Table olives direct retail $22–35/kg — shed enables in-house curing from Year 2</td>
+          <td class="num pos">+$0 cost</td>
+          <td>Agronomist confirms variety suitability May 2026</td>
+        </tr>
+        <tr>
+          <td><strong>Hive scale</strong></td>
+          <td>10–20 hives; honey only</td>
+          <td>50 hives by Year 3; honey + commercial pollination contracts</td>
+          <td class="num neg">+$8,000</td>
+          <td>Begin split programme Year 1, Year 2</td>
+        </tr>
+        <tr>
+          <td><strong>Finger lime planting</strong></td>
+          <td>Listed as trial crop, no timeline</td>
+          <td>10 grafted trees planted Apr–May 2026 alongside QRIDA application</td>
+          <td class="num neg">+$500</td>
+          <td>April–May 2026 (now)</td>
+        </tr>
+        <tr>
+          <td><strong>Nasturtium</strong></td>
+          <td>Listed as trial, no action</td>
+          <td>50 plants sown this week; restaurant outreach Month 2</td>
+          <td class="num neg">+$15</td>
+          <td>This week</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3"><strong>Total additional capex above base QRIDA plan</strong></td><td class="num neg"><strong>~$45,500</strong></td><td></td></tr>
+      </tfoot>
+    </table>
+
+    <div class="callout callout-green">
+      <strong>The most important insight:</strong> Five of these seven changes cost nothing — they are pricing decisions, timing decisions, and design decisions that must be locked in before construction begins. The shed size and aquaponics scale-up are the only items that require additional capital, and both can be funded through a QRIDA loan top-up or Year 2 reinvestment from BSFL and honey revenue.
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 5: IMPLEMENTATION TIMELINE ───────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 5</span>
+    <h2 class="section-title">Implementation <em>timeline</em></h2>
+    <p class="section-lead">The sequencing matters as much as the decisions. Some things must happen before others. This timeline integrates the $200K changes into the existing QRIDA calendar without conflicting with it.</p>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot done"></div>
+        <div class="tl-period">Now — April / May 2026</div>
+        <div class="tl-heading">Decisions that cost nothing but expire soon</div>
+        <div class="tl-body">
+          <strong>Sow nasturtium seeds this week</strong> ($15). Call the agronomist and ask specifically about table olive variety suitability and grade yield estimates — this shapes the entire revenue model. Order 10 grafted finger lime trees (Daleys Fruit) for April–May planting. When briefing the DA and shed designer, specify 15×10m footprint and three-tank aquaponics bay — changing this after DA lodgement costs $2,000–5,000 in re-lodgement fees. Reprice BSFL gate fees in your head before you approach any waste suppliers.
+        </div>
+        <div class="tl-cost">Additional cost this period: ~$515</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot done"></div>
+        <div class="tl-period">May – October 2026</div>
+        <div class="tl-heading">Bootstrap income + BSFL repricing in market</div>
+        <div class="tl-body">
+          Egg flock building to 75 birds. BSFL Phase 1 operational — approach waste suppliers at $60/tonne, not $20. First nasturtium restaurant deliveries by June. Bees established July. Finger limes in ground and establishing. QRIDA application lodged August with larger shed footprint and aquaponics scale-up documented in the business plan. Begin hive splitting programme — every split now is $200–350 saved in nucleus purchases later.
+        </div>
+        <div class="tl-rev">Cumulative revenue target by Oct 2026: $8,000–12,000</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot gold"></div>
+        <div class="tl-period">November 2026 – March 2027</div>
+        <div class="tl-heading">QRIDA-funded construction — build for $200K, not $80K</div>
+        <div class="tl-body">
+          Single excavation campaign as planned — but the shed is 15×10m. Three aquaponics tanks installed January–March instead of one. BSFL grow-out lean-to (from the BSFL plan) built alongside the shed in the same construction campaign — shared labour, shared machinery hire. Food business registration covers the shed curing facility and the aquaponics dispatch area. Hive count approaching 20 by end of this period from splitting.
+        </div>
+        <div class="tl-cost">Construction period: ~$93,000 total (QRIDA + top-up + own funds)</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot gold"></div>
+        <div class="tl-period">March – December 2027</div>
+        <div class="tl-heading">Year 2: the revenue inflection point</div>
+        <div class="tl-body">
+          May 2027 olive partial harvest — goes into in-house curing immediately, not to a contract presser. First table olive sales to restaurants by August 2027. Three aquaponics tanks cycling — first fish harvest November 2027. Commercial pollination contracts: approach macadamia and avocado growers in the Lockyer Valley now for the August–October 2027 season (they book 6–9 months ahead). BSFL Phase 2 planning underway. Nasturtium scaled to 500 plants. NASAA/ACO organic transition registered February 2027 as planned.
+        </div>
+        <div class="tl-rev">Year 2 net profit target: $50,000+</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2028 — Year 3</div>
+        <div class="tl-heading">Full production across all primary enterprises</div>
+        <div class="tl-body">
+          Olive grove near-full recovery harvest — May 2028 is the first full commercial harvest. Table olive direct retail and restaurant supply established. BSFL at Phase 2 capacity (450kg/week). 30–40 Langstroth hives producing honey + first full pollination season. Three aquaponics tanks at full production cycling. Finger limes beginning to fruit (GPL variety can produce in Year 2–3 from grafted stock). Commercial pollination season 2 — relationships established, pricing secured.
+        </div>
+        <div class="tl-rev">Year 3 net profit target: $124,000</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-period">2029–2030 — Years 4–5</div>
+        <div class="tl-heading">Scale, certify, optimise</div>
+        <div class="tl-body">
+          50 Langstroth hives reached through splitting programme — no additional hive purchases needed. Finger lime trees at commercial production (5–15kg/tree). Organic certification received February 2030 — olive pricing steps up to certified organic premium ($28–45/L EVOO or equivalent table olive premium). BSFL protocol licensing and consultancy income begins — your documented 6-month BSFL implementation plan is exactly the kind of asset that other small farms will pay to access. Vanilla first flowers if planted September 2026 as planned.
+        </div>
+        <div class="tl-rev">Year 5 net profit target: $200,000+</div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 6: QUARTERLY ACTION PLAN ─────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 6</span>
+    <h2 class="section-title">Quarterly <em>action plan</em> — Year 1</h2>
+    <p class="section-lead">The decisions that determine whether this reaches $200K or $80K are almost all made in the first two quarters. The window is narrow.</p>
+
+    <div class="qtr-grid">
+      <div class="qtr-card">
+        <div class="qtr-label">Q1 — Apr to Jun 2026</div>
+        <div class="qtr-heading">Foundation decisions</div>
+        <ul class="qtr-list">
+          <li>Sow nasturtium this week</li>
+          <li>Agronomist: table olive grade brief</li>
+          <li>DA brief: 15×10m shed + 3-tank aqua bay</li>
+          <li>Order 10 finger lime trees</li>
+          <li>BSFL: approach suppliers at $60/tonne</li>
+          <li>ABN + QFF FBRP session 1</li>
+        </ul>
+        <div class="qtr-rev">Target revenue: $0–800</div>
+      </div>
+      <div class="qtr-card">
+        <div class="qtr-label">Q2 — Jul to Sep 2026</div>
+        <div class="qtr-heading">Income + applications</div>
+        <ul class="qtr-list">
+          <li>2 nucleus hives delivered, registered</li>
+          <li>Bore pump test completed</li>
+          <li>QRIDA application lodged (Aug)</li>
+          <li>Hemp planted (licence permitting)</li>
+          <li>First nasturtium restaurant sales</li>
+          <li>Approach pollination clients for 2027</li>
+        </ul>
+        <div class="qtr-rev">Target revenue: $3,000–5,000</div>
+      </div>
+      <div class="qtr-card">
+        <div class="qtr-label">Q3 — Oct to Dec 2026</div>
+        <div class="qtr-heading">QRIDA approval + construction</div>
+        <ul class="qtr-list">
+          <li>QRIDA approval (Oct–Nov)</li>
+          <li>Single excavation campaign (Nov)</li>
+          <li>Shed construction begins (Dec)</li>
+          <li>Hemp harvest → first major revenue</li>
+          <li>Split hives → 4 hives by Dec</li>
+          <li>BSFL Phase 1 at full 4-IBC capacity</li>
+        </ul>
+        <div class="qtr-rev">Target revenue: $6,000–9,000</div>
+      </div>
+      <div class="qtr-card">
+        <div class="qtr-label">Q4 — Jan to Mar 2027</div>
+        <div class="qtr-heading">Commission + first harvests</div>
+        <ul class="qtr-list">
+          <li>3 aquaponics tanks installed (Jan)</li>
+          <li>Shed electrical + plumbing 2nd fix</li>
+          <li>First honey harvest (Feb)</li>
+          <li>NASAA/ACO transition registered</li>
+          <li>Jade Perch fingerlings stocked (Mar)</li>
+          <li>Food business registration</li>
+        </ul>
+        <div class="qtr-rev">Target revenue: $8,000–12,000</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 7: RISKS ──────────────────────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 7</span>
+    <h2 class="section-title">Risks specific to <em>the $200K plan</em></h2>
+    <p class="section-lead">These are the risks that don't exist in the base plan — the incremental risks of scaling up. The base plan risks (DA delay, bore capacity, etc.) are already covered in your ISO 31000 risk framework.</p>
+
+    <div style="border:1px solid var(--parch2);border-radius:8px;overflow:hidden;margin-bottom:1.5rem">
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Olive variety mismatch — table olive grades lower than projected</div>
+          <div class="risk-mit">The $80K olive target assumes 60% premium grade whole table olive. If Arbequina rows dominate (oil variety, small fruit, poor table grade) or if Kalamata has chilling hour issues, grade yield falls. <strong>Mitigation:</strong> Agronomist assessment May 2026 specifically requests grade yield estimate. If grade split is worse than 40% premium, revise olive target to $45–55K and compensate via BSFL or aquaponics scale-up.</div>
+        </div>
+        <span class="risk-badge rb-high">High</span>
+      </div>
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">QRIDA loan insufficient for larger shed + 3 tanks</div>
+          <div class="risk-mit">The base QRIDA plan is $75K. The $200K plan needs ~$93K in construction-phase capex. The gap (~$18K) needs to be funded from Year 1 BSFL + hemp + egg revenue, a second QRIDA loan tranche, or a commercial top-up. <strong>Mitigation:</strong> Present the full $200K business case to QRIDA from the start — the stronger revenue projections support a larger loan. The equity position ($496K) easily supports $93K.</div>
+        </div>
+        <span class="risk-badge rb-med">Medium</span>
+      </div>
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">BSFL waste suppliers resistant to $60/tonne gate fees</div>
+          <div class="risk-mit">Cafés and small food businesses may balk if they've heard about $20/tonne. <strong>Mitigation:</strong> Don't start the conversation at $20 — it's nearly impossible to renegotiate upward. Approach new suppliers at $60/tonne as the opening price. For existing contacts, frame as a commercial service from day one. Compare against commercial waste disposal costs ($100–180/tonne) — you are still demonstrably cheaper.</div>
+        </div>
+        <span class="risk-badge rb-med">Medium</span>
+      </div>
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Aquaponics 3-tank system overwhelms management capacity in Year 1</div>
+          <div class="risk-mit">Three 5,000L tanks is a meaningful management step up from one. Water quality, stocking, feeding, and harvest logistics triple. <strong>Mitigation:</strong> Stock Tank 1 at the same time as the base plan (March 2027). Stock Tank 2 at Month 6 once parameters are stable. Stock Tank 3 at Month 12. The CHOP2 design is forgiving — the risk is lower than it sounds.</div>
+        </div>
+        <span class="risk-badge rb-low">Low-Med</span>
+      </div>
+      <div class="risk-item">
+        <div>
+          <div class="risk-name">Pollination contracts not secured before hive investment</div>
+          <div class="risk-mit">Scaling to 50 hives only makes economic sense if pollination revenue is secured alongside honey. <strong>Mitigation:</strong> Approach macadamia and avocado growers in Q2 2026 (Jul–Sep) for the 2027 season — they book 6–9 months ahead. One signed contract at $80/hive × 20 hives covers the entire splitting programme cost.</div>
+        </div>
+        <span class="risk-badge rb-low">Low</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- ── SECTION 8: THE $200K CHECKLIST ────────────────────────────── -->
+  <div class="section-block">
+    <span class="section-num">Section 8</span>
+    <h2 class="section-title">The $200K <em>decision checklist</em></h2>
+    <p class="section-lead">These are the decisions that cannot be reversed later without significant cost. Everything else is operational — it can be adjusted as you go.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Decision</th><th>Deadline</th><th>Cost of getting it wrong</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>☐ Brief DA architect on 15×10m shed with 3-tank aquaponics bay</td><td><strong>Before DA lodgement</strong></td><td>$2,000–5,000 re-lodgement + 6-week delay if changed post-DA</td></tr>
+        <tr><td>☐ Ask agronomist for table olive grade yield estimate — not just EVOO yield</td><td><strong>Before May 2026 visit</strong></td><td>Revenue model built on wrong product — may not discover until first harvest 2027</td></tr>
+        <tr><td>☐ Set BSFL gate fee opening price at $60/tonne before first supplier conversation</td><td><strong>Before first approach</strong></td><td>Locked into $20/tonne by social contract — $40/tonne revenue per year foregone</td></tr>
+        <tr><td>☐ Approach 3–5 pollination clients for 2027 season (macadamia and avocado)</td><td><strong>Q2 2026 (Jul–Sep)</strong></td><td>Miss the booking window — 2027 pollination season goes to an established operator</td></tr>
+        <tr><td>☐ Begin hive splitting programme from first inspection — every split is $300 saved</td><td><strong>Spring 2026</strong></td><td>Buying 30 nucs at $300 each to reach 50 hives = $9,000 avoidable spend</td></tr>
+        <tr><td>☐ Plant 10 grafted finger limes in macadamia shade zone</td><td><strong>Apr–May 2026</strong></td><td>Every year delayed is a year's harvest foregone — 3-year crop means a 1-year delay costs $8,000–12,000</td></tr>
+        <tr><td>☐ Sow nasturtium seeds this week</td><td><strong>Now</strong></td><td>6–8 week delay to first income — negligible cost, maximum stupidity</td></tr>
+        <tr><td>☐ Build $200K revenue projections into QRIDA application, not $82K</td><td><strong>Before Aug 2026 lodgement</strong></td><td>QRIDA loans to the business case presented — underselling reduces approved loan amount</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- end page -->
+
+<footer class="doc-footer">
+  <span>658 Lefthand Branch Road · Lockyer Valley QLD 4343</span>
+  <span>$200K Farm Plan · April 2026</span>
+  <span>Review against agronomist report · Update after QRIDA approval</span>
+</footer>
+
+</body>
+</html>

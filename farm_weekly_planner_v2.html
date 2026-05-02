@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olive Farm — Monthly Weekly Planner | 658 Lefthand Branch Road</title>
+<style>
+  :root {
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f7f6f2;
+    --color-background-tertiary: #eeece7;
+    --color-text-primary: #1a1917;
+    --color-text-secondary: #5f5e5a;
+    --color-text-tertiary: #9c9a94;
+    --color-border-primary: #c8c5bc;
+    --color-border-secondary: #dedad2;
+    --color-border-tertiary: #e8e6e0;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --border-radius-md: 6px;
+    --border-radius-lg: 10px;
+  }
+  html { background: var(--color-background-primary); }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background-primary);
+    color: var(--color-text-primary);
+    margin: 0 auto;
+    padding: 20px 24px 40px;
+    max-width: 1200px;
+  }
+  .page-title { font-size: 20px; font-weight: 600; color: var(--color-text-primary); margin: 0 0 4px; }
+  .page-sub { font-size: 13px; color: var(--color-text-tertiary); margin: 0 0 20px; }
+  @media print {
+    body { padding: 10px; }
+    .nav-btn { display: none; }
+    .planner { display: block !important; page-break-after: always; }
+  }
+  *{box-sizing:border-box}
+  .nav{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 1rem}
+  .nav-btn{padding:4px 10px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all 0.1s}
+  .nav-btn.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:var(--color-text-primary)}
+  .planner{display:none}
+  .planner.show{display:block}
+  .p-header{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 0.8rem}
+  .p-title{font-size:16px;font-weight:500;color:var(--color-text-primary)}
+  .p-meta{font-size:11px;color:var(--color-text-tertiary)}
+  .week-grid{display:grid;grid-template-columns:70px repeat(7,minmax(0,1fr));gap:0;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+  .wg-head{background:var(--color-background-secondary);font-size:11px;font-weight:500;color:var(--color-text-secondary);padding:6px 5px;text-align:center;border-bottom:0.5px solid var(--color-border-secondary);border-right:0.5px solid var(--color-border-tertiary)}
+  .wg-head:last-child{border-right:none}
+  .wg-time{background:var(--color-background-secondary);font-size:10px;color:var(--color-text-tertiary);padding:5px 6px;border-right:0.5px solid var(--color-border-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;font-weight:500;white-space:nowrap}
+  .wg-cell{font-size:10px;padding:4px 5px;border-right:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:top;min-height:52px;line-height:1.35;color:var(--color-text-primary)}
+  .wg-cell:last-child{border-right:none}
+  .wg-cell.empty{background:var(--color-background-secondary);opacity:0.5}
+  .task{display:block;padding:2px 3px;border-radius:2px;margin-bottom:2px;font-size:10px;line-height:1.3}
+  .task.infreq{font-style:italic}
+  .freq{display:inline-block;font-size:9px;padding:0 3px;border-radius:2px;font-weight:500;margin-left:2px;vertical-align:middle;flex-shrink:0}
+  .fd{background:#E1F5EE;color:#085041}
+  .fw{background:#E6F1FB;color:#0C447C}
+  .fm{background:#FAEEDA;color:#633806}
+  .fs{background:#FAECE7;color:#712B13}
+  .fo{background:#F1EFE8;color:#444441}
+  .t-green{background:#E1F5EE;color:#085041}
+  .t-amber{background:#FAEEDA;color:#633806}
+  .t-blue{background:#E6F1FB;color:#0C447C}
+  .t-coral{background:#FAECE7;color:#712B13}
+  .t-purple{background:#EEEDFE;color:#3C3489}
+  .t-gray{background:#F1EFE8;color:#444441}
+  .t-sage{background:#EAF3DE;color:#27500A}
+  .legend-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 0.8rem;font-size:11px;color:var(--color-text-secondary)}
+  .li{display:flex;align-items:center;gap:4px}
+  .seasonal-note{font-size:11px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:7px 11px;border-radius:var(--border-radius-md);margin-bottom:0.8rem;line-height:1.5}
+</style>
+</head>
+<body>
+<h1 class="page-title">Olive Farm — Monthly Weekly Planner</h1>
+<p class="page-sub">658 Lefthand Branch Road, Lockyer Valley QLD &nbsp;·&nbsp; All times adjusted for eastern mountain (+10min effective sunrise) &nbsp;·&nbsp; D=Daily · W=Weekly (flexible day) · M=Monthly · S=Seasonal · O=Once/as needed &nbsp;·&nbsp; <em>Italics = monthly or less frequent</em></p>
+
+<div class="legend-row">
+  <span class="li"><span class="freq fd">D</span> daily</span>
+  <span class="li"><span class="freq fw">W</span> weekly</span>
+  <span class="li"><span class="freq fm">M</span> monthly</span>
+  <span class="li"><span class="freq fs">S</span> seasonal</span>
+  <span class="li"><span class="freq fo">O</span> once / as needed</span>
+  <span class="li"><span class="task t-green" style="display:inline-block;padding:1px 5px">daily care</span></span>
+  <span class="li"><span class="task t-amber" style="display:inline-block;padding:1px 5px">harvest/garden</span></span>
+  <span class="li"><span class="task t-blue" style="display:inline-block;padding:1px 5px">bees/aquaponics</span></span>
+  <span class="li"><span class="task t-coral" style="display:inline-block;padding:1px 5px">seasonal intensive</span></span>
+  <span class="li"><span class="task t-purple" style="display:inline-block;padding:1px 5px">desk/admin</span></span>
+  <span class="li"><span class="task t-sage" style="display:inline-block;padding:1px 5px">tree/field</span></span>
+  <span class="li"><span class="task t-gray" style="display:inline-block;padding:1px 5px">build/setup</span></span>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="planners"></div>
+
+<script>
+// Frequency helpers
+// infreq = true means task renders in italics (M, S, O)
+// For W tasks: only show on one logical day, leave others empty
+// cell format: {t, c, f, infreq}
+
+const MONTHS = [
+  {
+    name:'May', season:'Autumn', rise:'6:10', set:'5:15', hrs:'11h',
+    note:'Olive harvest is the dominant task — 4 to 6 weeks of intensive morning work. All admin moves to evening. First nasturtiums should be flowering.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6–7am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'7–9am', cells:[
+        [{t:'Flower harvest + pack',c:'t-amber',f:'fw'}],
+        [],
+        [],
+        [],
+        [],
+        [{t:'Market pack + label',c:'t-amber',f:'fw'}],
+        [],
+      ]},
+      {time:'9am–1pm', cells:[
+        [{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Olive harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Sat market stall — Toowoomba',c:'t-coral',f:'fw'}],
+        [{t:'Olive harvest (if not done)',c:'t-coral',f:'fs',infreq:true}],
+      ]},
+      {time:'1–5pm', cells:[
+        [{t:'Y1: bed build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Toowoomba delivery run',c:'t-sage',f:'fw'}],
+        [],
+        [{t:'Garden maintenance',c:'t-amber',f:'fw'}],
+        [{t:'Succession sow',c:'t-amber',f:'fw'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [{t:'Rest',c:'t-gray',f:'fo',infreq:true}],
+      ]},
+      {time:'6–8pm', cells:[
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+        [{t:'Olive curing bath check',c:'t-sage',f:'fd'}],
+      ]},
+      {time:'8–10pm', cells:[
+        [{t:'Admin + invoices',c:'t-purple',f:'fw'}],
+        [{t:'Farm app records',c:'t-purple',f:'fd'}],
+        [{t:'Delivery invoice prep',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],
+        [{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly records review',c:'t-purple',f:'fw'}],
+        [{t:'Seed order / planning',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+  {
+    name:'June', season:'Autumn', rise:'6:45', set:'5:05', hrs:'10.5h',
+    note:'Shortest working days of the year. Olive harvest winds down. Hive inspections need midday warmth — only unavoidable 9–5 task this month.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6:45–7:30am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'7:30–9:30am', cells:[
+        [{t:'Flower + herb harvest',c:'t-amber',f:'fw'}],
+        [],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden maintenance',c:'t-amber',f:'fw'}],
+        [{t:'Succession sow',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [],
+      ]},
+      {time:'9:30am–12pm', cells:[
+        [{t:'Olive pruning',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Garlic bed prep',c:'t-sage',f:'fo',infreq:true}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Olive pruning',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Ginger bed mulch',c:'t-sage',f:'fm',infreq:true}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk + check',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'12–1pm', cells:[
+        [{t:'Hive inspection (warmth needed)',c:'t-blue',f:'fw'}],
+        [],
+        [],
+        [{t:'Hive inspection',c:'t-blue',f:'fw'}],
+        [],
+        [],
+        [],
+      ]},
+      {time:'1–5pm', cells:[
+        [{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: aquaponics build',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [{t:'Rest / maintenance',c:'t-gray',f:'fo',infreq:true}],
+      ]},
+      {time:'6–10pm', cells:[
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Admin + invoices',c:'t-purple',f:'fw'}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'DAF logs',c:'t-purple',f:'fw'}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Weekly review',c:'t-purple',f:'fw'}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Invoices + scan',c:'t-purple',f:'fw'}],
+        [{t:'Curing bath check',c:'t-sage',f:'fd'},{t:'Planning + rest',c:'t-purple',f:'fw'}],
+      ]},
+    ]
+  },
+  {
+    name:'July', season:'Winter', rise:'6:53', set:'5:13', hrs:'10.5h',
+    note:'Quieter month operationally. Good time for garlic planting, ginger bed prep, and infrastructure work. Hive inspections continue at midday.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6:53–7:45am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'7:45–9:30am', cells:[
+        [{t:'Flower + veg harvest',c:'t-amber',f:'fw'}],
+        [],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden maintenance',c:'t-amber',f:'fw'}],
+        [{t:'Sat market box prep',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [],
+      ]},
+      {time:'9:30–11:30am', cells:[
+        [{t:'Garlic planting',c:'t-sage',f:'fo',infreq:true}],
+        [{t:'Rhizome bed prep',c:'t-sage',f:'fm',infreq:true}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Finger lime check',c:'t-sage',f:'fw'}],
+        [{t:'Infrastructure work',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'11:30–1pm', cells:[
+        [{t:'Hive inspection',c:'t-blue',f:'fw'}],
+        [],
+        [],
+        [{t:'Hive inspection',c:'t-blue',f:'fw'}],
+        [],
+        [],
+        [],
+      ]},
+      {time:'1–5pm', cells:[
+        [{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: fencing + infra',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'6–10pm', cells:[
+        [{t:'Delivery planning + buyer comms',c:'t-purple',f:'fw'}],
+        [{t:'Farm app records',c:'t-purple',f:'fd'}],
+        [{t:'Admin + invoices',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs',c:'t-purple',f:'fw'}],
+        [{t:'BAS + financial records',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly records review',c:'t-purple',f:'fw'}],
+        [{t:'Seed order planning',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+  {
+    name:'Aug', season:'Winter', rise:'6:30', set:'5:30', hrs:'11h',
+    note:'Best month for olive pruning. Peak cool-season flower and veg production. Aquaponics fully operational from Y2. Olive leaf drying needs daytime supervision.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6:30–7:15am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'7:15–9:15am', cells:[
+        [{t:'Peak flower + veg harvest',c:'t-amber',f:'fw'}],
+        [],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Peak flower + veg harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk + check',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'9:15am–12pm', cells:[
+        [{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Toowoomba delivery + Y2: aquaponics harvest',c:'t-sage',f:'fw'}],
+        [{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Major olive prune',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property maintenance',c:'t-gray',f:'fw'}],
+      ]},
+      {time:'12–2pm', cells:[
+        [{t:'Olive leaf drying — turn trays',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Olive leaf drying — turn trays',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Olive leaf drying',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'2–5:30pm', cells:[
+        [{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+      ]},
+      {time:'6–10pm', cells:[
+        [{t:'Market Sat prep + box labels',c:'t-purple',f:'fw'}],
+        [{t:'Farm records + invoice scan',c:'t-purple',f:'fw'}],
+        [{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q1 prep (Jul–Sep)',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review + records',c:'t-purple',f:'fw'}],
+        [{t:'Crop plan review + seed order',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+  {
+    name:'Sep', season:'Spring', rise:'6:00', set:'5:50', hrs:'12h',
+    note:'Transition month. Cool-season crops finishing, summer crops going in. First zucchini, beans, basil planted. Wasabi establishing. Aquaponics first harvests from Y2.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6:00–6:45am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'6:45–8:30am', cells:[
+        [{t:'Final cool-season harvest',c:'t-amber',f:'fw'}],
+        [],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Summer succession sow',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'8:30–11am', cells:[
+        [{t:'Plant zucchini + beans',c:'t-sage',f:'fo',infreq:true}],
+        [{t:'Plant basil + butterfly pea',c:'t-sage',f:'fo',infreq:true}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Wasabi shade structure',c:'t-sage',f:'fo',infreq:true}],
+        [{t:'Vanilla vine training',c:'t-sage',f:'fw'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk + pest check',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'11am–1pm', cells:[
+        [{t:'Y2+: aquaponics harvest pack',c:'t-blue',f:'fw'}],
+        [{t:'Y2+: aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics harvest',c:'t-blue',f:'fw'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+      ]},
+      {time:'1–5:50pm', cells:[
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Rest / aquaponics check',c:'t-blue',f:'fd'}],
+        [{t:'Rest / aquaponics check',c:'t-blue',f:'fd'}],
+      ]},
+      {time:'6–10pm', cells:[
+        [{t:'DAF compliance logs',c:'t-purple',f:'fw'}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'Chemical register update',c:'t-purple',f:'fw'}],
+        [{t:'Weekly financial review',c:'t-purple',f:'fw'}],
+        [{t:'Records + market recount',c:'t-purple',f:'fw'}],
+        [{t:'Planning + seed orders',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+  {
+    name:'Oct', season:'Spring', rise:'5:30', set:'6:15', hrs:'13h',
+    note:'Heat building. Zucchini flowers must be harvested before 10am — only truly time-critical morning task. Hive inspections still need midday warmth.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'5:30–6:15am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'6:15–8am', cells:[
+        [{t:'Zucchini flower harvest (closes 10am)',c:'t-amber',f:'fw'}],
+        [{t:'Herb + butterfly pea harvest',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Zucchini flower harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'8–10:30am', cells:[
+        [{t:'Finger lime + macadamia check',c:'t-sage',f:'fw'}],
+        [{t:'Hemp irrigation check',c:'t-sage',f:'fw'}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Garden pest management',c:'t-amber',f:'fw'}],
+        [{t:'Vanilla vine training',c:'t-sage',f:'fw'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property maintenance',c:'t-gray',f:'fw'}],
+      ]},
+      {time:'10:30am–12pm', cells:[
+        [{t:'Hive inspection (spring build-up)',c:'t-blue',f:'fw'}],
+        [{t:'Y2+: aquaponics harvest',c:'t-blue',f:'fw'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+        [{t:'Hive inspection',c:'t-blue',f:'fw'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [{t:'Y2+: aquaponics',c:'t-blue',f:'fd'}],
+      ]},
+      {time:'12–6:10pm', cells:[
+        [{t:'Y1: remaining infra — shade work',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],
+        [{t:'Y1: infra + aquaponics',c:'t-gray',f:'fo',infreq:true}],
+        [],
+        [],
+      ]},
+      {time:'6:30–10pm', cells:[
+        [{t:'Delivery pack + invoice prep',c:'t-purple',f:'fw'}],
+        [{t:'Farm records + invoice scan',c:'t-purple',f:'fw'}],
+        [{t:'Admin + buyer emails',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + compliance',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q2 Oct–Dec open',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review',c:'t-purple',f:'fw'}],
+        [],
+      ]},
+    ]
+  },
+  {
+    name:'Nov', season:'Spring', rise:'5:08', set:'6:35', hrs:'13.5h',
+    note:'Very early starts. DAF hemp inspectors may call during business hours — keep mornings free for outdoor work and stay available midday. Afternoon heat extreme.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'5:08–5:50am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'5:50–7:30am', cells:[
+        [{t:'Flower + herb harvest',c:'t-amber',f:'fw'}],
+        [{t:'Butterfly pea + zucchini flower',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Flower harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'7:30–10am', cells:[
+        [{t:'Rhizome beds — weed + mulch',c:'t-sage',f:'fm',infreq:true}],
+        [{t:'Aquaponics harvest (Y2+)',c:'t-blue',f:'fw'}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Hemp irrigation + check',c:'t-sage',f:'fw'}],
+        [{t:'Vanilla vine + finger lime',c:'t-sage',f:'fw'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'10am–12pm', cells:[
+        [{t:'DAF hemp compliance (available for inspector)',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'DAF hemp compliance',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'12–4:30pm', cells:[
+        [{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],
+        [{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],
+        [{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],
+        [{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],
+        [{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],
+        [],
+        [],
+      ]},
+      {time:'4:30–6:30pm', cells:[
+        [{t:'Evening garden round + pest bait',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+      ]},
+      {time:'6:30–10pm', cells:[
+        [{t:'Admin + invoice scan',c:'t-purple',f:'fw'}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'DAF logs + spray register',c:'t-purple',f:'fw'}],
+        [{t:'Delivery invoices + buyer comms',c:'t-purple',f:'fw'}],
+        [{t:'BAS prep',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Market records + weekly review',c:'t-purple',f:'fw'}],
+        [],
+      ]},
+    ]
+  },
+  {
+    name:'Dec', season:'Summer', rise:'4:59', set:'6:52', hrs:'13h 53m',
+    note:'Earliest starts of the year. All physical work done before 10:30am. Hemp harvest is a 2–3 week intensive burst. Afternoons are strictly indoor/shade only.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'4:59–5:45am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'5:45–7:30am', cells:[
+        [{t:'Full garden harvest before heat',c:'t-amber',f:'fw'}],
+        [{t:'Zucchini flower + herb harvest',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Full garden harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden round',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'7:30–10:30am', cells:[
+        [{t:'Hemp harvest — finish before midday',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Hemp harvest + Toowoomba delivery',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Hemp harvest',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Hemp harvest if behind',c:'t-coral',f:'fs',infreq:true}],
+      ]},
+      {time:'10:30am–4pm', cells:[
+        [{t:'Shade: aquaponics harvest + cool-room pack (Y2+)',c:'t-blue',f:'fw'}],
+        [{t:'Shade: aquaponics + equipment',c:'t-blue',f:'fw'}],
+        [{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],
+        [{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],
+        [{t:'Shade: aquaponics',c:'t-blue',f:'fw'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'4–6:45pm', cells:[
+        [{t:'Evening garden round + irrigation check',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+      ]},
+      {time:'7–10pm', cells:[
+        [{t:'Invoicing + Christmas delivery planning',c:'t-purple',f:'fw'}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + compliance records',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q2 close + invoice scan',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review + records',c:'t-purple',f:'fw'}],
+        [],
+      ]},
+    ]
+  },
+  {
+    name:'Jan', season:'Summer', rise:'5:05', set:'6:52', hrs:'13h 47m',
+    note:'Hottest month. Aquaponics water temp is critical — check twice daily. Afternoon outdoor work is off the table. Honey extraction preparation begins.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'5:05–5:50am', cells:[
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'5:50–7:30am', cells:[
+        [{t:'Zucchini flower + herb harvest',c:'t-amber',f:'fw'}],
+        [{t:'Butterfly pea + flower harvest',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'7:30–9:30am', cells:[
+        [{t:'Aquaponics — water temp critical check',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics — full water test',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics — harvest pack',c:'t-blue',f:'fw'}],
+        [{t:'Aquaponics — water test',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics — water test',c:'t-blue',f:'fd'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Aquaponics — check',c:'t-blue',f:'fd'}],
+      ]},
+      {time:'9:30am–4:30pm', cells:[
+        [{t:'Shade: equipment repairs + honey prep',c:'t-gray',f:'fm',infreq:true}],
+        [{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],
+        [{t:'Shade: Toowoomba delivery + aquaponics',c:'t-blue',f:'fw'}],
+        [{t:'Shade: equipment + cold room prep',c:'t-gray',f:'fw'}],
+        [{t:'Shade: equipment maintenance',c:'t-gray',f:'fw'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'4:30–6:45pm', cells:[
+        [{t:'Evening garden round + irrigation',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+      ]},
+      {time:'7–10pm', cells:[
+        [{t:'Admin + invoice scanning',c:'t-purple',f:'fw'}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Buyer emails + delivery planning',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + records',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q3 Jan–Mar open',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review',c:'t-purple',f:'fw'}],
+        [],
+      ]},
+    ]
+  },
+  {
+    name:'Feb', season:'Summer', rise:'5:25', set:'6:40', hrs:'13h',
+    note:'Honey extraction happens twice a year — these are full-morning days. Vanilla hand pollination opens in Y4. BSFL feeding routine established from Y2.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'5:25–6:10am', cells:[
+        [{t:'Egg collection + BSFL feed (Y2+)',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+      ]},
+      {time:'6:10–8:30am', cells:[
+        [{t:'EXTRACTION DAY: honey harvest (Y2+)',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Garden harvest + herb rounds',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'8:30–10:30am', cells:[
+        [{t:'Honey extraction continues',c:'t-coral',f:'fs',infreq:true}],
+        [{t:'Vanilla vine — hand pollination (Y4+)',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],
+        [{t:'Vanilla + finger lime check',c:'t-sage',f:'fw'}],
+        [{t:'Aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'10:30am–4:30pm', cells:[
+        [{t:'Shade: honey bottling + labelling',c:'t-gray',f:'fs',infreq:true}],
+        [{t:'Shade: potting + propagation',c:'t-gray',f:'fw'}],
+        [{t:'Shade: Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Shade: equipment + cold room',c:'t-gray',f:'fw'}],
+        [{t:'Shade: maintenance',c:'t-gray',f:'fw'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'4:30–6:30pm', cells:[
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round + irrigation',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+      ]},
+      {time:'7–10pm', cells:[
+        [{t:'Honey sales invoicing + records',c:'t-purple',f:'fs',infreq:true}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q3 prep',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review',c:'t-purple',f:'fw'}],
+        [],
+      ]},
+    ]
+  },
+  {
+    name:'Mar', season:'Autumn', rise:'5:45', set:'6:15', hrs:'12.5h',
+    note:'Rhizome and wasabi harvest. Wasabi must be delivered same day — the one unavoidable midday task. Cool-season succession sowing begins again in the evening.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'5:45–6:30am', cells:[
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'6:30–8:30am', cells:[
+        [{t:'Ginger + turmeric harvest, wash + pack',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Garden harvest + herbs',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Ginger harvest',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'8:30–10:30am', cells:[
+        [{t:'Wasabi harvest + immediate pack',c:'t-coral',f:'fw'}],
+        [{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],
+        [{t:'Aquaponics harvest (Y2+)',c:'t-blue',f:'fw'}],
+        [{t:'Wasabi harvest + pack',c:'t-coral',f:'fw'}],
+        [{t:'Aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'10:30am–2pm', cells:[
+        [{t:'Toowoomba delivery — wasabi + aquaponics same run',c:'t-sage',f:'fw'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'2–6pm', cells:[
+        [{t:'Cool-season succession sow — nasturtiums, violas',c:'t-amber',f:'fw'}],
+        [{t:'Cool-season succession sow',c:'t-amber',f:'fw'}],
+        [{t:'Cool-season sow',c:'t-amber',f:'fw'}],
+        [{t:'Cool-season sow',c:'t-amber',f:'fw'}],
+        [{t:'Cool-season sow + irrigation check',c:'t-amber',f:'fw'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+      ]},
+      {time:'7–10pm', cells:[
+        [{t:'Admin + rhizome sales invoices',c:'t-purple',f:'fw'}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'DAF logs + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'Records + financial review',c:'t-purple',f:'fw'}],
+        [{t:'BAS Q3 finalise',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Weekly review',c:'t-purple',f:'fw'}],
+        [{t:'Seed order + crop planning',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+  {
+    name:'Apr', season:'Autumn', rise:'6:05', set:'5:45', hrs:'11.5h',
+    note:'Best working month of the year — cool mornings, long enough days, no extreme heat. Good time for hemp planting, grafting, macadamia work, and BAS year-end.',
+    days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+    rows:[
+      {time:'6:05–6:50am', cells:[
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + BSFL feed',c:'t-green',f:'fd'}],
+        [{t:'Egg collection + shed clean',c:'t-green',f:'fw'}],
+        [{t:'Egg collection',c:'t-green',f:'fd'}],
+      ]},
+      {time:'6:50–8:30am', cells:[
+        [{t:'Cool-season flower planting',c:'t-amber',f:'fw'}],
+        [{t:'Nasturtium + flower harvest',c:'t-amber',f:'fw'}],
+        [{t:'Wed delivery pack',c:'t-amber',f:'fw'}],
+        [{t:'Flower planting + harvest',c:'t-amber',f:'fw'}],
+        [{t:'Sat market pack',c:'t-amber',f:'fw'}],
+        [{t:'Market pack',c:'t-amber',f:'fw'}],
+        [{t:'Garden walk',c:'t-amber',f:'fw'}],
+      ]},
+      {time:'8:30–11:30am', cells:[
+        [{t:'Hemp planting (next crop)',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Finger lime + macadamia grafts',c:'t-sage',f:'fw'}],
+        [{t:'Toowoomba delivery',c:'t-sage',f:'fw'}],
+        [{t:'Hemp planting',c:'t-sage',f:'fs',infreq:true}],
+        [{t:'Vanilla vine training',c:'t-sage',f:'fw'}],
+        [{t:'Sat market stall',c:'t-coral',f:'fw'}],
+        [{t:'Property walk + maintenance',c:'t-sage',f:'fw'}],
+      ]},
+      {time:'11:30am–1:30pm', cells:[
+        [{t:'Toowoomba restaurant drop + relationship calls',c:'t-sage',f:'fw'}],
+        [{t:'Aquaponics water test + feed',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Aquaponics harvest pack',c:'t-blue',f:'fw'}],
+        [{t:'Aquaponics water test',c:'t-blue',f:'fd'}],
+        [{t:'Return from market',c:'t-gray',f:'fw'}],
+        [],
+      ]},
+      {time:'1:30–5:40pm', cells:[
+        [{t:'BSFL substrate change',c:'t-blue',f:'fm',infreq:true}],
+        [{t:'Aquaponics deep clean',c:'t-blue',f:'fm',infreq:true}],
+        [{t:'Aquaponics + BSFL maintenance',c:'t-blue',f:'fm',infreq:true}],
+        [{t:'Garden maintenance + irrigation',c:'t-amber',f:'fw'}],
+        [{t:'Equipment service + maintenance',c:'t-gray',f:'fm',infreq:true}],
+        [{t:'Evening garden round',c:'t-amber',f:'fd'}],
+        [],
+      ]},
+      {time:'6–10pm', cells:[
+        [{t:'BAS Q4 year-end finalise',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Farm records',c:'t-purple',f:'fd'}],
+        [{t:'Admin + delivery invoices',c:'t-purple',f:'fw'}],
+        [{t:'DAF logs + compliance',c:'t-purple',f:'fw'}],
+        [{t:'Accountant export + invoice archive',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Annual crop plan review',c:'t-purple',f:'fm',infreq:true}],
+        [{t:'Seed orders + rest',c:'t-purple',f:'fm',infreq:true}],
+      ]},
+    ]
+  },
+];
+
+function buildPlanner(m){
+  const d=document.createElement('div');
+  d.className='planner';
+  d.id='p-'+m.name;
+  let h=`<div class="p-header"><span class="p-title">${m.name} — ${m.season}</span><span class="p-meta">Eff. sunrise ${m.rise} · Sunset ${m.set} · ${m.hrs} usable daylight</span></div>`;
+  h+=`<div class="seasonal-note">${m.note}</div>`;
+  h+=`<div class="week-grid">`;
+  h+=`<div class="wg-head"></div>`;
+  m.days.forEach(dy=>h+=`<div class="wg-head">${dy}</div>`);
+  m.rows.forEach(row=>{
+    h+=`<div class="wg-time">${row.time}</div>`;
+    row.cells.forEach(cell=>{
+      if(!cell||cell.length===0){h+=`<div class="wg-cell empty"></div>`;return;}
+      h+=`<div class="wg-cell">`;
+      cell.forEach(task=>{
+        const italic = task.infreq ? ' infreq' : '';
+        const label = task.f==='fd'?'D':task.f==='fw'?'W':task.f==='fm'?'M':task.f==='fs'?'S':'O';
+        h+=`<span class="task ${task.c}${italic}">${task.t}<span class="freq ${task.f}">${label}</span></span>`;
+      });
+      h+=`</div>`;
+    });
+  });
+  h+=`</div>`;
+  d.innerHTML=h;
+  return d;
+}
+
+const nav=document.getElementById('nav');
+const cont=document.getElementById('planners');
+MONTHS.forEach((m,i)=>{
+  const btn=document.createElement('button');
+  btn.className='nav-btn'+(i===0?' active':'');
+  btn.textContent=m.name;
+  btn.onclick=()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.planner').forEach(p=>p.classList.remove('show'));
+    document.getElementById('p-'+m.name).classList.add('show');
+  };
+  nav.appendChild(btn);
+  const p=buildPlanner(m);
+  if(i===0)p.classList.add('show');
+  cont.appendChild(p);
+});
+</script>
+</body></html>

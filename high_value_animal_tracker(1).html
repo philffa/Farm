@@ -1,0 +1,396 @@
+
+<h2 class="sr-only">High-value animal enterprise tracker for 658 Lefthand Branch Road. Lists 40+ species across land, aquatic, insect, and avian categories. Each entry shows revenue potential, feasibility status, and reason if deferred to the 'too hard' basket.</h2>
+
+<style>
+.hdr-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+.filter-btn { padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); font-size: 13px; cursor: pointer; color: var(--color-text-secondary); }
+.filter-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); font-weight: 500; border-color: var(--color-border-primary); }
+.search-box { padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); font-size: 13px; color: var(--color-text-primary); flex: 1; min-width: 160px; max-width: 260px; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
+.scard { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; }
+.scard-lbl { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 3px; }
+.scard-val { font-size: 20px; font-weight: 500; color: var(--color-text-primary); }
+.animal-list { display: flex; flex-direction: column; gap: 6px; }
+.animal-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color .15s;
+  border-left: 3px solid transparent;
+}
+.animal-card:hover { border-color: var(--color-border-secondary); }
+.animal-card.active-item { border-color: var(--color-border-secondary); }
+.animal-card.status-viable { border-left-color: #3B6D11; }
+.animal-card.status-monitor { border-left-color: #BA7517; }
+.animal-card.status-hard { border-left-color: #888780; }
+.animal-card.status-illegal { border-left-color: #A32D2D; }
+.card-top { display: flex; align-items: flex-start; gap: 10px; }
+.card-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.card-main { flex: 1; }
+.card-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+.card-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.cat-tag { font-size: 11px; padding: 2px 7px; border-radius: var(--border-radius-md); color: var(--color-text-secondary); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); }
+.card-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.revenue-tag { font-size: 12px; font-weight: 500; color: var(--color-text-primary); text-align: right; }
+.status-pill { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); font-weight: 500; white-space: nowrap; }
+.sp-viable { background: var(--color-background-success); color: var(--color-text-success); }
+.sp-monitor { background: var(--color-background-warning); color: var(--color-text-warning); }
+.sp-hard { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.sp-illegal { background: var(--color-background-danger); color: var(--color-text-danger); }
+.card-detail { margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; display: none; }
+.card-detail.open { display: block; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.detail-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; }
+.di-lbl { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+.di-val { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+.basket-note { margin-top: 8px; padding: 8px 10px; border-radius: var(--border-radius-md); font-size: 12px; line-height: 1.5; }
+.bn-hard { background: var(--color-background-secondary); color: var(--color-text-secondary); border-left: 2px solid var(--color-border-secondary); }
+.bn-illegal { background: var(--color-background-danger); color: var(--color-text-danger); border-left: 2px solid #A32D2D; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.bn-viable { background: var(--color-background-success); color: var(--color-text-success); border-left: 2px solid #3B6D11; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.bn-monitor { background: var(--color-background-warning); color: var(--color-text-warning); border-left: 2px solid #BA7517; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.empty-state { padding: 2rem; text-align: center; color: var(--color-text-secondary); font-size: 14px; }
+</style>
+
+<div class="hdr-row">
+  <input class="search-box" type="text" placeholder="Search animals..." id="search" oninput="render()">
+  <button class="filter-btn active" data-f="all" onclick="setFilter(this)">All</button>
+  <button class="filter-btn" data-f="viable" onclick="setFilter(this)">Viable now</button>
+  <button class="filter-btn" data-f="monitor" onclick="setFilter(this)">Watch list</button>
+  <button class="filter-btn" data-f="hard" onclick="setFilter(this)">Too hard (for now)</button>
+  <button class="filter-btn" data-f="illegal" onclick="setFilter(this)">Not legal/possible</button>
+</div>
+
+<div class="stats-row" id="stats"></div>
+<div class="animal-list" id="list"></div>
+
+<script>
+const ANIMALS = [
+  {id:1, icon:"🐝", name:"Native stingless bees (T. carbonaria)", cat:"Insect", status:"viable",
+   revenue:"$600/hive · nucleus splits $80–150",
+   setup:"$600–1,200 (hives)", time:"6–12 months to first honey",
+   desc:"Already on waitlist at sugarbag.net. Native SE QLD species. Low maintenance, no varroa, honey commands premium. Nucleus splits create propagation income.",
+   detail:"SE Queensland's climate is ideal. Each hive produces 1–2kg of high-value native honey per year at $80–120/kg. Hive splitting for sale is $80–150/nucleus. Already in your plan — just needs the waitlist to convert.",
+   basket:""},
+  {id:2, icon:"🐝", name:"European honeybees (Langstroth)", cat:"Insect", status:"viable",
+   revenue:"$600–1,200/hive honey · nucleus $200–350",
+   setup:"$300–400/hive (second-hand)", time:"First honey 6–10 months",
+   desc:"Already in your plan. Varroa-present but manageable. Pollination service to local orchards and growers is an additional income stream beyond honey.",
+   detail:"Pollination services: $80–150/hive per season for nearby orchardists. With 10–20 hives this becomes $800–3,000/season additional income on top of honey. Approach macadamia and avocado growers in the Lockyer Valley.",
+   basket:""},
+  {id:3, icon:"🐟", name:"Jade Perch (aquaponics)", cat:"Aquatic", status:"viable",
+   revenue:"$15–25/kg whole fish · $8,000–15,000/cycle",
+   setup:"Already in plan ($9,500 CHOP2 system)", time:"10–14 months to plate weight",
+   desc:"Already in your plan. Native warm-water species, strong restaurant demand in QLD, omega-3 rich. CHOP2 system designed for this.",
+   detail:"300–400 fingerlings in 5,000L system. Harvest at 300–500g plate weight. Restaurant direct-supply at $18–25/kg. Fingerlings $3–5 each from DAF-licensed suppliers.",
+   basket:""},
+  {id:4, icon:"🦎", name:"Silk worms", cat:"Insect", status:"viable",
+   revenue:"Cocoons $80–200/kg · live pupae $15–30/punnet",
+   setup:"~$150–300 starter kit", time:"35 days per cycle (very fast)",
+   desc:"Fast lifecycle, no noise, no smell, no DA required. Feed exclusively on mulberry leaves — your mulberry propagation business creates a natural feed supply. Multiple cycles per year.",
+   detail:"You have mulberry trees and plan to propagate more. Silk cocoons sold to artisan textile producers and educators. Live pupae sold to reptile keepers as feeder insects. 35-day cycle means 6–8 crops per year. Extremely low labour once established.",
+   basket:""},
+  {id:5, icon:"🦎", name:"Mealworms", cat:"Insect", status:"viable",
+   revenue:"$15–30/kg live · $60–80/kg dried",
+   setup:"~$200–400 (plastic tubs + substrate)", time:"3–4 months first harvest",
+   desc:"Thriving insect protein market. Feed to chickens, fish, reptiles. Low space, low smell if managed, no permits required in QLD for breeding for animal feed.",
+   detail:"Mealworms (Tenebrio molitor) and superworms (Zophobas morio) both viable. Temperature-dependent — need 25–30°C, which SE QLD provides naturally in summer; minimal heating in winter. Can be co-located with BSFL operation.",
+   basket:""},
+  {id:6, icon:"🪲", name:"BSFL (Black Soldier Fly Larvae)", cat:"Insect", status:"viable",
+   revenue:"Frass $2–4/kg · larvae $8–15/kg (animal feed)",
+   setup:"Already in plan", time:"2–3 weeks per cycle",
+   desc:"Already in your plan. The frass and larvae can also be sold externally to other small farms and aquaculture operations — not just used on-farm.",
+   detail:"External sales opportunity: packaged BSFL frass to home gardeners at $8–15/kg. Live larvae to local reptile keepers and fishers at $10–15 per 500g tub. Small side income from the existing operation.",
+   basket:""},
+  {id:7, icon:"🐛", name:"Crickets (human/animal food)", cat:"Insect", status:"monitor",
+   revenue:"$30–60/kg dried · $20–40/kg live",
+   setup:"~$500–1,000 (enclosures + climate control)", time:"6–8 weeks per cycle",
+   desc:"Food-grade cricket farming is growing rapidly in Australia. Edible insect protein is legal and increasingly mainstream. Requires careful temperature and humidity management.",
+   detail:"Key issue: QLD food standards require specific licensing for human-consumption insect products. For animal feed only, requirements are simpler. The market is growing but supply chain and distribution are not yet mature in SE QLD. Worth revisiting in 2–3 years as the sector develops.",
+   basket:"Keep watching: edible insect market doubling annually. When Brisbane wholesale channels for human-grade cricket flour exist, this becomes straightforward."},
+  {id:8, icon:"🦋", name:"Butterflies (ornamental / educational)", cat:"Insect", status:"monitor",
+   revenue:"$5–15/pupae · $200–400 butterfly release events",
+   setup:"~$800–1,500 (butterfly house + host plants)", time:"Ongoing supply once established",
+   desc:"Breeding native butterflies for release events (weddings, funerals, corporate) is a legal and growing industry in QLD. Requires specific host plants and a controlled environment.",
+   detail:"QLD biosecurity allows native species only. Host plants: Aristolochia (Richmond birdwing — protected, can't breed commercially), Citrus (orchard butterfly), native passionfruit (glasswing). Your existing citrus trees are already host plants for the citrus swallowtail. Low entry cost once a butterfly house is built.",
+   basket:"Revisit once farm is established. A butterfly house is a natural agritourism attraction complementing olive grove visitor experiences."},
+  {id:9, icon:"🐠", name:"Aquarium fish (native freshwater)", cat:"Aquatic", status:"monitor",
+   revenue:"$5–50/fish depending on species · $2,000–8,000/breeding cycle",
+   setup:"~$2,000–5,000 (tanks + filtration)", time:"3–6 months first saleable fish",
+   desc:"Native QLD freshwater species for the aquarium trade. Rainbowfish, gudgeons, and spangled perch command strong prices. Your bore water and warm climate are advantages.",
+   detail:"Species to consider: Melanotaenia splendida (eastern rainbowfish) $8–15/fish; Hypseleotris compressa (empire gudgeon) $10–20; Glossamia aprion (mouth almighty) $15–25. Aquarium fish sales require an aquaculture licence in QLD (same licence pathway as Jade Perch). Can share infrastructure.",
+   basket:"Natural expansion once aquaculture licence is in hand for Jade Perch. Low marginal cost to add a breeding room alongside the CHOP2 system."},
+  {id:10, icon:"🐟", name:"Yabby / freshwater crayfish", cat:"Aquatic", status:"monitor",
+   revenue:"$18–30/kg live · $35–50/kg restaurant",
+   setup:"~$1,500–3,000 (dams or tanks)", time:"12–18 months to harvest size",
+   desc:"Cherax destructor (common yabby) is the most commercially viable. SE QLD climate is ideal. Can be pond-raised or tank-raised. Strong restaurant demand for live product.",
+   detail:"The Tent Hill Creek riparian zone is a natural habitat but commercial extraction from natural waterways requires separate permits. Tank or dam cultivation is cleaner legally. A small dam (30–50m²) in the flood buffer zone could double as yabby production. Requires DAF QLD aquaculture licence.",
+   basket:"Viable if a small dam is constructed in the flood buffer zone — which also serves water management and fire risk reduction purposes. Revisit at Year 3 capital planning."},
+  {id:11, icon:"🦞", name:"Redclaw crayfish (Cherax quadricarinatus)", cat:"Aquatic", status:"monitor",
+   revenue:"$20–35/kg live · $50+/kg restaurant",
+   setup:"~$3,000–6,000 (tanks or dam)", time:"12–18 months",
+   desc:"Premium native crayfish native to northern QLD. Warm-water species suited to SE QLD summers. Higher value than common yabby, growing restaurant demand.",
+   detail:"Redclaw needs water temperatures above 20°C — your climate is ideal in summer, marginal in winter. Insulated tanks or a solar-heated dam would extend the growing season. DAF QLD aquaculture licence required. Complement to Jade Perch operation.",
+   basket:"Revisit at Year 2 once aquaculture licence is in place. Natural evolution of aquaculture infrastructure already planned."},
+  {id:12, icon:"🐸", name:"Edible frogs (Litoria caerulea etc.)", cat:"Amphibian", status:"hard",
+   revenue:"$50–200/frog (pet trade) · $300–600/kg meat",
+   setup:"Complex licensing required", time:"12–18 months",
+   desc:"Green tree frogs and similar native species have strong pet trade demand. Commercial frog meat is an emerging premium market. QLD native species require a Wildlife Authority licence.",
+   detail:"Serious licensing barrier: QLD requires a Wildlife Authority (Commercial) licence to breed native frogs for sale. Application is complex, requires demonstrated expertise and facilities inspection. Not impossible but significant upfront compliance cost.",
+   basket:"Keep on list: licensing pathway exists but is complex. Viable as a Year 4–5 enterprise once farm has operational history and facilities to support a compliance inspection."},
+  {id:13, icon:"🦎", name:"Blue-tongue lizards (pet trade)", cat:"Reptile", status:"hard",
+   revenue:"$300–800/juvenile · $1,000–2,000/breeding pair",
+   setup:"Licence + specialist facilities", time:"Annual breeding cycle",
+   desc:"Blue-tongue skinks (Tiliqua scincoides) are among the most popular reptile pets in Australia. Captive breeding for the pet trade is legal with the correct licence in QLD.",
+   detail:"Requires: QLD Wildlife Licence (Commercial) — breeding category. Annual reporting. Specific enclosure requirements. Blue-tongues breed once per year (live young, 10–25 per litter). At $300/juvenile × 15 young × multiple pairs, revenue potential is significant. Your biology background is relevant.",
+   basket:"Strong long-term candidate. Revisit at Year 3. The licence pathway is well-established and the market (licensed pet stores, licensed private buyers) is stable."},
+  {id:14, icon:"🐢", name:"Freshwater turtles (Emydura macquarii)", cat:"Reptile", status:"hard",
+   revenue:"$200–600/juvenile · slow but steady",
+   setup:"Wildlife licence + pond/tank setup", time:"2–3 years to breeding maturity",
+   desc:"Eastern long-neck and snake-necked turtles are common pets. Demand consistently exceeds licensed supply. Captive breeding legal with QLD Wildlife Licence.",
+   detail:"Long time to breeding maturity (2–3 years minimum) and low reproductive rate (5–15 eggs per year) limits scale. Revenue is modest but the licence is the same as blue-tongue lizards — minimal marginal cost to add once licence is in hand. Your creek provides natural habitat context useful for a licence application.",
+   basket:"Add-on to blue-tongue breeding operation once licence obtained. Not a standalone enterprise."},
+  {id:15, icon:"🦎", name:"Commercial freshwater crocodiles", cat:"Reptile", status:"hard",
+   revenue:"Skins $200–600 · meat $25–40/kg",
+   setup:"Significant — croc farming licence", time:"3–5 years to commercial size",
+   desc:"Crocodylus johnstoni (freshwater crocodile) farming is legal in QLD with a crocodile licence. Small freshwater crocs are not dangerous (unlike saltwater). Skin and meat market exists.",
+   detail:"Licencing is serious: QLD requires a Crocodile Farm Licence from Dept of Environment. Inspections, specific containment requirements, annual reporting. Capital cost significant. Not viable at current scale but worth noting — the market pays well for licensed product.",
+   basket:"Too hard at this stage. Note for Year 5+ if farm has established infrastructure and revenue base. The creek is relevant context for a licence application."},
+  {id:16, icon:"🐊", name:"Saltwater crocodiles", cat:"Reptile", status:"illegal",
+   revenue:"N/A at this location", setup:"N/A", time:"N/A",
+   desc:"Commercial saltwater crocodile farming in SE QLD is not viable — the species range doesn't extend this far south, and licensing for saltwater crocodile operations is limited to northern QLD operations. Not appropriate for this site.",
+   detail:"",
+   basket:"Not viable. Saltwater croc farming in SE QLD is not legally or practically feasible. Removed from consideration."},
+  {id:17, icon:"🐐", name:"Boer goats (meat)", cat:"Livestock", status:"viable",
+   revenue:"$300–600/head (live weight) · $15–25/kg carcass",
+   setup:"~$2,000–4,000 (fencing + starter herd)", time:"5–6 months to market weight",
+   desc:"Boer goats are the dominant commercial meat breed in Australia. Hardy, fast-growing, low maintenance on rough pasture. Grass field provides grazing.",
+   detail:"10 does + 1 buck = 15–20 kids per year at 5–6 months to 50kg. At $300/head live = $4,500–6,000/year from minimal additional infrastructure. Goats control weeds in the macadamia rows — genuine dual purpose. Fencing is the main cost (they are excellent escape artists).",
+   basket:""},
+  {id:18, icon:"🐑", name:"Dorper sheep (meat)", cat:"Livestock", status:"viable",
+   revenue:"$180–350/head · $8–14/kg carcass",
+   setup:"~$1,500–3,000 (fencing + starter flock)", time:"4–5 months to market weight",
+   desc:"Dorper is a hair breed (no shearing required). Hardy, suited to SE QLD climate. Lower revenue per head than Boer goat but lower management intensity.",
+   detail:"Complement to chicken rotation — sheep and chickens on the same pasture at different times creates excellent parasite management. 15 ewes + 1 ram = 20–25 lambs per year. At $250/head = $5,000–6,250/year.",
+   basket:""},
+  {id:19, icon:"🐐", name:"Dairy goats (Nubian, Saanen)", cat:"Livestock", status:"monitor",
+   revenue:"$6–12/litre milk · $20–40/kg cheese",
+   setup:"~$3,000–5,000 (milking setup + herd)", time:"Immediate if fresh-in-milk does purchased",
+   desc:"Artisan goat cheese and fresh goat milk command premium prices at Brisbane markets. However: requires food business registration for dairy products, DAFF dairy licence, and twice-daily milking — creating a daily obligation.",
+   detail:"The twice-daily milking obligation is the key barrier. It cannot be paused. If you travel or are unable to milk, you need a relief milker. Revenue potential is strong ($15,000–30,000/year from 6–8 does at artisan cheese pricing) but the lifestyle commitment is significant.",
+   basket:"Keep watching: viable if and when you can commit to a daily milking routine or hire/train someone. The shed infrastructure already planned is compatible with a small dairy."},
+  {id:20, icon:"🐄", name:"Dexter or miniature cattle", cat:"Livestock", status:"monitor",
+   revenue:"$800–2,000/calf · $2,500–4,000/breeding cow",
+   setup:"~$8,000–15,000 (fencing + starter pair)", time:"9 months gestation, annual calves",
+   desc:"Dexter cattle are the smallest recognised beef breed — suited to small properties. Breeding stock commands strong prices. Beef from Dexter × Angus crosses is premium quality.",
+   detail:"The 1–1.5ha grass field is borderline for cattle — would support 2–3 animals at most without supplementary feed, which limits scale. As a boutique breeding operation for registered Dexter genetics, small numbers can generate good returns from stud sales.",
+   basket:"Revisit at Year 3 once macadamia rows are established and the field's productive carrying capacity is better understood."},
+  {id:21, icon:"🐷", name:"Berkshire / heritage breed pigs", cat:"Livestock", status:"monitor",
+   revenue:"$400–800/pig (porchetta weight) · $15–25/kg",
+   setup:"~$2,500–4,000 (shelter + fencing + starter pair)", time:"5–6 months to market weight",
+   desc:"Heritage breed pork commands genuine premium pricing at Brisbane butchers and farmers markets. Pigs on the macadamia rows act as orchard floor management — eating fallen nuts and weeds.",
+   detail:"Key considerations: odour management (needs to be far from house and neighbours), council DA for piggery may be required even for small-scale, and the olive grove spray calendar must ensure pigs are excluded during copper/sulphur spray windows. Potential synergy with BSFL waste stream.",
+   basket:"Worth pursuing at Year 2 once shed is built and DA experience gives confidence in the planning system. Berkshire pigs on macadamia pasture is a genuine premium story."},
+  {id:22, icon:"🦙", name:"Alpacas (fibre + breeding)", cat:"Livestock", status:"monitor",
+   revenue:"$800–2,500/cria (baby) · $300–600/kg fibre",
+   setup:"~$5,000–12,000 (starter pair breeding quality)", time:"11.5 months gestation, annual cria",
+   desc:"Alpaca breeding stock — particularly huacaya — commands strong prices. Breeding females from quality bloodlines sell for $2,000–8,000. Fibre market is developing but slow.",
+   detail:"The appeal is dual: passive income from fibre (annual shearing, sell raw or processed fleece) plus capital return from cria sales. Alpacas are excellent grass managers and do not damage fencing like goats. Low odour, quiet, low disease pressure. Consider as the macadamia orchard's resident weed managers.",
+   basket:"Strong medium-term candidate. Revisit at Year 2. The main barrier is the upfront cost of quality breeding stock."},
+  {id:23, icon:"🦌", name:"Deer (Fallow, Red)", cat:"Livestock", status:"hard",
+   revenue:"$600–1,200/head · venison $25–40/kg",
+   setup:"~$15,000–25,000 (deer-proof fencing + stock)", time:"18–24 months to market weight",
+   desc:"Deer farming in QLD requires specific high fencing (2.1m minimum), a deer farmer registration, and is subject to specific biosecurity regulations. Venison is a growing premium market.",
+   detail:"Deer fencing is the major cost barrier — $20–40/m for adequate deer-proof construction makes the initial investment substantial on a 1.5ha field. A 1ha deer paddock fencing alone could cost $20,000–30,000. Not viable at current scale but worth noting.",
+   basket:"Revisit if property is ever subdivided or expanded. The capital requirement for fencing alone puts this out of reach at current scale."},
+  {id:24, icon:"🦜", name:"Native parrots (captive breeding)", cat:"Avian", status:"hard",
+   revenue:"$100–500/bird depending on species",
+   setup:"QLD Wildlife Licence + aviaries", time:"Annual breeding cycle",
+   desc:"Captive breeding of native parrots (lorikeets, rosellas, cockatoos, eclectus) for the pet trade is legal with a QLD Wildlife (Commercial) licence. Consistent demand, good prices for hand-reared birds.",
+   detail:"The licence application requires demonstrated knowledge, suitable aviary facilities (minimum cage sizes prescribed by regulation), and annual reporting. Hand-reared birds — which require feeding every 3–4 hours during the nestling stage — command 3–5× the price of parent-raised birds but are extremely time-intensive. This is the main labour barrier.",
+   basket:"Viable long-term with the right licence and facilities. Your biology background is directly relevant. Revisit at Year 3 when shed is built and facilities can be demonstrated to the licensing authority."},
+  {id:25, icon:"🦤", name:"Emus", cat:"Avian", status:"monitor",
+   revenue:"Oil $200–400/L · meat $15–25/kg · feathers $5–15/bird",
+   setup:"~$3,000–5,000 (fencing + chicks)", time:"18–24 months to processing",
+   desc:"Emu oil commands extraordinary prices in cosmetics and therapeutics. Meat is lean and increasingly sought after. Emus are native, hardy, and require minimal shelter. A single emu produces 5–8L of oil.",
+   detail:"Biosecurity QLD does not restrict emu farming. No DA required for small numbers (check LVRC for rural zone thresholds). Emus are notoriously curious and will damage structures, vehicles, and fencing — the macadamia rows would be at risk. Keep emus in dedicated paddocks away from plantings.",
+   basket:"Revisit at Year 2. Natural fit with the grass field — the flood buffer zone in the SW corner could be a dedicated emu paddock. Oil extraction requires a contract processor unless you invest in rendering equipment."},
+  {id:26, icon:"🦩", name:"Ostriches", cat:"Avian", status:"hard",
+   revenue:"$200–400/hide · $12–20/kg meat · feathers",
+   setup:"~$5,000–10,000 (robust fencing + stock)", time:"2–3 years to commercial size",
+   desc:"Ostrich farming in Australia has a small but established industry. Leather, meat, and feather markets exist. Requires robust fencing — ostriches kick with lethal force and can clear most normal rural fences.",
+   detail:"Main issue: the property size is borderline for ostriches (minimum recommended 0.5ha per bird). The grass field could support 2–3 birds at most. Too small for a commercial operation and the investment in fencing is disproportionate to potential returns at this scale.",
+   basket:"Too small a property for a viable ostrich operation. Noted and parked."},
+  {id:27, icon:"🦚", name:"Peafowl (peacocks)", cat:"Avian", status:"viable",
+   revenue:"$150–400/bird · eggs $5–20 each · feathers $2–8/each",
+   setup:"~$500–1,500 (pair + basic shelter)", time:"Annual breeding",
+   desc:"Peafowl are low-maintenance, free-ranging birds that sell well at markets and to hobby farms. Feathers are sold to craft markets. They also eat insects and small reptiles, reducing pest pressure in the grove.",
+   detail:"The main issue is noise — peacock calls are extremely loud and carry long distances, which may be a nuisance consideration. At 658 Lefthand Branch Rd the nearest neighbours appear distant based on the aerial, which makes this less of a concern. Free-ranging peafowl are resistant to most diseases that affect other poultry.",
+   basket:""},
+  {id:28, icon:"🦃", name:"Heritage turkeys", cat:"Avian", status:"viable",
+   revenue:"$80–180/bird (table) · $200–400 (breeding pair)",
+   setup:"~$800–1,500 (starter flock)", time:"4–5 months to market weight",
+   desc:"Heritage breed turkeys (Bourbon Red, Black Spanish, Narragansett) command premium prices at Christmas and Easter. Breeding pairs sell to hobby farmers year-round.",
+   detail:"Table birds: sell direct to households at $80–180 for a 6–8kg dressed bird, particularly in the months leading to Christmas. Breeding pairs to hobby farmers $200–400. Turkeys free-range well with chickens and provide natural tick and insect control in the grove.",
+   basket:""},
+  {id:29, icon:"🐇", name:"Rabbits (meat + pet trade)", cat:"Small mammal", status:"hard",
+   revenue:"$15–25/kg meat · $30–80/pet rabbit",
+   setup:"~$1,000–2,000 (hutches + breeding stock)", time:"10–12 weeks per batch",
+   desc:"In QLD, domestic rabbit keeping is legal but strictly regulated. Rabbits classified as class 2 pests in QLD — commercial meat rabbit farming requires a specific exemption from Biosecurity QLD, which is very difficult to obtain.",
+   detail:"The fundamental barrier: QLD has some of Australia's strictest rabbit regulations due to feral rabbit risk. Even 'approved' domestic breeds require written approval from the Department of Agriculture. This is a significant regulatory hurdle that makes commercial-scale rabbit farming extremely difficult in QLD.",
+   basket:"Regulatory barrier in QLD is genuinely severe. This is a 'too hard' basket entry that is unlikely to change unless QLD rabbit biosecurity regulations are reformed. Flag for annual review."},
+  {id:30, icon:"🐾", name:"Guinea pigs (pet/meat)", cat:"Small mammal", status:"monitor",
+   revenue:"$25–60/pet guinea pig · $8–15/kg meat (niche)",
+   setup:"~$500–1,000 (enclosures + breeding trio)", time:"3–4 months gestation",
+   desc:"Pet guinea pigs sell steadily to families. Guinea pig meat (cuy) is a growing niche in Australia among South American communities and some restaurant markets. No specific permit required in QLD.",
+   detail:"Pet market: breed and sell at $25–60 each to pet stores and private buyers. Low space requirement. Meat market: cuy at $15/kg fresh dressed is served in Peruvian restaurants in Brisbane. The market exists but is very small currently. Low entry cost makes this a reasonable small-scale addition.",
+   basket:"Low priority but low cost. Could integrate with the feed waste stream from other enterprises."},
+  {id:31, icon:"🐕", name:"Native animal rehabilitation (not commercial)", cat:"Other", status:"hard",
+   revenue:"Not commercial — cost centre",
+   setup:"Wildlife Rehabilitator Permit", time:"N/A",
+   desc:"Wildlife rehabilitation is valuable but is not a revenue enterprise — it is a community service that involves significant time cost. Listed here because it commonly comes up in integrated farm discussions.",
+   detail:"",
+   basket:"Not a commercial enterprise. If personally important, pursue a QLD Wildlife Rehabilitator permit independently of the farm business plan. Do not mix with commercial operations for regulatory clarity."},
+  {id:32, icon:"🦔", name:"Short-beaked echidna breeding", cat:"Wildlife", status:"illegal",
+   revenue:"N/A — protected species", setup:"N/A", time:"N/A",
+   desc:"Echidnas are protected under the Nature Conservation Act 1992 (QLD). Commercial breeding or sale is illegal. They cannot be kept without a specific scientific permit.",
+   detail:"",
+   basket:"Illegal. Not viable under any circumstances without a scientific research permit."},
+  {id:33, icon:"🐝", name:"Requeening / queen bee production", cat:"Insect", status:"viable",
+   revenue:"$40–80/queen · $200–350/nucleus",
+   setup:"Minimal if you already have hives", time:"Weeks per queen batch",
+   desc:"Queen bees and nucleus hives are chronically undersupplied in SE QLD, particularly since varroa established. If you develop good queen-rearing skills, selling queens and nucs to other beekeepers is a reliable income stream from your existing hives.",
+   detail:"With 10–20 hives, you can sustainably produce 10–20 queens per season without depleting your own colonies. At $60/queen = $600–1,200/season with almost no additional cost. Nucleus hive production ($250–350 each) is even more profitable. This is a natural extension of the beekeeping enterprise already in your plan.",
+   basket:""},
+  {id:34, icon:"🦋", name:"Earthworms (commercial vermicompost)", cat:"Insect", status:"viable",
+   revenue:"Castings $3–8/kg · worm stock $40–80/kg",
+   setup:"Already in plan (worm farm)", time:"6–12 months to saleable stock",
+   desc:"Your worm farm is already planned. Worm castings sold externally to home gardeners and market growers is a modest but easy additional income. Worm stock sold to other farmers is higher value.",
+   detail:"SE QLD has strong demand for vermicompost among home gardeners and community gardens. Packaged in 5kg bags at $15–25 retail (farmers market) this generates useful income from a system you're already running. Worm stock (by weight) sells to other small farms for $50–80/kg.",
+   basket:""},
+  {id:35, icon:"🦂", name:"Scorpions (pet/venom research)", cat:"Arachnid", status:"hard",
+   revenue:"Venom research $10,000+/L · pet trade $50–200",
+   setup:"Licence + specialist containment", time:"Slow reproduction",
+   desc:"Australian scorpions are legally captive-bred for the pet trade with a Wildlife Licence. Venom extraction for pharmaceutical research sounds extraordinary but requires research institute partnerships, not independent farming.",
+   detail:"",
+   basket:"Too niche at this scale. Venom production requires pharma relationships that are not realistic to establish. Pet trade volumes too low to justify the licensing complexity. Noted."},
+  {id:36, icon:"🕷", name:"Redback spiders (venom research)", cat:"Arachnid", status:"hard",
+   revenue:"Antivenom research — not direct market",
+   setup:"No commercial pathway available", time:"N/A",
+   desc:"Redback venom is used in antivenom production but the supply chain runs through established research institutions (CSL) not independent farms. There is no direct commercial pathway for independent venom farming.",
+   detail:"",
+   basket:"No commercial pathway. Noted and closed."},
+  {id:37, icon:"🐌", name:"Escargot / edible snails (Helix aspersa)", cat:"Mollusc", status:"monitor",
+   revenue:"$25–40/kg fresh · $60–80/kg processed",
+   setup:"~$1,500–3,000 (outdoor enclosures + starter culture)", time:"6–12 months to harvest size",
+   desc:"French-style edible snail farming is legal in QLD. Helix aspersa (common garden snail) is already naturalised in SE QLD — the inputs are literally free if you source from your own garden. Growing restaurant demand in Brisbane.",
+   detail:"Key issue: QLD has specific requirements for contained snail farming to prevent escape of food-source snails becoming agricultural pests. Secure enclosures are required. The business case is genuinely attractive — Brisbane French and European restaurants constantly struggle to source fresh Australian escargot.",
+   basket:"Strong medium-term candidate. Low input cost (snails eat vegetable scraps and fallen olive leaves). The containment requirement is manageable with a simple enclosed greenhouse structure. Revisit at Year 2."},
+  {id:38, icon:"🦪", name:"Freshwater mussels / yabbies dam culture", cat:"Aquatic", status:"monitor",
+   revenue:"Combined aquaculture $8,000–20,000/year (dam)",
+   setup:"~$15,000–25,000 (dam construction)", time:"2–3 years setup",
+   desc:"A properly constructed dam in the flood buffer zone could serve multiple purposes: fire suppression water storage, yabby/crayfish culture, freshwater mussel culture, and duck habitat. Capital cost is significant but the dam pays dividends across multiple systems.",
+   detail:"QLD has specific dam construction requirements. A dam in the SW flood buffer zone would require engineering assessment and council approval. However, it transforms the flood liability into a productive asset. Freshwater mussel culture for the aquarium trade (native species like Hyridella drapeta) is an emerging niche.",
+   basket:"Year 3+ capital project. The dam concept is worth a feasibility study once the main construction is complete."},
+  {id:39, icon:"🐛", name:"Hornworms / waxworms (reptile feed)", cat:"Insect", status:"viable",
+   revenue:"$15–25 per 25-count cup · $100–200/kg",
+   setup:"~$200–400", time:"4–6 weeks per cycle",
+   desc:"Hornworms (Manduca sexta) and waxworms (Galleria mellonella) are premium feeder insects for reptile keepers. The reptile hobby is large in SE QLD. Online sales via Facebook Marketplace and reptile forums.",
+   detail:"Feed requirements: hornworms eat sweet potato vines and capsicum leaves — both easily grown on your property. Waxworms eat beeswax and honey — a natural integration with your beehive operation (wax cappings and old comb are ideal feed). Very low capital cost.",
+   basket:""},
+  {id:40, icon:"🦆", name:"Muscovy ducks (meat + eggs)", cat:"Avian", status:"viable",
+   revenue:"$25–50/bird (table) · $8–15/duck egg",
+   setup:"Already in plan", time:"Immediate",
+   desc:"Already in your plan. Muscovy duck eggs command $8–15 each for culinary use — 3× hen egg prices. Duck meat is premium at farmers markets. Muscovies are silent (unlike most ducks), excellent foragers, and non-migratory.",
+   detail:"Muscovy duck fat is particularly sought after by chefs at $40–80/kg rendered. Don't discard fat from table birds — render and sell separately. Feathers (down) have craft market value.",
+   basket:""},
+  {id:41, icon:"🦢", name:"Pilgrim/Toulouse geese (foie gras alternative)", cat:"Avian", status:"monitor",
+   revenue:"$400–800 for a whole goose (Christmas market)",
+   setup:"Already in plan", time:"Immediate",
+   desc:"Already in your plan. Whole Christmas geese direct-to-customer at $60–80/kg dressed weight is a genuine premium opportunity in Brisbane. Traditional Christmas goose is undersupplied in the Australian market.",
+   detail:"Foie gras production is illegal in Australia (force-feeding). However, naturally pastured geese with free access to grain produce a naturally enlarged liver that some chefs value. The Christmas whole-bird market is the primary opportunity — start taking orders in October for December delivery.",
+   basket:""},
+  {id:42, icon:"🐠", name:"Ornamental koi / goldfish", cat:"Aquatic", status:"monitor",
+   revenue:"$50–500/fish (quality koi) · $5–20 (goldfish)",
+   setup:"~$3,000–6,000 (outdoor pond)", time:"1–2 years to saleable size",
+   desc:"Quality koi (Nishikigoi) command extraordinary prices. Breeding for colour and pattern rather than just size. SE QLD climate extends the growing season vs southern states, giving a competitive advantage.",
+   detail:"Key issue: koi are classified as noxious fish in QLD — keeping and selling requires a specific exemption and registration with Biosecurity QLD. This is achievable but adds a compliance layer. Goldfish do not have this restriction. The outdoor pond doubles as a garden feature and could be an agritourism draw.",
+   basket:"Revisit at Year 2 after aquaculture licence experience. The noxious fish registration is an additional licence but the pathway is clear."},
+];
+
+let activeFilter = 'all';
+let openId = null;
+
+function setFilter(btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.f;
+  render();
+}
+
+function toggle(id) {
+  openId = openId === id ? null : id;
+  render();
+}
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = ANIMALS.filter(a => {
+    const matchFilter = activeFilter === 'all' || a.status === activeFilter;
+    const matchSearch = !q || a.name.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q) || a.cat.toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  const counts = { viable: ANIMALS.filter(a=>a.status==='viable').length, monitor: ANIMALS.filter(a=>a.status==='monitor').length, hard: ANIMALS.filter(a=>a.status==='hard').length, illegal: ANIMALS.filter(a=>a.status==='illegal').length };
+  document.getElementById('stats').innerHTML = `
+    <div class="scard"><div class="scard-lbl">Viable now</div><div class="scard-val" style="color:var(--color-text-success)">${counts.viable}</div></div>
+    <div class="scard"><div class="scard-lbl">Watch list</div><div class="scard-val" style="color:var(--color-text-warning)">${counts.monitor}</div></div>
+    <div class="scard"><div class="scard-lbl">Too hard (for now)</div><div class="scard-val" style="color:var(--color-text-secondary)">${counts.hard}</div></div>
+    <div class="scard"><div class="scard-lbl">Not possible/legal</div><div class="scard-val" style="color:var(--color-text-danger)">${counts.illegal}</div></div>
+  `;
+
+  if (!filtered.length) {
+    document.getElementById('list').innerHTML = '<div class="empty-state">No animals match this filter. Try a different search or category.</div>';
+    return;
+  }
+
+  const spMap = { viable: ['sp-viable','Viable now'], monitor: ['sp-monitor','Watch list'], hard: ['sp-hard','Too hard for now'], illegal: ['sp-illegal','Not viable/legal'] };
+  const bnMap = { hard: 'bn-hard', illegal: 'bn-illegal', viable: 'bn-viable', monitor: 'bn-monitor' };
+
+  document.getElementById('list').innerHTML = filtered.map(a => {
+    const [pillCls, pillLabel] = spMap[a.status];
+    const isOpen = openId === a.id;
+    const hasDetail = a.detail || a.basket;
+    return `
+    <div class="animal-card status-${a.status}" onclick="toggle(${a.id})" role="button" tabindex="0">
+      <div class="card-top">
+        <div style="font-size:20px;flex-shrink:0;margin-top:1px">${a.icon}</div>
+        <div class="card-main">
+          <div class="card-name-row">
+            <span class="card-name">${a.name}</span>
+            <span class="cat-tag">${a.cat}</span>
+            <span class="status-pill ${pillCls}">${pillLabel}</span>
+          </div>
+          <div class="card-desc">${a.desc}</div>
+        </div>
+        <div class="card-right">
+          <div class="revenue-tag">${a.revenue}</div>
+          <div style="font-size:12px;color:var(--color-text-tertiary)">${isOpen ? '▲ less' : '▼ detail'}</div>
+        </div>
+      </div>
+      ${hasDetail ? `<div class="card-detail ${isOpen ? 'open' : ''}">
+        ${a.setup ? `<div class="detail-grid">
+          <div class="detail-item"><div class="di-lbl">Setup cost</div><div class="di-val">${a.setup}</div></div>
+          <div class="detail-item"><div class="di-lbl">Time to income</div><div class="di-val">${a.time}</div></div>
+        </div>` : ''}
+        ${a.detail ? `<p style="margin-top:10px;font-size:13px;color:var(--color-text-secondary);line-height:1.6">${a.detail}</p>` : ''}
+        ${a.basket ? `<div class="basket-note ${bnMap[a.status]}">${a.basket}</div>` : ''}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+render();
+</script>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAS/DWC Aquaponics System — 658 Lefthand Branch Road</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#0A1A12;--deep2:#0F2318;--mid-green:#1A4028;
+  --green:#2A6040;--green2:#3A8055;--green3:#5AAA78;
+  --water:#1A3A5A;--water2:#2A5A8A;--water3:#4A8ABF;
+  --sand:#C8A870;--sand2:#E8C890;--cream:#F5EDD8;
+  --white:#FAFAF5;--ink:#0A1208;
+  --rust:#8A3020;--rust2:#C04828;
+  --amber:#8A5A10;--amber2:#C08020;
+  --muted:#6A8A72;--light:#A8C8B0;--border:#2A4A32;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Barlow',sans-serif;
+  --font-cond:'Barlow Condensed',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:15px;scroll-behavior:smooth;}
+body{font-family:var(--font-body);background:var(--deep);color:var(--cream);line-height:1.65;min-height:100vh;}
+
+/* ── HERO ──────────────────────────────────────────────────────────────────── */
+.hero{
+  background:var(--deep2);
+  padding:4rem 2.5rem 3rem;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid var(--border);
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 85% 50%, rgba(42,96,64,.35) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(26,58,90,.3) 0%, transparent 55%);
+  pointer-events:none;
+}
+.hero-inner{max-width:960px;margin:0 auto;position:relative;z-index:1;}
+.hero-tag{
+  font-family:var(--font-cond);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--green3);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;
+}
+.hero-tag::before{content:'';display:inline-block;width:2rem;height:1px;background:var(--green3);}
+h1{font-family:var(--font-display);font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:900;line-height:1.05;margin-bottom:.6rem;}
+h1 em{font-style:italic;color:var(--sand2);}
+.hero-sub{font-size:.95rem;color:var(--light);max-width:580px;line-height:1.7;margin-bottom:2.5rem;font-weight:300;}
+.hero-stats{display:flex;gap:2rem;flex-wrap:wrap;}
+.hs{display:flex;flex-direction:column;}
+.hs-val{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:var(--sand2);line-height:1;}
+.hs-lbl{font-family:var(--font-cond);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:.25rem;}
+
+/* ── PAGE ──────────────────────────────────────────────────────────────────── */
+.page{max-width:960px;margin:0 auto;padding:3rem 2rem 6rem;}
+
+/* ── SECTION ───────────────────────────────────────────────────────────────── */
+.sec{margin-bottom:3.5rem;}
+.sec-tag{font-family:var(--font-cond);font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--green3);margin-bottom:.4rem;}
+.sec-title{font-family:var(--font-display);font-size:1.8rem;font-weight:700;line-height:1.15;margin-bottom:.7rem;}
+.sec-title em{font-style:italic;color:var(--sand2);}
+.sec-lead{font-size:.9rem;color:var(--light);line-height:1.75;max-width:680px;margin-bottom:1.5rem;font-weight:300;border-left:2px solid var(--green);padding-left:1rem;}
+
+hr.rule{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+
+/* ── SYSTEM DIAGRAM ────────────────────────────────────────────────────────── */
+.diagram{
+  background:var(--deep2);border:1px solid var(--border);
+  border-radius:10px;padding:2rem;margin-bottom:1.5rem;overflow-x:auto;
+}
+.diag-flow{display:flex;align-items:center;gap:0;flex-wrap:nowrap;min-width:600px;}
+.diag-node{
+  background:var(--mid-green);border:1px solid var(--border);border-radius:8px;
+  padding:.8rem 1rem;text-align:center;flex-shrink:0;min-width:110px;
+}
+.diag-node.water{background:var(--water);border-color:var(--water2);}
+.diag-node.fish{background:rgba(42,96,64,.6);border-color:var(--green2);}
+.diag-node.plant{background:rgba(42,90,26,.5);border-color:#4A7030;}
+.diag-node.split{background:rgba(138,90,16,.3);border-color:var(--amber2);}
+.dn-icon{font-size:1.5rem;margin-bottom:.2rem;}
+.dn-label{font-family:var(--font-cond);font-size:.7rem;font-weight:600;letter-spacing:.05em;color:var(--cream);line-height:1.3;}
+.dn-spec{font-size:.62rem;color:var(--muted);margin-top:.15rem;}
+.diag-arrow{color:var(--green3);font-size:1.1rem;padding:0 .3rem;flex-shrink:0;}
+.diag-arrow.down{display:flex;flex-direction:column;align-items:center;padding:.2rem .5rem;}
+.diag-split{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0;}
+.diag-split-label{font-family:var(--font-cond);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber2);text-align:center;margin-bottom:.2rem;}
+
+/* ── COMPONENT CARDS ───────────────────────────────────────────────────────── */
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.comp-card{background:var(--deep2);border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.2rem;position:relative;}
+.comp-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0;}
+.comp-card.ras::after{background:linear-gradient(90deg,var(--water2),var(--water3));}
+.comp-card.dwc::after{background:linear-gradient(90deg,var(--green),var(--green3));}
+.comp-card.shared::after{background:linear-gradient(90deg,var(--amber),var(--amber2));}
+.cc-icon{font-size:1.4rem;margin-bottom:.4rem;}
+.cc-name{font-family:var(--font-cond);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sand2);margin-bottom:.15rem;}
+.cc-spec{font-size:.82rem;font-weight:600;color:var(--cream);margin-bottom:.3rem;}
+.cc-note{font-size:.75rem;color:var(--muted);line-height:1.5;}
+.cc-cost{font-family:var(--font-cond);font-size:.72rem;color:var(--amber2);margin-top:.5rem;font-weight:600;}
+
+/* ── TABLE ─────────────────────────────────────────────────────────────────── */
+.data-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:1.5rem;}
+.data-table th{padding:.65rem 1rem;text-align:left;background:var(--mid-green);color:var(--sand2);font-family:var(--font-cond);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;}
+.data-table td{padding:.6rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.45;color:var(--cream);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(42,96,64,.15);}
+.data-table td.num{font-family:var(--font-cond);text-align:right;}
+.data-table td.pos{color:var(--green3);font-weight:600;}
+.data-table td.neg{color:var(--rust2);}
+.data-table td.gold{color:var(--sand2);font-weight:600;}
+.data-table tfoot td{background:var(--mid-green);font-weight:700;border-top:2px solid var(--border);color:var(--sand2);}
+
+/* ── CALLOUT ───────────────────────────────────────────────────────────────── */
+.callout{border-radius:6px;padding:1rem 1.2rem;margin-bottom:1.2rem;font-size:.85rem;line-height:1.65;font-weight:300;}
+.callout strong{font-weight:600;}
+.callout-green{background:rgba(42,96,64,.25);border-left:3px solid var(--green3);color:var(--light);}
+.callout-amber{background:rgba(138,90,16,.2);border-left:3px solid var(--amber2);color:var(--sand2);}
+.callout-water{background:rgba(26,58,90,.35);border-left:3px solid var(--water3);color:var(--light);}
+.callout-rust{background:rgba(138,48,32,.2);border-left:3px solid var(--rust2);color:#F0A898;}
+
+/* ── BIG NUMBERS ───────────────────────────────────────────────────────────── */
+.big-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.big-num{flex:1;min-width:130px;background:var(--deep2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;}
+.bn-val{font-family:var(--font-display);font-size:1.9rem;font-weight:700;line-height:1;}
+.bn-val.green{color:var(--green3);}
+.bn-val.gold{color:var(--sand2);}
+.bn-val.water{color:var(--water3);}
+.bn-lbl{font-family:var(--font-cond);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+.bn-note{font-size:.7rem;color:var(--muted);margin-top:.25rem;line-height:1.4;}
+
+/* ── PHASE BLOCKS ──────────────────────────────────────────────────────────── */
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.phase{background:var(--deep2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;}
+.phase-num{font-family:var(--font-cond);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green3);margin-bottom:.3rem;}
+.phase-title{font-size:.9rem;font-weight:600;color:var(--cream);margin-bottom:.4rem;}
+.phase-list{font-size:.76rem;color:var(--muted);line-height:1.7;padding-left:1rem;}
+.phase-list li{list-style:disc;}
+.phase-rev{font-family:var(--font-cond);font-size:.7rem;color:var(--sand2);margin-top:.4rem;font-weight:600;}
+
+/* ── PARAMS TABLE ──────────────────────────────────────────────────────────── */
+.param-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;margin-bottom:1.5rem;}
+.param{background:var(--deep2);border:1px solid var(--border);border-radius:6px;padding:.7rem .9rem;}
+.param-name{font-family:var(--font-cond);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem;}
+.param-range{font-size:.88rem;font-weight:600;color:var(--cream);}
+.param-note{font-size:.68rem;color:var(--muted);margin-top:.15rem;line-height:1.4;}
+
+/* ── CHECKLIST ─────────────────────────────────────────────────────────────── */
+.checklist{background:var(--deep2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.5rem;}
+.cl-item{padding:.7rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.8rem;font-size:.82rem;color:var(--cream);}
+.cl-item:last-child{border-bottom:none;}
+.cl-item::before{content:'□';color:var(--green3);font-size:1rem;flex-shrink:0;margin-top:-.05rem;}
+.cl-item strong{color:var(--sand2);}
+.cl-item.phase2{opacity:.65;}
+.cl-item.phase2::before{content:'◇';color:var(--muted);}
+
+/* ── FOOTER ────────────────────────────────────────────────────────────────── */
+.doc-footer{border-top:1px solid var(--border);padding:1.2rem 2rem;font-family:var(--font-cond);font-size:.62rem;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;max-width:960px;margin:0 auto;}
+
+@media(max-width:600px){
+  .hero{padding:2.5rem 1.5rem 2rem;}
+  .page{padding:1.5rem 1.2rem 4rem;}
+  .diag-flow{gap:.2rem;}
+  h1{font-size:2rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">658 Lefthand Branch Road · Aquaponics System Design</div>
+    <h1>RAS / DWC <em>Split System</em></h1>
+    <p class="hero-sub">Decoupled recirculating aquaculture and deep water culture — fish and plants optimised independently, integrated through a common nutrient sump. Maximum profit, minimum single points of failure.</p>
+    <div class="hero-stats">
+      <div class="hs"><span class="hs-val">$52K</span><span class="hs-lbl">Year 3 net / yr</span></div>
+      <div class="hs"><span class="hs-val">8,000L</span><span class="hs-lbl">RAS fish tank</span></div>
+      <div class="hs"><span class="hs-val">72m²</span><span class="hs-lbl">DWC float beds</span></div>
+      <div class="hs"><span class="hs-val">2,000L</span><span class="hs-lbl">Shared sump</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── SECTION 1: SYSTEM ARCHITECTURE ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 1</div>
+    <h2 class="sec-title">System <em>architecture</em></h2>
+    <p class="sec-lead">The RAS loop handles fish welfare and water quality. The DWC loop handles plant production and nutrient export. They share a sump that acts as the transfer point — RAS effluent feeds DWC, clarified return water tops up the RAS. The two enterprises can be managed, troubleshot, and harvested completely independently.</p>
+
+    <div class="diagram">
+      <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green3);margin-bottom:1.2rem">System flow diagram</div>
+      <!-- Row 1: RAS loop -->
+      <div style="margin-bottom:.6rem;font-family:var(--font-cond);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--water3)">RAS loop — fish water circuit</div>
+      <div class="diag-flow" style="margin-bottom:1.4rem">
+        <div class="diag-node fish">
+          <div class="dn-icon">🐟</div>
+          <div class="dn-label">RAS Tank<br>8,000L poly</div>
+          <div class="dn-spec">400–500 fish</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node water">
+          <div class="dn-icon">🔄</div>
+          <div class="dn-label">Drum Filter<br>or Radial Flow</div>
+          <div class="dn-spec">Solids removal</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node water">
+          <div class="dn-icon">🦠</div>
+          <div class="dn-label">MBBR<br>Biofilter</div>
+          <div class="dn-spec">NH₃ → NO₃</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node water">
+          <div class="dn-icon">☀️</div>
+          <div class="dn-label">UV<br>Steriliser</div>
+          <div class="dn-spec">25W unit</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node fish">
+          <div class="dn-icon">💧</div>
+          <div class="dn-label">Return to<br>RAS tank</div>
+          <div class="dn-spec">Clean, oxygenated</div>
+        </div>
+      </div>
+      <!-- Row 2: transfer -->
+      <div style="margin-bottom:.6rem;font-family:var(--font-cond);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber2)">Effluent transfer — RAS → sump → DWC</div>
+      <div class="diag-flow" style="margin-bottom:1.4rem">
+        <div class="diag-node split">
+          <div class="dn-icon">🪣</div>
+          <div class="dn-label">Sump<br>2,000L</div>
+          <div class="dn-spec">Nutrient reservoir</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node plant">
+          <div class="dn-icon">🌿</div>
+          <div class="dn-label">DWC Bed 1<br>2m × 6m</div>
+          <div class="dn-spec">Leafy greens</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node plant">
+          <div class="dn-icon">🌿</div>
+          <div class="dn-label">DWC Bed 2<br>2m × 6m</div>
+          <div class="dn-spec">Asian greens</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node plant">
+          <div class="dn-icon">🌿</div>
+          <div class="dn-label">DWC Beds<br>3–6</div>
+          <div class="dn-spec">Herbs / watercress</div>
+        </div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-node split">
+          <div class="dn-icon">↩</div>
+          <div class="dn-label">Return<br>top-up</div>
+          <div class="dn-spec">Back to sump / RAS</div>
+        </div>
+      </div>
+      <!-- BSFL integration note -->
+      <div style="border-top:1px solid var(--border);padding-top:.9rem;display:flex;align-items:center;gap:.8rem;font-size:.76rem;color:var(--muted)">
+        <span style="font-size:1.1rem">🪲</span>
+        <span><strong style="color:var(--sand2)">BSFL integration:</strong> Frass tea (1:20 dilution, 24hr aeration) fed directly into sump — never into RAS tank. DWC beds absorb the nutrient spike. Fish are never exposed to raw frass pathogens.</span>
+      </div>
+    </div>
+
+    <div class="callout callout-water">
+      <strong>Why decoupled beats integrated CHOP2 for this farm:</strong> In a CHOP2 loop, fish stocking density is capped by plant bed ammonia processing capacity — you can't push fish numbers without adding more grow beds, and vice versa. In this split design, the MBBR biofilter handles the fish-side ammonia independently. You can run higher fish density in the RAS, run higher plant density in the DWC, and optimise each for profit without the other being a constraint.
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 2: COMPONENT SPEC ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 2</div>
+    <h2 class="sec-title">Component <em>specification</em></h2>
+    <p class="sec-lead">Every component is sized for the 8,000L RAS tank and 72m² DWC array. Costs are based on QLD suppliers and Gumtree/Facebook Marketplace second-hand pricing as of 2025.</p>
+
+    <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--water3);margin-bottom:.6rem">RAS — fish circuit</div>
+    <div class="comp-grid" style="margin-bottom:1.5rem">
+      <div class="comp-card ras">
+        <div class="cc-icon">🐟</div>
+        <div class="cc-name">RAS</div>
+        <div class="cc-spec">8,000L round poly tank</div>
+        <div class="cc-note">2.8m diameter × 1.5m deep. Round tank = no dead corners, uniform flow. 7,500L or 10,000L both fine — use whatever poly tank is cheapest locally. Colorbond green or black preferred — algae suppression.</div>
+        <div class="cc-cost">$800–1,200 new · $350–600 Gumtree</div>
+      </div>
+      <div class="comp-card ras">
+        <div class="cc-icon">🔄</div>
+        <div class="cc-name">Solids removal</div>
+        <div class="cc-spec">Radial flow settler, 200L drum</div>
+        <div class="cc-note">200L HDPE drum with tangential inlet and central standpipe — DIY build, $35 in fittings. Removes ~70% of suspended solids before biofilter. Settled sludge drains directly to frass shelter composting area. Upgrade to drum filter in Year 3 if needed.</div>
+        <div class="cc-cost">$35 DIY · $400–600 commercial drum filter</div>
+      </div>
+      <div class="comp-card ras">
+        <div class="cc-icon">🦠</div>
+        <div class="cc-name">MBBR biofilter</div>
+        <div class="cc-spec">200L drum, K3 media 50L fill</div>
+        <div class="cc-note">Moving bed biofilm reactor — 200L drum half-filled with K3 plastic media, air-lifted. The biofilm converts ammonia → nitrite → nitrate. Surfaces in 4–6 weeks. This is the heart of the RAS. Don't skimp — this is what keeps fish alive at high density.</div>
+        <div class="cc-cost">$120 (drum + media + airline)</div>
+      </div>
+      <div class="comp-card ras">
+        <div class="cc-icon">☀️</div>
+        <div class="cc-name">UV steriliser</div>
+        <div class="cc-spec">25W inline UV, 3,000–4,000 L/hr</div>
+        <div class="cc-note">Kills pathogen load before water returns to fish. Critical for high-density RAS where disease spreads fast. Inline on return line, post-biofilter. Replace bulb annually (~$35). At 8,000L tank, one pass every 2–3 hours is adequate.</div>
+        <div class="cc-cost">$85–120 online (Aqua-Pure or equivalent)</div>
+      </div>
+      <div class="comp-card ras">
+        <div class="cc-icon">💨</div>
+        <div class="cc-name">Aeration</div>
+        <div class="cc-spec">80W linear air pump + diffusers</div>
+        <div class="cc-note">Jade Perch tolerate low DO better than most species but 6–8 mg/L is the target. Two 150mm disc diffusers on the tank floor, one airline to MBBR. Backup battery air pump ($45) for power outages — at high stocking density, 2 hours without aeration is a total loss event.</div>
+        <div class="cc-cost">$65 pump · $25 diffusers · $45 backup</div>
+      </div>
+      <div class="comp-card ras">
+        <div class="cc-icon">⚙️</div>
+        <div class="cc-name">Circulation pump</div>
+        <div class="cc-spec">3,000 L/hr submersible</div>
+        <div class="cc-note">Moves water: RAS tank → radial settler → MBBR → UV → return. Target 1× full tank volume per hour minimum. 3,000 L/hr at 2–3m head. Run continuously on a dedicated circuit — this pump never goes off. Spare pump on shelf at all times.</div>
+        <div class="cc-cost">$65–90 · keep $65 spare on shelf</div>
+      </div>
+    </div>
+
+    <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green3);margin-bottom:.6rem">DWC — plant circuit</div>
+    <div class="comp-grid" style="margin-bottom:1.5rem">
+      <div class="comp-card dwc">
+        <div class="cc-icon">🌿</div>
+        <div class="cc-name">Float beds ×6</div>
+        <div class="cc-spec">2m × 6m × 300mm deep, liner-based</div>
+        <div class="cc-note">Timber frame (90×45 H3 pine), pond liner, 300mm water depth. Six beds = 72m² total. Build in pairs — one pair per construction weekend. Styrofoam float boards 25mm thick, 50mm net pot holes at 200mm spacing = ~540 plant sites per bed, 3,240 total. Beds inside shed or under shade cloth run off the same roof.</div>
+        <div class="cc-cost">$180–220 per bed DIY · $1,200 total</div>
+      </div>
+      <div class="comp-card dwc">
+        <div class="cc-icon">🪣</div>
+        <div class="cc-name">Sump tank</div>
+        <div class="cc-spec">2,000L poly, gravity-fed from DWC return</div>
+        <div class="cc-note">Central reservoir receiving RAS effluent and DWC return water. BSFL frass tea added here (never to RAS). pH and EC monitored in sump — adjustments made once rather than in 6 separate beds. Float valve maintains water level. Sump positioned lower than all beds for gravity return.</div>
+        <div class="cc-cost">$280–380 new · $120–180 Gumtree</div>
+      </div>
+      <div class="comp-card dwc">
+        <div class="cc-icon">🔀</div>
+        <div class="cc-name">DWC circulation</div>
+        <div class="cc-spec">1× 2,500 L/hr pump, manifold to 6 beds</div>
+        <div class="cc-note">Single pump in sump feeds all 6 beds via 40mm poly pipe manifold with ball valve per bed for individual flow control. Flood-and-drain timer: 15 min on / 45 min off is sufficient for DWC — roots stay submerged, oxygen exchange happens at surface. Simple, low energy.</div>
+        <div class="cc-cost">$55 pump · $80 pipe and fittings</div>
+      </div>
+      <div class="comp-card dwc">
+        <div class="cc-icon">💡</div>
+        <div class="cc-name">Supplemental lighting</div>
+        <div class="cc-spec">3× 60W full-spectrum LED bars per bed pair</div>
+        <div class="cc-note">Only needed for the 2 beds inside the shed (no natural light). The 4 outdoor/greenhouse beds need none. Full-spectrum LED bars at 400–700nm. 16hr photoperiod on timer. At $0.30/kWh this runs ~$180/yr for 2 beds — fully justified by year-round production vs. seasonal.</div>
+        <div class="cc-cost">$55/bar × 6 = $330 · shed beds only</div>
+      </div>
+    </div>
+
+    <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber2);margin-bottom:.6rem">Shared infrastructure</div>
+    <div class="comp-grid" style="margin-bottom:1.5rem">
+      <div class="comp-card shared">
+        <div class="cc-icon">📊</div>
+        <div class="cc-name">Monitoring</div>
+        <div class="cc-spec">2× digital pH/EC/temp combo meters</div>
+        <div class="cc-note">One dedicated to RAS (test daily), one to sump/DWC (test every 2 days). Apera or Bluelab — don't buy cheap pH pens for a commercial system. Calibrate weekly with pH 7.0 and 4.0 buffer. Wireless temp/DO logger in RAS tank with alarm below 5mg/L DO.</div>
+        <div class="cc-cost">$85–120 each · $220 total</div>
+      </div>
+      <div class="comp-card shared">
+        <div class="cc-icon">🌡️</div>
+        <div class="cc-name">Temperature control</div>
+        <div class="cc-spec">Shade cloth + evaporative cooling in summer</div>
+        <div class="cc-note">Jade Perch thrive 22–30°C — Lockyer Valley summers rarely exceed this in a shaded shed. Shade cloth over the RAS tank (50%) prevents direct sun heating. In extreme January heat, a $45 evaporative cooler blowing across the tank surface drops temperature 3–4°C adequately. No chiller needed.</div>
+        <div class="cc-cost">$0 (shade cloth already in build) · $45 fan</div>
+      </div>
+      <div class="comp-card shared">
+        <div class="cc-icon">🔌</div>
+        <div class="cc-name">Electrical</div>
+        <div class="cc-spec">Dedicated 20A circuit, 4× weatherproof GPO</div>
+        <div class="cc-note">RAS pump and aeration on one circuit (never shared with lights — pump failure alarm needs to be independent). Lighting on separate circuit with timer. All connections weatherproof IP65 minimum. UPS battery backup ($120) keeps circulation and aeration running 4hrs during power outage — Jade Perch at high density won't survive 2hrs without both.</div>
+        <div class="cc-cost">$380 electrician + $120 UPS</div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>Total infrastructure cost estimate:</strong> RAS components $1,500–1,900 · DWC beds + plumbing $2,100–2,600 · Shared infrastructure $1,200–1,600 · Contingency 15% $700–900. <strong>Total: $5,500–7,000 installed</strong> — significantly cheaper than three separate CHOP2 tanks, more profitable, and more resilient.
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 3: PRODUCTION MODEL ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 3</div>
+    <h2 class="sec-title">Production model <em>&amp; revenue</em></h2>
+    <p class="sec-lead">Two independent revenue streams from one integrated water system. Fish and plants are priced, cycled, and sold completely separately — a bad fish harvest doesn't affect plant revenue, and vice versa.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Parameter</th><th>RAS — Jade Perch</th><th>DWC — Produce</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Stocking / planting</td><td>400 fingerlings per cohort @ $1.50 each</td><td>540 plants per bed × 6 beds = 3,240 sites</td></tr>
+        <tr><td>Cycle time</td><td>10–12 months to 600–800g plate weight</td><td>28–42 days per crop rotation</td></tr>
+        <tr><td>Cohorts per year</td><td>2 staggered cohorts in same tank</td><td>8–10 crop rotations per bed per year</td></tr>
+        <tr><td>Yield per cohort</td><td>400 fish × 700g avg = 280kg</td><td>3,240 sites × 150g avg = 486kg / rotation</td></tr>
+        <tr><td>Annual yield</td><td>~560kg (2 cohorts with mortality allowance)</td><td>~3,500kg across all crops and rotations</td></tr>
+        <tr><td>Pricing</td><td>$22/kg restaurant direct / $18/kg wholesale</td><td>$6–25/kg depending on crop (herbs premium)</td></tr>
+        <tr><td>Gross revenue</td><td class="num pos">$10,000–12,300/yr</td><td class="num pos">$21,000–28,000/yr</td></tr>
+        <tr><td>Operating costs</td><td class="num neg">-$3,200 (feed, fingerlings, power)</td><td class="num neg">-$2,800 (seeds, net pots, power, packaging)</td></tr>
+        <tr><td><strong>Net contribution</strong></td><td class="num pos"><strong>$7,000–9,000/yr</strong></td><td class="num pos"><strong>$18,000–25,000/yr</strong></td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td><strong>Combined system net — Year 3 (full production)</strong></td><td colspan="2" class="num pos"><strong>$25,000–34,000/yr</strong></td></tr>
+      </tfoot>
+    </table>
+
+    <div class="big-row">
+      <div class="big-num"><div class="bn-val green">$28K</div><div class="bn-lbl">DWC net / yr at full production</div><div class="bn-note">Herbs + Asian greens + lettuce, restaurant direct, 72m²</div></div>
+      <div class="big-num"><div class="bn-val water">$9K</div><div class="bn-lbl">RAS net / yr at full production</div><div class="bn-note">560kg Jade Perch, 2 cohorts, restaurant and wholesale</div></div>
+      <div class="big-num"><div class="bn-val gold">$34K+</div><div class="bn-lbl">Combined net Year 3+</div><div class="bn-note">Exceeds the $30K target from the $200K plan</div></div>
+      <div class="big-num"><div class="bn-val green">$6,500</div><div class="bn-lbl">Total build cost</div><div class="bn-note">~50% cheaper than three separate CHOP2 tanks</div></div>
+    </div>
+
+    <div class="callout callout-green">
+      <strong>The DWC produce revenue is the surprise:</strong> In most aquaponics planning, plants are treated as the water-cleaning mechanism and fish are the product. In this design the plants are a genuine primary revenue stream — 72m² of DWC beds producing restaurant-quality herbs and Asian greens generates more net profit than the fish at full production. The fish feed the plants for free. That's the key insight.
+    </div>
+
+    <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green3);margin-bottom:.8rem;margin-top:1.5rem">Recommended crop mix — DWC beds</div>
+    <table class="data-table">
+      <thead><tr><th>Crop</th><th>Beds</th><th>Cycle</th><th>Price / kg</th><th>Net / yr</th><th>Buyer</th></tr></thead>
+      <tbody>
+        <tr><td>🌿 Thai basil</td><td>1 bed (12m²)</td><td>35 days</td><td class="num gold">$20–25/kg</td><td class="num pos">$6,000–8,000</td><td>Thai / Vietnamese restaurants</td></tr>
+        <tr><td>🥬 Butter lettuce</td><td>1.5 beds (18m²)</td><td>28 days</td><td class="num gold">$6–8/kg</td><td class="num pos">$3,500–5,000</td><td>Restaurants, grocers</td></tr>
+        <tr><td>🥬 Asian greens (pak choi, tatsoi)</td><td>1.5 beds (18m²)</td><td>30 days</td><td class="num gold">$8–12/kg</td><td class="num pos">$4,500–7,000</td><td>Asian grocers, restaurants</td></tr>
+        <tr><td>💧 Watercress</td><td>1 bed (12m²)</td><td>21 days</td><td class="num gold">$15–22/kg</td><td class="num pos">$4,000–6,000</td><td>Restaurants, health food</td></tr>
+        <tr><td>🌸 Edible flowers (viola, borage)</td><td>1 bed (12m²)</td><td>42 days</td><td class="num gold">$80–120/kg</td><td class="num pos">$3,500–5,000</td><td>Fine dining restaurants</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4"><strong>Total DWC gross revenue (Year 3)</strong></td><td class="num pos"><strong>$21,500–31,000</strong></td><td></td></tr>
+      </tfoot>
+    </table>
+
+    <div class="callout callout-rust">
+      <strong>What to grow first (Year 1, beds 1–2 only):</strong> Butter lettuce and Thai basil. Both are forgiving of variable nutrient levels while the system establishes, both have reliable local buyers, and both give you rapid feedback cycles (28–35 days) to diagnose any issues. Add watercress in Month 3, Asian greens in Month 4, edible flowers once you have a restaurant relationship locked in.
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 4: SHED LAYOUT ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 4</div>
+    <h2 class="sec-title">Shed layout <em>integration</em></h2>
+    <p class="sec-lead">The RAS/DWC split fits cleanly into the 15×10m shed design. The aquaponics bay occupies the eastern third — 5m × 10m — leaving the western two-thirds for olive processing and general farm storage.</p>
+
+    <div class="diagram">
+      <div style="font-family:var(--font-cond);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green3);margin-bottom:1rem">Shed floor plan — aquaponics bay (5m × 10m)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;min-width:400px">
+        <div style="background:rgba(26,58,90,.3);border:1px solid var(--water2);border-radius:6px;padding:.9rem;text-align:center">
+          <div style="font-family:var(--font-cond);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--water3);margin-bottom:.4rem">North bay (5m × 5m)</div>
+          <div style="font-size:.8rem;color:var(--cream);font-weight:500;margin-bottom:.3rem">🐟 RAS tank (8,000L)</div>
+          <div style="font-size:.75rem;color:var(--muted)">+ radial settler<br>+ MBBR biofilter<br>+ UV steriliser<br>+ sump (2,000L)<br>+ harvest bench</div>
+        </div>
+        <div style="background:rgba(42,96,64,.25);border:1px solid var(--green);border-radius:6px;padding:.9rem;text-align:center">
+          <div style="font-family:var(--font-cond);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green3);margin-bottom:.4rem">South bay (5m × 5m)</div>
+          <div style="font-size:.8rem;color:var(--cream);font-weight:500;margin-bottom:.3rem">🌿 DWC beds 1–2</div>
+          <div style="font-size:.75rem;color:var(--muted)">2× 2m × 6m float beds<br>+ LED grow lights<br>+ harvest trolley<br>+ cold room / bar fridge</div>
+        </div>
+        <div style="background:rgba(42,96,64,.15);border:1px dashed var(--border);border-radius:6px;padding:.9rem;text-align:center">
+          <div style="font-family:var(--font-cond);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem">Greenhouse lean-to (4m × 10m)</div>
+          <div style="font-size:.8rem;color:var(--cream);font-weight:500;margin-bottom:.3rem">🌿 DWC beds 3–6</div>
+          <div style="font-size:.75rem;color:var(--muted)">4× 2m × 6m float beds<br>Natural light + 50% shade cloth<br>Poly roof — rain-independent<br>Attached to shed east wall</div>
+        </div>
+        <div style="background:rgba(138,90,16,.15);border:1px dashed var(--border);border-radius:6px;padding:.9rem;text-align:center">
+          <div style="font-family:var(--font-cond);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem">Access + dispatch</div>
+          <div style="font-size:.8rem;color:var(--cream);font-weight:500;margin-bottom:.3rem">🚐 Loading zone</div>
+          <div style="font-size:.75rem;color:var(--muted)">Harvest bins + scales<br>Cool box for delivery<br>Shared with olive dispatch</div>
+        </div>
+      </div>
+      <div style="margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted);line-height:1.6">
+        <strong style="color:var(--sand2)">Note:</strong> DWC beds 3–6 are in a greenhouse lean-to attached to the shed east wall — not inside the shed footprint. This keeps the main shed footprint at 15×10m while adding 40m² of grow space at low cost (~$2,800 polycarbonate lean-to). The lean-to uses natural subtropical light and needs no artificial lighting except a 60-day winter gap.
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 5: COMMISSIONING SEQUENCE ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 5</div>
+    <h2 class="sec-title">Commissioning <em>sequence</em></h2>
+    <p class="sec-lead">Don't put fish in water until the biofilter is established. Don't plant all 6 beds on day one. This sequence keeps complexity manageable and gives each component time to stabilise before the next is added.</p>
+
+    <div class="phase-grid">
+      <div class="phase">
+        <div class="phase-num">Week 1–2 · Jan 2027</div>
+        <div class="phase-title">Fill and cycle RAS</div>
+        <ul class="phase-list">
+          <li>Fill RAS tank with bore water</li>
+          <li>Start circulation pump + aeration</li>
+          <li>Seed MBBR with commercial nitrifying bacteria</li>
+          <li>Dose with ammonia source (fish food)</li>
+          <li>Test NH₃, NO₂, NO₃ daily on whiteboard</li>
+          <li>UV off until biofilter established</li>
+        </ul>
+        <div class="phase-rev">No revenue this phase — system cycling</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Week 3–4 · Jan 2027</div>
+        <div class="phase-title">Plant DWC beds 1–2</div>
+        <ul class="phase-list">
+          <li>Fill sump with RAS effluent + bore water</li>
+          <li>Plant butter lettuce seedlings, bed 1</li>
+          <li>Plant Thai basil seedlings, bed 2</li>
+          <li>Check EC 1.2–1.8 mS/cm — adjust with fish food</li>
+          <li>pH 6.5–7.0 target — adjust with pH down (citric acid)</li>
+          <li>First crop harvest in 28–35 days</li>
+        </ul>
+        <div class="phase-rev">Revenue from Week 6: $600–900/month</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Week 5–6 · Feb 2027</div>
+        <div class="phase-title">Stock fish cohort 1</div>
+        <ul class="phase-list">
+          <li>NH₃ &lt;0.25 mg/L, NO₂ &lt;0.5 mg/L confirmed</li>
+          <li>Order 400 Jade Perch fingerlings (Sunland)</li>
+          <li>Acclimatise: float bags 20 min, temp equalise</li>
+          <li>Stock at 50 fish/day over 8 days if nervous</li>
+          <li>Feed 2× daily, 3% body weight</li>
+          <li>Turn UV on day of stocking</li>
+        </ul>
+        <div class="phase-rev">Fish harvest: Nov–Dec 2027</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Month 3–4 · Mar–Apr 2027</div>
+        <div class="phase-title">Add DWC beds 3–4</div>
+        <ul class="phase-list">
+          <li>Build greenhouse lean-to — Stage 1–3</li>
+          <li>Install beds 3–4 (watercress + Asian greens)</li>
+          <li>Connect to sump manifold</li>
+          <li>Add BSFL frass tea: 1:20 dilution, sump only</li>
+          <li>Begin restaurant outreach with first harvest samples</li>
+        </ul>
+        <div class="phase-rev">Revenue increases to $2,000–2,800/month</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Month 6 · Jul 2027</div>
+        <div class="phase-title">Stock fish cohort 2</div>
+        <ul class="phase-list">
+          <li>Stock 400 more fingerlings — 6 months behind cohort 1</li>
+          <li>Two age classes in same tank from now on</li>
+          <li>Separate harvest events Nov 2027 and May 2028</li>
+          <li>Monitor DO carefully — doubled biomass</li>
+        </ul>
+        <div class="phase-rev">Two harvests/yr from May 2028 onward</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">Month 9–12 · Oct–Jan 2028</div>
+        <div class="phase-title">Full production — beds 5–6</div>
+        <ul class="phase-list">
+          <li>Add edible flower beds once restaurant relationship confirmed</li>
+          <li>Full 72m² DWC in production</li>
+          <li>First Jade Perch harvest Nov/Dec 2027</li>
+          <li>Full system revenue review Jan 2028</li>
+        </ul>
+        <div class="phase-rev">Full production: $3,000–4,000/month</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 6: DAILY MANAGEMENT ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 6</div>
+    <h2 class="sec-title">Daily management <em>load</em></h2>
+    <p class="sec-lead">One of the key advantages of this design is how little daily attention it needs once established. The RAS is self-regulating between water changes. The DWC beds need checking but not adjusting most days.</p>
+
+    <table class="data-table">
+      <thead><tr><th>Task</th><th>Frequency</th><th>Time</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>🐟 Feed fish</td><td>2× daily</td><td>5 min</td><td>3% body weight, pellet — skip if 20%+ uneaten after 10 min</td></tr>
+        <tr><td>💧 Check RAS: DO, temp, visual</td><td>Daily</td><td>5 min</td><td>DO alarm set at 5mg/L — if alarm sounds, troubleshoot before anything else</td></tr>
+        <tr><td>📊 pH + EC test (sump)</td><td>Every 2 days</td><td>5 min</td><td>Log on whiteboard. Adjust only if outside range by &gt;0.3 pH or 0.3 EC</td></tr>
+        <tr><td>🌿 Plant visual check</td><td>Daily</td><td>5 min</td><td>Yellowing = iron deficiency (chelated iron $15/kg fix). Slime = DO too low in DWC</td></tr>
+        <tr><td>📋 Weekly test: NH₃, NO₂, NO₃</td><td>Weekly</td><td>15 min</td><td>Full water chemistry. Log in farm records app.</td></tr>
+        <tr><td>🌿 Harvest + replant</td><td>Weekly (rotating)</td><td>45–90 min</td><td>One or two beds per week on rotation. Harvest → wash → bag → cold room. Replant immediately.</td></tr>
+        <tr><td>🔄 Partial water change (RAS)</td><td>Weekly</td><td>20 min</td><td>10–15% volume to manage nitrate accumulation. Drain to frass composting area.</td></tr>
+        <tr><td>🦠 Radial settler cleanout</td><td>Weekly</td><td>15 min</td><td>Drain settled sludge to compost/frass area. Never to DWC — too concentrated.</td></tr>
+        <tr><td>☀️ UV bulb check</td><td>Monthly</td><td>5 min</td><td>Wipe quartz sleeve. Replace bulb at 9,000hrs (annually, ~$35).</td></tr>
+        <tr><td>🐟 Fish weighing — 5 fish sample</td><td>Monthly</td><td>15 min</td><td>Track growth against FCR target. Adjust feeding rate accordingly.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-green">
+      <strong>Total daily routine: ~20 minutes.</strong> Weekly deep check + harvest: 90–120 minutes. This system is designed to be managed solo alongside BSFL, bees, and olive grove — it cannot demand more than this without compromising those enterprises. If it's taking longer than 20 minutes daily in Month 3+, something is wrong and needs diagnosing, not more management time.
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 7: WATER PARAMETERS ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 7</div>
+    <h2 class="sec-title">Target water <em>parameters</em></h2>
+    <p class="sec-lead">Jade Perch are among the most tolerant aquaculture species for water quality variation — a major reason they suit a small RAS. These are target ranges, not cliffs: brief excursions outside these won't kill fish, but sustained deviation will.</p>
+
+    <div class="param-grid">
+      <div class="param"><div class="param-name">pH — RAS</div><div class="param-range">6.8 – 7.4</div><div class="param-note">Biofilter runs best 6.8–7.2. Below 6.5 → biofilm stress. Above 7.8 → NH₃ toxicity risk.</div></div>
+      <div class="param"><div class="param-name">pH — DWC</div><div class="param-range">6.0 – 7.0</div><div class="param-note">Plants prefer slightly lower. Sump acts as buffer — usually 0.2–0.4 lower than RAS.</div></div>
+      <div class="param"><div class="param-name">Dissolved oxygen</div><div class="param-range">&gt; 6 mg/L</div><div class="param-note">Critical parameter. Below 5 → fish stress. Below 3 → mortality within hours. Alarm set at 5.</div></div>
+      <div class="param"><div class="param-name">Temperature</div><div class="param-range">22 – 30°C</div><div class="param-note">Jade Perch ideal 24–28°C. Below 18 → feed refusal and slow growth. Above 32 → stress.</div></div>
+      <div class="param"><div class="param-name">Ammonia (TAN)</div><div class="param-range">&lt; 1 mg/L</div><div class="param-note">Target &lt; 0.5 after cycling. &gt; 2 mg/L at pH 7+ begins to damage gills. Cause: overfeeding or biofilter crash.</div></div>
+      <div class="param"><div class="param-name">Nitrite (NO₂)</div><div class="param-range">&lt; 0.5 mg/L</div><div class="param-note">Transitional compound — high during cycling, should drop to near-zero once biofilter matures. Monitor weekly.</div></div>
+      <div class="param"><div class="param-name">Nitrate (NO₃)</div><div class="param-range">&lt; 100 mg/L</div><div class="param-note">Plant food — DWC beds consume it. Weekly water change prevents accumulation. Target 20–60 for plant benefit.</div></div>
+      <div class="param"><div class="param-name">EC — DWC sump</div><div class="param-range">1.2 – 2.0 mS/cm</div><div class="param-note">Electrical conductivity = total dissolved nutrients. Below 1.0 = plants hungry. Above 2.5 = nutrient stress.</div></div>
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ── SECTION 8: COMMISSIONING CHECKLIST ── -->
+  <div class="sec">
+    <div class="sec-tag">Section 8</div>
+    <h2 class="sec-title">Pre-stock <em>checklist</em></h2>
+    <p class="sec-lead">Do not order fingerlings until every item below is ticked. A failed batch of 400 Jade Perch costs $600 in fish alone, plus 6 months of lost production time.</p>
+
+    <div class="checklist">
+      <div class="cl-item"><span>RAS tank filled, pump running, zero leaks after 48hrs</span></div>
+      <div class="cl-item"><span>MBBR biofilter cycling — NH₃ reading declining daily</span></div>
+      <div class="cl-item"><span>NH₃ &lt; 0.25 mg/L and NO₂ &lt; 0.5 mg/L — confirmed 3 days in a row</span></div>
+      <div class="cl-item"><span>DO &gt; 6 mg/L with aeration running — verified with calibrated meter</span></div>
+      <div class="cl-item"><span>pH stable 6.8–7.2 without daily adjustment</span></div>
+      <div class="cl-item"><span>UV steriliser installed, bulb glowing (hold paper in front — should cast shadow through UV)</span></div>
+      <div class="cl-item"><span>Backup air pump tested — verify runs on battery, produces visible bubbles</span></div>
+      <div class="cl-item"><span>UPS tested — confirm pump runs for 4hrs on battery alone</span></div>
+      <div class="cl-item"><span>Temp logged AM and PM for 7 days — within 22–30°C range</span></div>
+      <div class="cl-item"><span>Radial settler clean, drain valve functional</span></div>
+      <div class="cl-item"><span>DWC beds 1–2 filled, plants in and growing — system producing nutrients</span></div>
+      <div class="cl-item"><span>Spare pump on shelf — same model as circulation pump</span></div>
+      <div class="cl-item"><span>Fingerling supplier (Sunland Aquaculture, Warwick QLD) confirmed, delivery date booked</span></div>
+      <div class="cl-item phase2"><span><em>(Phase 2)</em> DWC beds 3–4 installed and producing before cohort 2 stocking</span></div>
+      <div class="cl-item phase2"><span><em>(Phase 2)</em> Restaurant buyers confirmed before edible flower beds planted</span></div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="doc-footer">
+  <span>658 Lefthand Branch Road · Aquaponics System Design</span>
+  <span>RAS/DWC Split — April 2026</span>
+  <span>Review after shed DA approval · Update fingerling supplier pricing annually</span>
+</footer>
+
+</body>
+</html>

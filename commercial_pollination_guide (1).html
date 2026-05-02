@@ -1,0 +1,393 @@
+
+<h2 class="sr-only">Comprehensive guide to commercial pollination services in Queensland, covering legal requirements, hive quantities, equipment, contracts, and crop-specific parameters</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-size:14px}
+.wrap{padding:1rem 0}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1rem}
+.tab{padding:6px 14px;font-size:12px;border-radius:20px;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.tab.on{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent;font-weight:500}
+.pane{display:none}.pane.on{display:block}
+.sh{font-size:13px;font-weight:500;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:6px;margin:1rem 0 10px}
+.sh:first-child{margin-top:0}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:11px 13px;border:0.5px solid var(--color-border-tertiary)}
+.card.hi{border-color:var(--color-border-success)}
+.card.warn{border-color:var(--color-border-warning)}
+.card.danger{border-color:var(--color-border-danger)}
+.cn{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.cd{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:1px 7px;border-radius:4px;margin-bottom:4px}
+.b-info{background:var(--color-background-info);color:var(--color-text-info)}
+.b-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.b-succ{background:var(--color-background-success);color:var(--color-text-success)}
+.b-danger{background:var(--color-background-danger);color:var(--color-text-danger)}
+.b-mid{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary)}
+.info{background:var(--color-background-info);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-info);margin:8px 0;line-height:1.5}
+.warnbox{background:var(--color-background-warning);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-warning);margin:8px 0;line-height:1.5}
+.dangerbox{background:var(--color-background-danger);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-danger);margin:8px 0;line-height:1.5}
+.succbox{background:var(--color-background-success);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-success);margin:8px 0;line-height:1.5}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.tbl th{background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:500;padding:6px 8px;text-align:left;border-bottom:0.5px solid var(--color-border-secondary);font-size:11px}
+.tbl td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:top;line-height:1.4}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:nth-child(even) td{background:var(--color-background-secondary)}
+.step-row{display:flex;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start}
+.step-row:last-child{border-bottom:none}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.st{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.sd{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.phase{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:10px 13px;border-left:3px solid;margin:8px 0}
+.p-reg{border-color:#185FA5}.p-eq{border-color:#0F6E56}.p-col{border-color:#BA7517}.p-net{border-color:#993C1D}
+.phase-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.phase-body{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+</style>
+
+<div class="wrap">
+<div class="tabs">
+  <button class="tab on" onclick="show('legal')">Legal & registration</button>
+  <button class="tab" onclick="show('hives')">Hive numbers & specs</button>
+  <button class="tab" onclick="show('crops')">Crops & rates</button>
+  <button class="tab" onclick="show('equipment')">Equipment</button>
+  <button class="tab" onclick="show('contracts')">Winning contracts</button>
+  <button class="tab" onclick="show('roadmap')">Roadmap</button>
+</div>
+
+<div id="legal" class="pane on">
+  <div class="dangerbox"><strong>Varroa is confirmed in the Lockyer Valley.</strong> This changes several legal obligations — read this section carefully before doing anything else.</div>
+
+  <div class="sh">Step 1 — Registration (mandatory before any commercial activity)</div>
+  <div class="g2">
+    <div class="card hi">
+      <span class="badge b-succ">European bees — required</span>
+      <div class="cn">Biosecurity entity registration</div>
+      <div class="cd">Register at business.qld.gov.au before keeping a single European hive. Free for hobbyists, small fee for commercial primary producers. You receive a Hive Identification Number (HIN) — brand at least 1 in every 50 hives. Registrations valid 3 years. Call Biosecurity QLD: 13 25 23.</div>
+    </div>
+    <div class="card">
+      <span class="badge b-mid">Native bees — not required</span>
+      <div class="cn">No registration needed for native hives</div>
+      <div class="cd">Stingless bee hives (T. carbonaria, T. hockingsi) do not need registration under QLD Biosecurity Act 2014. However, if you're offering them commercially, you still need an ABN and public liability insurance — see below.</div>
+    </div>
+    <div class="card hi">
+      <span class="badge b-succ">Both bee types</span>
+      <div class="cn">ABN registration</div>
+      <div class="cd">Any commercial pollination activity requires an ABN. Register free at abr.business.gov.au. Required to invoice growers, claim business expenses, and enter formal contracts. Sole trader ABN is fine to start.</div>
+    </div>
+    <div class="card hi">
+      <span class="badge b-succ">Both bee types</span>
+      <div class="cn">Public liability insurance</div>
+      <div class="cd">Non-negotiable for commercial contracts. Growers will ask for your Certificate of Currency before signing. Minimum $10 million cover. Bee-specific policies available through QBA Group Insurance or Marsh Insurance. Expect $800–1,500/year for a small operation. Never place hives on a grower's property without this.</div>
+    </div>
+  </div>
+
+  <div class="sh">Step 2 — Varroa-specific obligations (currently active in Lockyer Valley)</div>
+  <div class="g2">
+    <div class="card warn">
+      <span class="badge b-warn">Mandatory</span>
+      <div class="cn">Monthly hive health checks + Bee 123 reporting</div>
+      <div class="cd">All QLD beekeepers must conduct monthly hive health checks (alcohol wash preferred) and report results — positive or negative — via the Bee 123 form at business.qld.gov.au. This is a legal obligation under the General Biosecurity Obligation (GBO). Records must be kept and available for inspection.</div>
+    </div>
+    <div class="card warn">
+      <span class="badge b-warn">Mandatory</span>
+      <div class="cn">Varroa reporting within 24 hours</div>
+      <div class="cd">If you detect varroa mite in any hive you must report to Biosecurity QLD within 24 hours on 13 25 23. Varroa is currently restricted matter category 2 — reporting is compulsory. Failure to report is an offence under the Biosecurity Act 2014.</div>
+    </div>
+    <div class="card warn">
+      <span class="badge b-warn">Mandatory before moving hives</span>
+      <div class="cn">Pre and post-move hive health checks</div>
+      <div class="cd">You must complete a hive health check before moving hives to any pollination site and after returning them. This is required to avoid spreading varroa to new sites. Document with Bee 123. "Come clean, go clean" — decontaminate all equipment between sites.</div>
+    </div>
+    <div class="card warn">
+      <span class="badge b-warn">Mandatory</span>
+      <div class="cn">Bee biosecurity online training</div>
+      <div class="cd">The QBA strongly recommends (and for commercial operators is effectively mandatory) completing the Bee Biosecurity Online Training course via Plant Health Australia. It's free. Do it within your first 12 months, then repeat every 3 years. Growers may ask for proof of completion.</div>
+    </div>
+  </div>
+
+  <div class="sh">Step 3 — Business and property obligations</div>
+  <div class="g3">
+    <div class="card">
+      <span class="badge b-info">Business</span>
+      <div class="cn">Hive movement record book</div>
+      <div class="cd">Required to record all hive movements in QLD — date, from/to location, number of hives. QLD Apiary Record Book available from QBA. Must be produced on request by biosecurity officers.</div>
+    </div>
+    <div class="card">
+      <span class="badge b-info">Business</span>
+      <div class="cn">Chemical record keeping</div>
+      <div class="cd">All varroa treatments must be recorded including: product name, batch number, hive treated, date, dose. Records must be retained for 2 years. Part of your GBO compliance.</div>
+    </div>
+    <div class="card">
+      <span class="badge b-info">Distances</span>
+      <div class="cn">Minimum apiary distances</div>
+      <div class="cd">QLD Biosecurity Regulation 2016 specifies minimum distances between apiaries. Check with Biosecurity QLD before siting permanent or temporary apiary at a pollination site — commercial distances differ from hobbyist.</div>
+    </div>
+  </div>
+
+  <div class="sh">Step 4 — Training and qualifications growers expect</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cn">Certificate III in Beekeeping (AHC30122)</div>
+      <div class="cd">Offered by TAFE Queensland and some RTOs. Not legally required but increasingly expected by commercial growers when tendering for large contracts. Covers colony management, pest/disease identification, food safety, and business basics. Take it in year 2 once you have practical experience.</div>
+    </div>
+    <div class="card">
+      <div class="cn">QBA membership + bee course</div>
+      <div class="cd">Queensland Beekeepers' Association membership (~$80/year). Attend a beginner course in your first year. Access to the QBA group insurance scheme, contract templates, and the network of commercial beekeepers who are your best source of local knowledge and contract leads.</div>
+    </div>
+  </div>
+</div>
+
+<div id="hives" class="pane">
+  <div class="info">Minimum viable hive numbers depend on the crop and grower's acreage. Below are the parameters you must meet to be taken seriously and fulfil contract obligations. A weak hive is a contractual breach.</div>
+
+  <div class="sh">Colony strength — what contracts specify</div>
+  <table class="tbl">
+    <tr><th>Parameter</th><th>Minimum acceptable</th><th>Target for contract</th><th>Why it matters</th></tr>
+    <tr><td>Frames of bees (Langstroth)</td><td>4 frames covered</td><td>6–8 frames covered</td><td>Under 4 frames = minimal pollination value. Growers can reject and withhold payment.</td></tr>
+    <tr><td>Brood frames</td><td>2 frames capped brood</td><td>3–4 frames brood</td><td>Brood indicates a healthy laying queen and a growing colony</td></tr>
+    <tr><td>Total bee population</td><td>~15,000 bees</td><td>20,000–40,000 bees</td><td>Standard measure for effective foraging coverage</td></tr>
+    <tr><td>Varroa mite load</td><td>Below treatment threshold</td><td>Below 1% infestation</td><td>High mite loads = weak, short-lived foragers. Growers increasingly test for this.</td></tr>
+    <tr><td>Queen status</td><td>Laying queen present</td><td>Marked, known-age queen</td><td>Unmarked queens make hive inspection slower and weaker colonies hard to diagnose</td></tr>
+    <tr><td>Food stores</td><td>1 frame capped honey</td><td>2+ frames</td><td>Bees with no stores forage erratically and may abscond from the site</td></tr>
+  </table>
+
+  <div class="sh">Hive numbers by operation size</div>
+  <table class="tbl">
+    <tr><th>Operation size</th><th>Hive count</th><th>What it enables</th><th>Revenue potential</th></tr>
+    <tr><td>Micro (starting out)</td><td>5–10 hives</td><td>Small trial contracts with nearby growers, proof of concept, building reputation</td><td>$500–2,000/season</td></tr>
+    <tr><td>Small commercial</td><td>25–50 hives</td><td>10–20 ha crop contracts, reliable local work, second income stream</td><td>$3,000–10,000/season</td></tr>
+    <tr><td>Small-medium</td><td>50–150 hives</td><td>Multiple simultaneous contracts, macadamia or avocado orchards, some migratory work</td><td>$10,000–30,000/season</td></tr>
+    <tr><td>Commercial</td><td>250–500 hives</td><td>Full pollination seasons, multiple crops, migratory routes, full-time income possible</td><td>$50,000–150,000/season</td></tr>
+    <tr><td>Large commercial</td><td>500–1,000+ hives</td><td>Major orchard contracts, multi-site simultaneous placement, crew required</td><td>$150,000+/season</td></tr>
+  </table>
+  <div class="warnbox">The QLD commercial beekeeping sector is growing: beekeepers with 25–250 hives are the fastest-growing segment. You don't need 500 hives to start commercially — but you need at least 20–30 strong colonies to make your first contract worth the logistics.</div>
+
+  <div class="sh">Native bee hives — commercial parameters</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cn">T. carbonaria for commercial use</div>
+      <div class="cd">Used primarily for enclosed crops (strawberries under netting, capsicums, greenhouse tomatoes). Typical placement: 1–3 hives per 500m² of enclosed growing area. Charge: ~$110/hive. Colonies must be active, with visible entrance traffic and at least 12 months old. New colonies are not strong enough for commercial placement.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Minimum viable native fleet</div>
+      <div class="cd">Start with 10 hives minimum for any commercial trial. Scale to 20–50 via splitting before approaching growers. Each hive must be at least 12–18 months old and actively foraging. Don't promise what you can't deliver — a failed hive placement damages your reputation with that grower permanently.</div>
+    </div>
+  </div>
+</div>
+
+<div id="crops" class="pane">
+  <div class="info">The Lockyer Valley and broader SE QLD grow avocados, macadamias, strawberries, blueberries, cucurbits, stone fruits, and seed crops. All require managed bee pollination. Seasonal overlap creates opportunities to move hives between crops across the year.</div>
+
+  <div class="sh">Crop-by-crop parameters</div>
+  <table class="tbl">
+    <tr><th>Crop</th><th>Bee type</th><th>Hives/ha</th><th>Season (QLD)</th><th>Duration</th><th>Rate/hive</th><th>Notes</th></tr>
+    <tr><td><strong>Macadamia</strong></td><td>European</td><td>2–3 hives/ha</td><td>Aug–Oct</td><td>4–6 weeks</td><td>$50–80</td><td>Largest QLD pollination event. Low rate per hive but very high volume. Lockyer Valley producers nearby.</td></tr>
+    <tr><td><strong>Avocado</strong></td><td>European</td><td>3–4 hives/ha</td><td>Jun–Nov</td><td>4–8 weeks</td><td>$150–225</td><td>Best return per hive in QLD. 4 hives/ha can boost yield up to 300% on individual trees. High demand, especially in Lockyer/Sunshine Coast hinterland.</td></tr>
+    <tr><td><strong>Strawberry (under netting)</strong></td><td>Native (T. carbonaria)</td><td>1–2 hives/500m²</td><td>Apr–Sep</td><td>Ongoing rotation</td><td>$110</td><td>Native bees outperform European bees under netting. Strawberry Lockyer Valley growers are your target market. Hives rotated out to recover.</td></tr>
+    <tr><td><strong>Blueberry</strong></td><td>European + native</td><td>2–4 hives/ha (up to 9)</td><td>Sep–Dec</td><td>4–6 weeks</td><td>$120–160</td><td>Native bees provide buzz pollination. European bees provide volume. Combined approach is best practice. Under netting: native only.</td></tr>
+    <tr><td><strong>Cucurbits (melons, pumpkin, zucchini)</strong></td><td>European</td><td>1–2 hives/ha</td><td>Oct–Mar</td><td>3–4 weeks</td><td>$80–130</td><td>Good summer work when other crops have finished. Large areas planted in Lockyer Valley and Darling Downs.</td></tr>
+    <tr><td><strong>Stone fruit (peach, plum, cherry)</strong></td><td>European</td><td>2–3 hives/ha</td><td>Jul–Sep</td><td>2–3 weeks</td><td>$80–120</td><td>Self-fertile varieties need less pollination but benefit from cross-pollination between rows.</td></tr>
+    <tr><td><strong>Capsicum / tomato (greenhouse)</strong></td><td>Native (T. carbonaria)</td><td>1 hive/200m²</td><td>Year-round</td><td>Rotation</td><td>$110–150</td><td>Native bees buzz pollinate capsicum — European bees cannot. High demand from hydroponic and greenhouse operators.</td></tr>
+    <tr><td><strong>Seed crops (brassicas, clover)</strong></td><td>European</td><td>2–5 hives/ha</td><td>Variable</td><td>3–5 weeks</td><td>$60–100</td><td>Lower profile but reliable volume contracts. Darling Downs canola and brassica producers are accessible from Lockyer Valley.</td></tr>
+  </table>
+
+  <div class="sh">Seasonal calendar — stacking contracts across the year</div>
+  <table class="tbl">
+    <tr><th>Month</th><th>Primary crop</th><th>Secondary crop</th><th>Bee type priority</th></tr>
+    <tr><td>Apr–Jun</td><td>Avocado (start)</td><td>Strawberry (netting)</td><td>European + native</td></tr>
+    <tr><td>Jul–Aug</td><td>Avocado (peak)</td><td>Stone fruit, macadamia (early)</td><td>European heavy</td></tr>
+    <tr><td>Sep–Oct</td><td>Macadamia (peak)</td><td>Blueberry, stone fruit</td><td>European heavy</td></tr>
+    <tr><td>Nov–Dec</td><td>Blueberry (late)</td><td>Cucurbits (start)</td><td>European + native</td></tr>
+    <tr><td>Jan–Mar</td><td>Cucurbits</td><td>Recovery period</td><td>European — build colonies for next season</td></tr>
+  </table>
+  <div class="succbox">The Lockyer Valley's proximity to avocado and macadamia country (Sunshine Coast hinterland, Atherton Tablelands transport route, and local Lockyer/Gatton producers) means you can stack avocado + macadamia + cucurbit contracts across June–December with the same hive fleet. This is the core seasonal circuit for small commercial operators in SE QLD.</div>
+</div>
+
+<div id="equipment" class="pane">
+  <div class="sh">Transport equipment — the non-negotiable investment</div>
+  <div class="warnbox">A full Langstroth hive ready for transport weighs 40–60kg. You cannot move 20+ hives by hand. Transport equipment is where you must spend money — back injury from manual handling is the most common reason beekeepers leave the industry.</div>
+
+  <div class="g2">
+    <div class="card hi">
+      <span class="badge b-succ">Essential — buy early</span>
+      <div class="cn">Hive pallets (4-hive wooden pallets)</div>
+      <div class="cd">The universal standard. 4 hives sit on one pallet (~200kg total). Pallets are forklift-compatible and make loading/unloading fast. Build or buy: 18mm treated ply, 1.2m × 0.6m, with forklift entry slots. Make them yourself for $20 each or buy commercial for $35–60. You need one pallet per 4 hives.</div>
+    </div>
+    <div class="card hi">
+      <span class="badge b-succ">Essential — buy early</span>
+      <div class="cn">Hive straps (ratchet straps)</div>
+      <div class="cd">Strap each hive box and pallet securely before transport. 25mm ratchet straps, 2 per hive during travel, 1 to secure the pallet load. Buy in bulk — $8–15 each. Keep 40+ for a 20-hive operation. Hive boxes must not shift during transit or you risk comb collapse.</div>
+    </div>
+    <div class="card hi">
+      <span class="badge b-succ">Essential — buy early</span>
+      <div class="cn">Transport trailer or ute tray</div>
+      <div class="cd">Starting out (5–20 hives): a heavy-duty box trailer or ute with drop sides carries 10–20 hives per load. 20–60 hives: a flat-top trailer (tandem axle, 7×5m or larger). 60+ hives: you need a truck and dog trailer setup — commercial operators move 120 hives per load on flatbeds.</div>
+    </div>
+    <div class="card hi">
+      <span class="badge b-succ">Essential — buy or hire early</span>
+      <div class="cn">Mini loader / bee loader</div>
+      <div class="cd">The Avant BeePro and MultiOne series are the Australian commercial standard. Lifts 4-hive pallets (~200kg) onto trucks. Articulated chassis handles soft and uneven ground at orchards. Parks sideways on the truck deck. New: $25,000–50,000. Hire: ~$400/day. For 5–20 hives, a hired loader for delivery day is cost-effective. At 50+ hives, own one.</div>
+    </div>
+    <div class="card">
+      <span class="badge b-info">Mid-scale (20–60 hives)</span>
+      <div class="cn">Truck-mounted crane (Hiab)</div>
+      <div class="cd">A crane fitted to a flatbed truck allows one person to load/unload without a separate loader on site. Commercial beekeepers on the Bush Bee Man circuit use this setup. A used Hiab-equipped truck is $40,000–80,000. More versatile for remote or tight access sites where a mini loader can't go.</div>
+    </div>
+    <div class="card">
+      <span class="badge b-mid">Small scale only</span>
+      <div class="cn">Two-person hive carriers</div>
+      <div class="cd">Steel frame with handles that grip the hive sides. $80–150 each. Only practical for moving 1–5 hives short distances (e.g., repositioning within a site). Not viable for loading trucks commercially — they are too slow and carry injury risk at scale.</div>
+    </div>
+  </div>
+
+  <div class="sh">Hive specification for commercial use (Langstroth)</div>
+  <div class="g3">
+    <div class="card">
+      <div class="cn">8 or 10-frame Langstroth</div>
+      <div class="cd">10-frame is the QLD commercial standard. 8-frame is lighter and easier to handle alone but lower honey and brood capacity. For pollination work, 10-frame full-depth brood box + 1 super is the industry standard growers expect.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Screened bottom board</div>
+      <div class="cd">Required for varroa management (passive mite drop). Also improves ventilation during transport — critical for preventing overheating on hot days. Build this into every hive from day one.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Entrance reducers</div>
+      <div class="cd">Fit before every transport. Block most of the entrance so bees stay inside during the trip. Mesh entrance reducers allow ventilation. Solid reducers block everything — only use for short moves at night. Remove immediately on placement at the orchard.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Hive identification marking</div>
+      <div class="cd">Brand or paint your HIN on every hive (required by law, at least 1 in 50). For commercial work: also number each hive with a unique ID and photograph every placement. GPS-document where each hive goes. Essential for contract compliance and dispute resolution.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Ventilated moving screens</div>
+      <div class="cd">Replace the solid lid with a mesh screen during transport. Prevents CO2 buildup and overheating. A full pallet of bees generates serious heat — queens can die if poorly ventilated. Commercial suppliers: Beechwood Supplies, B&B Honey Farm (QLD).</div>
+    </div>
+    <div class="card">
+      <div class="cn">Shade netting</div>
+      <div class="cd">Large shade cloth draped over the truck load during transport. Keeps bees contained if any escape entrance blocks, maintains airflow, reduces radiant heat. Must be breathable — not tarps. Standard commercial practice for every hive movement in QLD.</div>
+    </div>
+  </div>
+
+  <div class="sh">Field and inspection equipment</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cn">Commercial bee suit (ventilated)</div>
+      <div class="cd">Inspect and work hives faster in a ventilated suit in QLD summer. Swienty, Sherriff, and Mann Lake make good ventilated commercial suits. Used suits from deceased estates or exiting beekeepers are fine — inspect carefully for holes and wash thoroughly. Never buy used veils — they deteriorate invisibly.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Commercial smoker (large)</div>
+      <div class="cd">A large-capacity smoker (30cm bellows) keeps burning for 2+ hours. Essential for inspecting 20+ hives in a session. Stainless steel, not galvanised. Used is fine. Fuel: hessian, pine needles, dry grass. Keep 2 — they go out at the worst moment.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Hive tools (multiple)</div>
+      <div class="cd">J-style hive tools for frame removal. Buy 5+ — they go missing constantly. Stainless steel, about $15 each new, or $5 used. Sterilise between apiaries with 70% methylated spirits in a spray bottle. Required by GBO when moving between sites.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Alcohol wash kit (varroa monitoring)</div>
+      <div class="cd">500ml jar, methylated spirits, fine mesh sieve, white tray. ~$20 DIY. Do not cut corners here — accurate mite counts are your legal obligation and your contract protection. A high mite count you didn't catch is a failed hive at the grower's site.</div>
+    </div>
+  </div>
+
+  <div class="sh">Native bee commercial equipment</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cn">Commercial OATH or OATH-style boxes</div>
+      <div class="cd">For commercial native bee placement, hives must be robust, watertight, and standardised. All 280×200mm footprint so they stack uniformly for transport. At commercial scale, buy commercially made hoop pine boxes (Quality Beekeeping Supplies, Native Bees Australia) rather than DIY — consistency matters when a grower inspects your hives.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Padded transport box or crate</div>
+      <div class="cd">Native hives are fragile during transport — the soft cerumen comb can shatter if jolted. Foam-lined wooden crates or milk crates with padding protect the colony during movement. Strap individual hives. Do not stack native hives — the weight crushes the boxes.</div>
+    </div>
+  </div>
+</div>
+
+<div id="contracts" class="pane">
+  <div class="sh">What growers actually want (and how to prove you deliver it)</div>
+  <div class="g2">
+    <div class="card hi">
+      <div class="cn">Reliability above all</div>
+      <div class="cd">A grower's crop may be worth millions. They need hives on site within a tight bloom window — often 3–7 days before first flowers open. Missing the window or delivering weak hives is a catastrophic outcome for them. Growers talk to each other. One failed delivery ends your local reputation.</div>
+    </div>
+    <div class="card hi">
+      <div class="cn">Provable colony strength</div>
+      <div class="cd">Growers will ask to inspect colonies on arrival. Be prepared to open any hive on request and demonstrate 6–8 frames of bees. GPS-photographed colony records with frame counts before loading build trust and protect you from post-delivery disputes. Some large growers now use infrared thermal imaging to assess colony strength.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Clean biosecurity documentation</div>
+      <div class="cd">Bring to every delivery: current registration certificate, Bee 123 records for the previous 3 months, pre-move hive health check results, varroa mite treatment records, certificate of public liability insurance. Organised documentation is a differentiator — most small operators have none of this ready.</div>
+    </div>
+    <div class="card">
+      <div class="cn">Written contract every time</div>
+      <div class="cd">Never place hives on a handshake. A one-page contract covering: hive count, strength minimum, delivery/removal dates, fee and payment terms (50% on delivery, 50% on removal is standard), pesticide notification clause, and liability. The QBA and Beeaware.org.au have template agreements.</div>
+    </div>
+  </div>
+
+  <div class="sh">Essential contract clauses</div>
+  <table class="tbl">
+    <tr><th>Clause</th><th>What it covers</th><th>Why you need it</th></tr>
+    <tr><td>Hive strength minimum</td><td>Minimum 6 frames of bees on delivery; colonies under 4 frames excluded from count</td><td>Protects you from disputes about weak hives and gives grower confidence</td></tr>
+    <tr><td>Delivery window</td><td>Hives placed 3–7 days before bloom opens</td><td>Protects both parties if bloom is early or late</td></tr>
+    <tr><td>Payment terms</td><td>50% on delivery, 50% on removal, net 14 days</td><td>Protects your cash flow. Never leave without a deposit.</td></tr>
+    <tr><td>Pesticide notification</td><td>Grower must give 48 hours notice of any chemical application within 2km of hive placement</td><td>Gives you time to move or protect hives. Without this clause, you have no recourse for a pesticide kill.</td></tr>
+    <tr><td>Pesticide kill compensation</td><td>If grower fails to notify and a kill occurs, grower pays replacement cost per hive (specify $/hive)</td><td>A lost hive at a pollination site costs you $600–800 to replace. This clause ensures the grower bears that cost.</td></tr>
+    <tr><td>Water access</td><td>Grower provides potable water within 500m of hive placement</td><td>Bees need water constantly — without it, they forage for it and don't pollinate</td></tr>
+    <tr><td>Site access</td><td>Beekeeper may enter property at any reasonable time to service hives</td><td>Required for varroa inspections and GBO compliance — you must be able to access your hives</td></tr>
+    <tr><td>Removal notice</td><td>Grower gives 48 hours notice before requesting hive removal</td><td>Allows you to organise transport, especially if managing multiple sites simultaneously</td></tr>
+    <tr><td>Force majeure</td><td>Neither party liable for non-performance due to extreme weather or natural events</td><td>Protects both parties if a flood or cyclone prevents delivery or causes colony losses</td></tr>
+    <tr><td>Dispute resolution</td><td>Disputes resolved by a mutually agreed third-party apiarist inspector</td><td>Cheaper and faster than lawyers for the most common disputes (hive count, colony strength)</td></tr>
+  </table>
+
+  <div class="sh">How to find your first contracts</div>
+  <div class="step-row"><div class="sn">1</div><div><div class="st">Join Queensland Beekeepers' Association and attend regional meetings</div><div class="sd">The QBA Lockyer Valley/Toowoomba region meetings are where local commercial beekeepers and growers interact. This is the single most direct route to local contract leads. Attend before you have hives — introduce yourself as building towards commercial work.</div></div></div>
+  <div class="step-row"><div class="sn">2</div><div><div class="st">Contact Lockyer Valley growers directly — start with avocado and strawberry</div><div class="sd">The Lockyer Valley has a high density of strawberry growers (many under netting — perfect for native bees) and proximity to SE QLD avocado orchards. Cold call or email — a beekeeper who is local, registered, and varroa-compliant is valuable right now because feral bee populations are collapsing. Use the AgriFutures Australia grower directory or simply drive the region and note what's growing.</div></div></div>
+  <div class="step-row"><div class="sn">3</div><div><div class="st">Register with HortConnect / Pollination Australia directories</div><div class="sd">Pollination Australia (pollinationaustralia.net.au) runs a national directory of registered pollination service providers. Growers use it to find beekeepers. Free to list. Also register with the QBA's beekeeper finder. This is passive lead generation that costs nothing.</div></div></div>
+  <div class="step-row"><div class="sn">4</div><div><div class="st">Approach macadamia growers in Aug–Sep (a year before you want the contract)</div><div class="sd">Experienced growers book their pollination services in November–January for the following season's bloom. To win a macadamia contract for October next year, start conversations now. Show up in person, bring your biosecurity documents, and offer a trial with a small number of hives.</div></div></div>
+  <div class="step-row"><div class="sn">5</div><div><div class="st">Offer a trial placement on your own farm first</div><div class="sd">If you grow any fruit or vegetables on your Lefthand Branch property, place your hives there first and document the yield improvement. Photographs, before/after yield data, and a grower testimonial (even from yourself) are powerful proof of concept for your first external pitch.</div></div></div>
+  <div class="step-row"><div class="sn">6</div><div><div class="st">Price to win the first contract, not to maximise</div><div class="sd">Your first commercial contract is a reference. Offer 10–15% below market rate in exchange for a written testimonial and the right to use the grower as a reference for future contracts. One good reference in the Lockyer Valley opens doors to their neighbours.</div></div></div>
+</div>
+
+<div id="roadmap" class="pane">
+  <div class="sh">Realistic roadmap to commercial pollination — from where you are now</div>
+
+  <div class="phase p-reg">
+    <div class="phase-title">Phase 1 — Foundation (now — 12 months) — build while learning</div>
+    <div class="phase-body">Build OATH hives (now). Get native bee colony in spring 2026. Register as a biosecurity entity with European bee registration before buying European hives. Complete QBA beginners course and Bee Biosecurity Online Training. Buy 2 European hive setups (VSH stock, screened bottom boards) in spring 2026. Begin monthly Bee 123 reporting. Register ABN. Get public liability insurance. Goal: 2 healthy European hives + 1 native hive by end of year 1. Cost: ~$3,000–4,000 total.</div>
+  </div>
+
+  <div class="phase p-eq">
+    <div class="phase-title">Phase 2 — Build fleet (months 12–24) — split aggressively</div>
+    <div class="phase-body">Split both European hives in spring 2027 → 4 hives. Split again in spring/summer → 6–8 hives. Split native hive → 2 native hives. Invest in a second-hand box trailer and a set of pallets. Practice pre-move health checks and hive transport. Approach 1–2 local strawberry growers (Lockyer Valley) with native hives — small trial, 3–5 hives under netting. This is your first commercial placement. Document everything. Goal: 8+ European hives, 4+ native hives, 1 trial contract completed.</div>
+  </div>
+
+  <div class="phase p-col">
+    <div class="phase-title">Phase 3 — First real contracts (months 24–36) — 20–30 hive operation</div>
+    <div class="phase-body">By year 3 you should have 20–30 European hives via continued splitting (or targeted purchases of strong nucs). This is enough for a small avocado or macadamia contract (5–10 ha). Hire a mini loader for delivery days ($400/day). Pitch 2–3 local growers with full biosecurity documentation package. Use the QBA contract template. Target: 2 paid contracts in the Jun–Oct pollination season at $80–150/hive × 20 hives = $1,600–3,000 per contract. Native bee fleet: 8–10 hives via continued splitting, handling 2–3 strawberry/capsicum contracts year-round.</div>
+  </div>
+
+  <div class="phase p-net">
+    <div class="phase-title">Phase 4 — Scale to profitability (years 3–5) — 50–100 hive operation</div>
+    <div class="phase-body">At 50 hives you enter serious small commercial territory. Consider purchasing a used mini loader outright (~$15,000–25,000 second-hand Avant or MultiOne) instead of hiring. Pursue Certificate III in Beekeeping. Stack seasonal contracts: avocado (Jun–Oct) + macadamia (Sep–Oct) + cucurbits (Nov–Mar). At $100/hive average × 50 hives × 3 seasonal placements: ~$15,000/season gross. Deduct transport, treatment, equipment: net ~$8,000–10,000/season as a secondary income. To make it a primary income: you need 150–250 hives and a migratory route.</div>
+  </div>
+
+  <div class="sh">Key financial parameters to track from day one</div>
+  <table class="tbl">
+    <tr><th>Metric</th><th>Target</th><th>Why it matters</th></tr>
+    <tr><td>Cost per hive per year (European)</td><td>Under $200/hive</td><td>Equipment depreciation + treatments + transport + insurance divided by hive count. Must be below your per-hive revenue.</td></tr>
+    <tr><td>Minimum contract rate to break even</td><td>~$80–100/hive</td><td>At 20 hives, you need $1,600–2,000 per contract placement just to cover costs. Under this: you're subsidising the grower.</td></tr>
+    <tr><td>Colony loss rate</td><td>Under 15%/year</td><td>Industry average is 30–40% in varroa-affected operations. Strong IPM keeps you below 15%. Each lost hive costs $600–800 to replace.</td></tr>
+    <tr><td>Hive growth rate via splitting</td><td>50–100% per year</td><td>Doubling hives via splits each spring = free fleet growth. Buying nucs at $250–350 each is expensive — splitting is your primary growth strategy.</td></tr>
+    <tr><td>Pre-contract booking lead time</td><td">Book 3–6 months ahead</td><td>Major growers book in Nov–Jan for the following season. Being late means taking leftover contracts at lower rates.</td></tr>
+  </table>
+
+  <div class="succbox">The Lockyer Valley is genuinely well-positioned for commercial pollination: you're within 1–2 hours of SE QLD's major avocado, macadamia, strawberry, and blueberry growing regions. Varroa is actually creating a shortage of managed hives as feral bee populations collapse — registered, compliant beekeepers with clean records are in increasing demand right now. The market is coming to you.</div>
+</div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+</script>
