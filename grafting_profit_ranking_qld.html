@@ -1,0 +1,361 @@
+
+<style>
+*{box-sizing:border-box}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.tab-row{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:0;overflow-x:auto}
+.tab{padding:9px 14px;font-size:13px;font-weight:400;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;flex-shrink:0}
+.tab:hover{color:var(--color-text-primary)}
+.tab.active{color:var(--color-text-primary);font-weight:500;border-bottom-color:var(--color-text-primary)}
+.panel{display:none}.panel.active{display:block}
+
+.rank-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:10px;overflow:hidden}
+.rank-head{display:grid;grid-template-columns:32px 1fr auto;gap:10px;align-items:center;padding:11px 14px;cursor:pointer;user-select:none}
+.rank-head:hover{background:var(--color-background-secondary)}
+.rank-num{font-size:16px;font-weight:700;color:var(--color-text-tertiary);text-align:center}
+.rank-num.top{color:var(--color-text-success)}
+.rank-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.rank-sub{font-size:11px;color:var(--color-text-secondary);margin-top:1px}
+.rank-price{font-size:14px;font-weight:500;color:var(--color-text-primary);text-align:right;white-space:nowrap}
+.rank-price-sub{font-size:11px;color:var(--color-text-secondary);text-align:right}
+.rank-body{display:none;padding:0 14px 14px;border-top:0.5px solid var(--color-border-tertiary)}
+.rank-body.open{display:block}
+
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin:10px 0}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-sm);padding:7px 9px}
+.stat-label{font-size:10px;color:var(--color-text-tertiary);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.stat-val{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+
+.badge{font-size:11px;padding:2px 7px;border-radius:10px;white-space:nowrap;margin-left:6px}
+.b-easy{background:var(--color-background-success);color:var(--color-text-success)}
+.b-med{background:var(--color-background-warning);color:var(--color-text-warning)}
+.b-hard{background:var(--color-background-danger);color:var(--color-text-danger)}
+.b-vol{background:var(--color-background-info);color:var(--color-text-info)}
+
+.detail-section{margin-top:10px}
+.detail-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.detail-text{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+
+.warn{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-warning);line-height:1.5;margin-bottom:12px}
+.note{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 12px;font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px}
+
+.layout-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.layout-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px}
+.layout-card h3{font-size:13px;font-weight:500;margin-bottom:4px}
+.layout-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin:0}
+.layout-card .size{font-size:11px;font-family:monospace;color:var(--color-text-tertiary);margin-bottom:4px}
+
+.ask-btn{width:100%;margin-top:12px;padding:9px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);font-size:12px;cursor:pointer;text-align:left}
+.ask-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+</style>
+
+<h2 class="sr-only">Highest-profit grafting species for 2 acres near Gatton QLD — ranked by profit per square metre with detailed setup, difficulty, and market analysis</h2>
+
+<div class="tab-row">
+  <button class="tab active" onclick="showTab('ranking')">Ranked species</button>
+  <button class="tab" onclick="showTab('layout')">2-acre layout</button>
+  <button class="tab" onclick="showTab('buyers')">Who buys them</button>
+</div>
+
+<div style="padding:14px 0 4px">
+
+<div id="p-ranking" class="panel active">
+
+<div class="note">Ranked by <strong>profit per m² of propagation space per year</strong> — not just retail price per tree. A $200 tree that takes 3 years and 1m² beats a $50 tree that takes 6 months and 0.1m² only if volume and take rates stack up. Click any species to expand.</div>
+
+<!-- 1 AVOCADO -->
+<div class="rank-card" id="r1">
+  <div class="rank-head" onclick="togR('r1')">
+    <div class="rank-num top">1</div>
+    <div>
+      <div class="rank-title">Grafted Avocado (Hass, Shepard, Reed) <span class="badge b-vol">Volume play</span></div>
+      <div class="rank-sub">Cleft or whip graft onto seedling rootstock · 12–16 week cycle</div>
+    </div>
+    <div>
+      <div class="rank-price">$35–65 retail</div>
+      <div class="rank-price-sub">$18–32 wholesale · ~$280/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r1">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Graft difficulty</div><div class="stat-val">Medium <span class="badge b-med" style="margin:0;font-size:10px">med</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">70–85%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">12–16 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$280</div></div>
+      <div class="stat"><div class="stat-label">Demand</div><div class="stat-val">Extremely high</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Why #1</div>
+      <div class="detail-text">Avocado demand in Australia is insatiable — per-capita consumption has tripled in 10 years. Every new lifestyle block, hobby farm, and suburban acreage owner wants one. Grafted trees (vs seedlings) fruit in 2–3 years instead of 7–10, which is the entire sales pitch. You can produce 4 batches per year in a warm greenhouse. At 1,000 trees/batch × 80% take × $30 wholesale = $96,000 from one greenhouse bay. The rootstock (Zutano or Duke 7) is cheap and fast to germinate. SEQ climate is ideal — Gatton is warm enough year-round to keep production moving.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Graft method</div>
+      <div class="detail-text">Cleft graft or whip-and-tongue onto 8–12mm diameter seedling rootstock. Graft when rootstock pencil-thick (12–16 weeks from seed). Wrap with grafting tape, cover with clear bag for 3–4 weeks humidity chamber. Take rates improve dramatically with bottom heat (soil at 22–25°C). Most challenging part is timing: scion wood must be from dormant terminal buds, not actively flushing. Once you dial in the method, an experienced grafter can do 200–300/day.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">PBR / licensing risk</div>
+      <div class="detail-text">Standard commercial varieties (Hass, Shepard, Bacon, Reed) are not PBR-protected in Australia — you can graft and sell freely. New releases like "Jala" are PBR-protected — avoid these without a licence.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Gatton-specific advantage</div>
+      <div class="detail-text">Anderson Horticulture (Australia's largest avocado nursery) works with UQ — meaning there's deep local expertise and rootstock supply nearby. The South East QLD avocado expansion has been significant in recent years, creating demand for commercial orchard volumes as well as retail trees.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 MACADAMIA -->
+<div class="rank-card" id="r2">
+  <div class="rank-head" onclick="togR('r2')">
+    <div class="rank-num top">2</div>
+    <div>
+      <div class="rank-title">Grafted Macadamia (344, A4, 842 varieties) <span class="badge b-vol">Volume + premium</span></div>
+      <div class="rank-sub">Chip or cleft bud graft onto M. tetraphylla rootstock · 18–24 week cycle</div>
+    </div>
+    <div>
+      <div class="rank-price">$45–90 retail</div>
+      <div class="rank-price-sub">$22–45 wholesale · ~$240/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r2">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Graft difficulty</div><div class="stat-val">Medium <span class="badge b-med" style="margin:0;font-size:10px">med</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">65–80%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">18–24 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$240</div></div>
+      <div class="stat"><div class="stat-label">Demand</div><div class="stat-val">High + growing</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Why #2</div>
+      <div class="detail-text">Macadamia orchards across SEQ and northern NSW are ageing out and being replanted with modern high-yield varieties. Commercial growers need hundreds of trees at a time. Your proximity to the macadamia belt (Gympie, Kenilworth, Nambour) puts you inside the supply catchment. Grafted trees command a massive premium over seedlings — a grafted variety 344 or A4 tree starts producing in 3–5 years vs 8–12 for seedlings, which is the argument that sells itself to a commercial grower. Orchard orders of 200–500 trees at $30–45 each are common.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Graft method</div>
+      <div class="detail-text">Chip budding or cleft grafting. Chip bud is preferred — higher take rate, less scion material needed. Rootstock from M. tetraphylla seed (readily available, fast germinating). Bud when rootstock 8–15mm diameter. Wrap, leave bud exposed or covered depending on humidity. In Gatton's warm climate, buds push within 3–5 weeks. Scion wood from known commercial varieties — source from reputable QLD macadamia nurseries or AMS (Australian Macadamia Society) members.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Synergy with your property</div>
+      <div class="detail-text">Your pollination hive operation directly serves macadamia growers. The same growers who book your hives in July–September are also potential buyers for replacement trees. One relationship, two revenue streams.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 LYCHEE -->
+<div class="rank-card" id="r3">
+  <div class="rank-head" onclick="togR('r3')">
+    <div class="rank-num top">3</div>
+    <div>
+      <div class="rank-title">Marcotted / Air-layered Lychee (Fay Zee Sui, Bengal, Kwai May) <span class="badge b-med">Premium retail</span></div>
+      <div class="rank-sub">Air layering (marcotting) rather than grafting · 8–12 week cycle</div>
+    </div>
+    <div>
+      <div class="rank-price">$55–120 retail</div>
+      <div class="rank-price-sub">$28–55 wholesale · ~$220/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r3">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Propagation</div><div class="stat-val">Air layer <span class="badge b-easy" style="margin:0;font-size:10px">easy</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">85–95%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">8–12 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$220</div></div>
+      <div class="stat"><div class="stat-label">Demand</div><div class="stat-val">Very high in SEQ</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Note on technique</div>
+      <div class="detail-text">Lychee is propagated by air layering (marcotting) rather than grafting — it's easier, faster, and has higher success rates. Ring-bark a pencil-thick branch, wrap with moist sphagnum moss and plastic. Roots form in 6–10 weeks. Detach, pot, harden off. Takes more scion tree space than grafting but is forgiving for beginners and produces a true-to-type tree guaranteed to fruit.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Why it ranks highly</div>
+      <div class="detail-text">Lychee trees are chronically undersupplied in Australian nurseries — good-variety marcotted trees sell out constantly. Fay Zee Sui (early season), Bengal (mid), and Kwai May Pink (late) cover the full harvest window and are what commercial growers want. Gatton's climate is ideal. The Erdon Lee supersized variety commands $100–180 per tree at retail due to extreme scarcity.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Volume consideration</div>
+      <div class="detail-text">You need established mother trees to take air layers from. Either source large lychee trees to plant as stock plants (1–2 years to establish), or buy them in and start taking layers immediately. 20 good mother trees can produce 200–400 marcots per season.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 MANGO -->
+<div class="rank-card" id="r4">
+  <div class="rank-head" onclick="togR('r4')">
+    <div class="rank-num">4</div>
+    <div>
+      <div class="rank-title">Grafted Mango (Kensington Pride, R2E2, Honey Gold) <span class="badge b-vol">High volume</span></div>
+      <div class="rank-sub">Cleft or veneer graft · 14–20 week cycle</div>
+    </div>
+    <div>
+      <div class="rank-price">$45–85 retail</div>
+      <div class="rank-price-sub">$20–40 wholesale · ~$200/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r4">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Graft difficulty</div><div class="stat-val">Med-high <span class="badge b-med" style="margin:0;font-size:10px">med</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">60–75%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">14–20 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$200</div></div>
+      <div class="stat"><div class="stat-label">Demand</div><div class="stat-val">Very high</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Why it ranks 4th not higher</div>
+      <div class="detail-text">Mango grafting has a slightly lower take rate than avocado and requires more skill — the veneer graft or soft-wood cleft graft is technique-sensitive, and mango scion wood must be at exactly the right dormancy stage (panicle/grey wood, not actively flushing). That said, demand is enormous and QLD is the centre of Australian mango culture. Kensington Pride (Bowen) is the workhorse but Honey Gold, R2E2 and calypso-types command $15–25 more per tree retail.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">PBR warning</div>
+      <div class="detail-text">Honey Gold and Calypso are PBR-protected — you cannot graft and sell these without a licence from the variety holder. Kensington Pride, R2E2, and Irwin are not protected. Check AusPBR before grafting any named variety commercially.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 OLIVE -->
+<div class="rank-card" id="r5">
+  <div class="rank-head" onclick="togR('r5')">
+    <div class="rank-num">5</div>
+    <div>
+      <div class="rank-title">Grafted Olive — from your own grove genetics <span class="badge b-easy">Lowest input cost</span></div>
+      <div class="rank-sub">Cleft or whip graft / semi-hardwood cuttings · 16–24 week cycle</div>
+    </div>
+    <div>
+      <div class="rank-price">$35–120 retail</div>
+      <div class="rank-price-sub">$18–55 wholesale · ~$160/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r5">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Graft difficulty</div><div class="stat-val">Easy <span class="badge b-easy" style="margin:0;font-size:10px">easy</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">75–90%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">16–24 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$160</div></div>
+      <div class="stat"><div class="stat-label">Input cost</div><div class="stat-val">Near zero</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">The unique advantage here</div>
+      <div class="detail-text">You already have the scion wood growing in your grove. Zero scion cost. Olive semi-hardwood cuttings also strike without grafting at a reasonable rate, but grafting onto a vigorous rootstock (Frantoio seedling or Arbequina) produces a much faster-establishing tree that commands 3–4× the price of a cutting-grown plant. A grafted tree from a known productive, named variety in your own grove has a genuine origin story — "grafted from a 20-year-old Frantoio at 658 Lefthand Branch Rd" — that adds retail value.</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Market</div>
+      <div class="detail-text">Lifestyle property owners buying 5–50 trees at a time. Council revegetation and streetscape projects (olive as an ornamental). Boutique producers wanting to establish a known variety quickly. Wholesale to garden centres — olive trees are perennial sellers in QLD. Larger form trees (2–3 years in the pot) retail $90–180 each.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 JABOTICABA -->
+<div class="rank-card" id="r6">
+  <div class="rank-head" onclick="togR('r6')">
+    <div class="rank-num">6</div>
+    <div>
+      <div class="rank-title">Grafted Jaboticaba (Red Hybrid, Sabara) <span class="badge b-hard">Specialist/collector</span></div>
+      <div class="rank-sub">Cleft or approach graft · 20–30 week cycle · very slow growing</div>
+    </div>
+    <div>
+      <div class="rank-price">$80–250 retail</div>
+      <div class="rank-price-sub">Chronically sold out · ~$140/m²/yr</div>
+    </div>
+  </div>
+  <div class="rank-body" id="b-r6">
+    <div class="stat-row">
+      <div class="stat"><div class="stat-label">Graft difficulty</div><div class="stat-val">Hard <span class="badge b-hard" style="margin:0;font-size:10px">hard</span></div></div>
+      <div class="stat"><div class="stat-label">Take rate</div><div class="stat-val">40–60%</div></div>
+      <div class="stat"><div class="stat-label">Cycle time</div><div class="stat-val">20–30 wk</div></div>
+      <div class="stat"><div class="stat-label">$/m²/yr</div><div class="stat-val">~$140</div></div>
+      <div class="stat"><div class="stat-label">Scarcity</div><div class="stat-val">Extreme</div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-label">Why it's worth doing despite difficulty</div>
+      <div class="detail-text">Grafted jaboticaba — especially Red Hybrid and Sabara varieties — are almost never available in quantity in Australia. They sell instantly at $80–180 retail and online waiting lists are common. The slow growth means you can hold trees in pots and charge more as they mature. A 3-year-old grafted Sabara in a 30L pot retails $200–350. The market is collectors, serious foodies, and subtropical gardeners — a growing demographic in SEQ. Low volume, very high margin. Treat this as your premium product line alongside volume avocado and macadamia.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div id="p-layout" class="panel">
+  <div class="note">2 acres = ~8,100m². The key principle: <strong>heated propagation space is your most valuable square metre</strong> — use it for grafting and early establishment only. Move hardened-off stock to cheaper shade house or open hardening bays to free up propagation capacity.</div>
+
+  <div class="warn">QLD summer heat is the design constraint. Your propagation greenhouse must have evaporative cooling or shade cloth rated 50–70% — avocado and macadamia grafts fail above 35°C. Budget $4,000–8,000 for a properly cooled 10×20m greenhouse.</div>
+
+  <div class="layout-grid">
+    <div class="layout-card">
+      <h3>Zone A — Heated propagation greenhouse</h3>
+      <div class="size">~200m² (10×20m) · ~$6,000–10,000</div>
+      <p>Temperature-controlled (22–32°C). Bottom heat benches. Mist irrigation. This is where grafting and first 6–8 weeks of establishment happen. Capacity: 3,000–4,000 grafted trees at any time across all species. Rotate every 10–12 weeks to Zone B.</p>
+    </div>
+    <div class="layout-card">
+      <h3>Zone B — Shade house hardening</h3>
+      <div class="size">~600m² (20×30m) · ~$3,000–5,000</div>
+      <p>50% shadecloth, drip irrigation. Trees here for 8–16 weeks post-graft. Lower cost per m² than Zone A. Capacity: 6,000–8,000 trees in 5–15L pots. Can use existing poor shed after minimal upgrade.</p>
+    </div>
+    <div class="layout-card">
+      <h3>Zone C — Stock plant rows (mother trees)</h3>
+      <div class="size">~2,000m² · low cost</div>
+      <p>Lychee mother trees for air layering (20–30 trees). Olive rootstock and scion rows. Macadamia scion block. Mango scion block. These produce your free scion wood indefinitely. Plant once, harvest forever. Drip irrigated rows.</p>
+    </div>
+    <div class="layout-card">
+      <h3>Zone D — Rootstock nursery beds</h3>
+      <div class="size">~500m² · minimal cost</div>
+      <p>Direct-sown rootstock seeds (avocado, macadamia, mango polyembryonic). Target: 2,000–3,000 rootstocks in production at all times. In-ground or deep trays. This is your bottleneck if not managed — grafting output is limited by rootstock availability.</p>
+    </div>
+    <div class="layout-card">
+      <h3>Zone E — Grow-on / sales holding</h3>
+      <div class="size">~2,000m² · open air</div>
+      <p>Hardened trees waiting for sale. Larger-format trees earning premium price with time. Shade cloth optional. Drip irrigation. Can hold 5,000–8,000 trees in 8–25L pots. This space converts to revenue by letting trees size up for 6–18 months at near-zero cost.</p>
+    </div>
+    <div class="layout-card">
+      <h3>Revenue projection — 2 acres fully operational</h3>
+      <div class="size">Year 2–3 steady state</div>
+      <p>8,000 wholesale trees/yr at $28 avg = <strong>$224,000</strong><br>
+      2,000 retail trees/yr at $65 avg = <strong>$130,000</strong><br>
+      Premium/aged trees 500/yr at $120 avg = <strong>$60,000</strong><br>
+      <strong>Total gross: ~$414,000</strong><br>
+      Net after labour (2 staff) + inputs: ~$240–280k</p>
+    </div>
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Design a detailed greenhouse and shade house layout for a 2-acre grafting nursery near Gatton QLD — dimensions, materials, irrigation, and cooling for avocado, macadamia, lychee and mango')">Design the full greenhouse and nursery layout ↗</button>
+</div>
+
+<div id="p-buyers" class="panel">
+  <div class="note">Your marketing constraint is getting products to market. The grafting nursery is one of the best enterprises for solving this — trees have multiple buyer types with different price points and almost no cold chain requirements.</div>
+
+  <div class="layout-grid">
+    <div class="layout-card">
+      <h3>🌿 Garden centres — retail wholesale</h3>
+      <p>Bunnings, local independents, and specialist nurseries. Approach with a line sheet and samples. They want consistent supply on 4–6 week replenishment cycles. Margin: they take 40–50%, you get $20–35/tree. Volume: 50–200 trees/order. Closest: Gatton, Ipswich, Toowoomba, Brisbane. 5–8 accounts = $150–250k/yr at scale.</p>
+    </div>
+    <div class="layout-card">
+      <h3>🥑 Commercial orchard developers</h3>
+      <p>Avocado and macadamia orchards being established across SEQ need 200–2,000 trees per order. These are your best single-order customers. Contact via QLD Avocado Growers Association and Australian Macadamia Society. Price: $18–35/tree, massive volume. One order can be $20,000+.</p>
+    </div>
+    <div class="layout-card">
+      <h3>💻 Online direct — highest margin</h3>
+      <p>Shopify or your farm website. Ship in purpose-built plant boxes via Aramex or StarTrack. QLD trees ship nationally with permit. $45–120/tree direct. 200 online orders/month = $9–24k revenue with no middleman. Instagram and YouTube "nursery tour" content drives this — it genuinely works for rare/premium varieties.</p>
+    </div>
+    <div class="layout-card">
+      <h3>🏡 Farm gate / open days</h3>
+      <p>Monthly or seasonal open-nursery days. Customers come to you, pay retail, carry their own tree. Zero freight cost, zero packaging. Combine with the olive harvest experience and honey sales — people who visit for a tree buy $80 of other products. Sell aged premium trees at $120–250 that you couldn't ship.</p>
+    </div>
+    <div class="layout-card">
+      <h3>🌳 Councils and revegetation</h3>
+      <p>Lockyer Valley Regional Council, SEQ catchment authorities, and road corridor planting projects buy trees in volume. Olives, macadamias, and native species for streetscape and revegetation. Quote directly. Slow procurement but large, predictable orders (500–2,000 trees/order). Lower price ($8–18) but guaranteed volume with no marketing effort.</p>
+    </div>
+    <div class="layout-card">
+      <h3>🪴 Collector / rare fruit community</h3>
+      <p>Rare Fruit Society of Australia (Brisbane chapter active). Facebook groups "Rare and Unusual Fruit Australia" — 60,000+ members. Grafted jaboticaba, unusual lychee varieties, and rare mango types sell instantly here at full retail. Zero marketing cost. One post, sold out. Join and contribute before you sell — community trust precedes sales.</p>
+    </div>
+  </div>
+  <button class="ask-btn" onclick="sendPrompt('Write a wholesale line sheet for a grafted tropical fruit tree nursery near Gatton QLD — avocado, macadamia, lychee, mango — targeting garden centres and commercial orchards')">Write a wholesale line sheet for garden centres ↗</button>
+</div>
+
+</div>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+function togR(id){
+  const b=document.getElementById('b-'+id);
+  b.classList.toggle('open');
+}
+togR('r1');
+</script>
