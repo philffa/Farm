@@ -1,0 +1,65 @@
+<!--
+  ╔══════════════════════════════════════════════════════╗
+  ║  PHIL'S FARM — HOME BUTTON SNIPPET                   ║
+  ║  Add this to every HTML page to get the logo/home    ║
+  ║  button back to index.html                           ║
+  ╚══════════════════════════════════════════════════════╝
+
+  STEP 1 — Paste this CSS inside your <style> block:
+  ─────────────────────────────────────────────────── -->
+
+<style>
+/* ── PHIL'S FARM HOME BUTTON ── */
+.pf-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+.pf-home-btn:hover .pf-home-badge { opacity: .85; transform: scale(.96); }
+.pf-home-badge {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  background: #C8A84B;       /* --straw */
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  color: #2C1A0E;            /* --soil */
+  font-size: .8rem;
+  line-height: 1;
+  box-shadow: 0 1px 6px rgba(0,0,0,.25);
+  transition: opacity .15s, transform .15s;
+  flex-shrink: 0;
+}
+.pf-home-label {
+  font-size: .65rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: .02em;
+  /* colour will inherit from your header — adjust if needed */
+}
+</style>
+
+<!--
+  STEP 2 — Paste this HTML wherever you want the button
+  (typically at the start of your header/nav bar):
+  ──────────────────────────────────────────────────── -->
+
+<a class="pf-home-btn" href="index.html" title="Phil's Farm Hub">
+  <div class="pf-home-badge">PF</div>
+  <div class="pf-home-label">Phil's<br>Farm</div>
+</a>
+
+<!--
+  NOTES:
+  • The label text colour inherits from the parent — if your header
+    has a dark background with light text it will show correctly.
+    If not, add  color: #f5f0e8;  to  .pf-home-label.
+  • The badge is always gold (#C8A84B) on dark brown (#2C1A0E).
+  • You need Playfair Display loaded for the badge font:
+      <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+    Most of your pages already have this.
+-->
